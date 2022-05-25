@@ -61,7 +61,7 @@ class TestMOSEI(object):
         labels_7 = []
 
         # pkl data
-        with open(f"../datasets/MOSEI/mosei.pkl", "rb") as handle:
+        with open(f"../datasets/mosei.pkl", "rb") as handle:
             data = pickle.load(handle)
 
         test_data = data["test"]
@@ -296,7 +296,7 @@ class TestMOSI(object):
         preds_7 = []
 
         # pkl data
-        with open(f"../datasets/MOSI/mosi.pkl", "rb") as handle:
+        with open(f"../datasets/mosi.pkl", "rb") as handle:
             mosi_data = pickle.load(handle)
 
         test_data = mosi_data["test"]
