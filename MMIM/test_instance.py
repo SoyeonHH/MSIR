@@ -49,7 +49,7 @@ class TestMOSEI(object):
         self.model = model
 
     def start(self):
-        sys.stdout = open('/mnt/soyeon/workspace/multimodal/MISA/MISA_mosei.txt', 'w')
+        # sys.stdout = open('/mnt/soyeon/workspace/multimodal/MISA/MISA_mosei.txt', 'w')
         self.model.eval()
         segment_list = []
         words_list = []
@@ -61,7 +61,7 @@ class TestMOSEI(object):
         labels_7 = []
 
         # pkl data
-        with open(f"../datasets/MOSEI/mosei.pkl", "rb") as handle:
+        with open(f"../datasets/mosei.pkl", "rb") as handle:
             data = pickle.load(handle)
 
         test_data = data["test"]
@@ -172,7 +172,7 @@ class TestMOSEI(object):
             print(preds_2[i])
             print(preds_7[i])
 
-        sys.stdout.close()
+        # sys.stdout.close()
 
 
 class InputFeatures(object):
@@ -288,7 +288,7 @@ class TestMOSI(object):
         self.model = model
 
     def start(self):
-        sys.stdout = open('/mnt/soyeon/workspace/multimodal/MMIM/MMIM_mosi.txt', 'w')
+        # sys.stdout = open('/mnt/soyeon/workspace/multimodal/MMIM/MMIM_mosi.txt', 'w')
         self.model.eval()
         segment_list = []
         preds = []
@@ -296,7 +296,7 @@ class TestMOSI(object):
         preds_7 = []
 
         # pkl data
-        with open(f"../datasets/MOSI/mosi.pkl", "rb") as handle:
+        with open(f"../datasets/mosi.pkl", "rb") as handle:
             mosi_data = pickle.load(handle)
 
         test_data = mosi_data["test"]
@@ -354,7 +354,7 @@ class TestMOSI(object):
             print(preds_2[i])
             print(preds_7[i])
 
-        sys.stdout.close()
+        # sys.stdout.close()
 
         return segment_list, preds, preds_2, preds_7
 
