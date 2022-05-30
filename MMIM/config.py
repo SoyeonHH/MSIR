@@ -18,8 +18,8 @@ assert(word_emb_path is not None)
 # sdk_dir = project_dir.joinpath('CMU-MultimodalSDK')
 # data_dir = project_dir.joinpath('datasets')
 
-sdk_dir = '/home/ubuntu/soyeon/CMU-MultimodalSDK'
-data_dir = '/home/ubuntu/soyeon/MSIR/datasets'
+sdk_dir = Path('/home/ubuntu/soyeon/CMU-MultimodalSDK')
+data_dir = Path('/home/ubuntu/soyeon/MSIR/datasets')
 
 data_dict = {'mosi': data_dir.joinpath('MOSI'), 'mosei': data_dir.joinpath(
     'MOSEI'), 'ur_funny': data_dir.joinpath('UR_FUNNY')}

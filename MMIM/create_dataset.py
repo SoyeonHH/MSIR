@@ -31,6 +31,24 @@ def return_unk():
 def get_length(x):
     return x.shape[1]-(np.sum(x, axis=-1) == 0).sum(1)
 
+def load_emb(w2i, path_to_embedding, embedding_size=300, embedding_vocab=2196017, init_emb=None):
+    if init_emb is None:
+        emb_mat = np.random.randn(len(w2i), embedding_size)
+    else:
+        emb_mat = init_emb
+    f = open(path_to_embedding, 'r')
+    found = 0
+    for line in tqdm_notebook(f, total=embedding_vocab):
+        content = line.strip().split()
+        vector = np.asarray(list(map(lambda x: float(x), content[-300:])))
+        word = ' '.join(content[:-300])
+        if word in w2i:
+            idx = w2i[word]
+            emb_mat[idx, :] = vector
+            found += 1
+    print(f"Found {found} words in the embedding file.")
+    return torch.tensor(emb_mat).float()
+
 class MOSI:
     def __init__(self, config):
         if config.sdk_dir is None:
@@ -39,8 +57,7 @@ class MOSI:
         else:
             sys.path.append(str(config.sdk_dir))
         
-        # DATA_PATH = str(config.dataset_dir)
-        DATA_PATH = '/home/ubuntu/soyeon/MSIR/datasets'
+        DATA_PATH = str(config.dataset_dir)
         CACHE_PATH = DATA_PATH + '/embedding_and_mapping.pt'
 
         # If cached data if already exists
@@ -59,7 +76,7 @@ class MOSI:
             # load pickle file for unaligned acoustic and visual source
             # pickle_filename = '../datasets/MOSI/mosi_data_noalign.pkl'
             # csv_filename = '../datasets/MOSI/MOSI-label.csv'
-            pickle_filename = '/home/ubuntu/soyeon/MSIR/datasets/mosi_data_noalign.pkl'
+            pickle_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/mosi_data_noalign.pkl'
             csv_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/MOSI-label.csv'
 
             with open(pickle_filename,'rb') as f:
@@ -174,8 +191,8 @@ class MOSI:
             word2id.default_factory = return_unk
 
             # Save glove embeddings cache too
-            # self.pretrained_emb = pretrained_emb = load_emb(word2id, config.word_emb_path)
-            # torch.save((pretrained_emb, word2id), CACHE_PATH)
+            self.pretrained_emb = pretrained_emb = load_emb(word2id, config.word_emb_path)
+            torch.save((pretrained_emb, word2id), CACHE_PATH)
 
             # Save pickles
             to_pickle(train, DATA_PATH + '/train.pkl')
@@ -222,8 +239,8 @@ class MOSEI:
             # load pickle file for unaligned acoustic and visual source
             # pickle_filename = '../datasets/MOSEI/mosei_senti_data_noalign.pkl'
             # csv_filename = '../datasets/MOSEI/MOSEI-label.csv'
-            pickle_filename = '/home/ubuntu/soyeon/MSIR/datasets/mosei_senti_data_noalign.pkl'
-            csv_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSEI-label.csv'
+            pickle_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSEI/mosei_senti_data_noalign.pkl'
+            csv_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSEI/MOSEI-label.csv'
 
             with open(pickle_filename, 'rb') as f:
                 d = pickle.load(f)
@@ -331,8 +348,8 @@ class MOSEI:
             word2id.default_factory = return_unk
 
             # Save glove embeddings cache too
-            # self.pretrained_emb = pretrained_emb = load_emb(word2id, config.word_emb_path)
-            # torch.save((pretrained_emb, word2id), CACHE_PATH)
+            self.pretrained_emb = pretrained_emb = load_emb(word2id, config.word_emb_path)
+            torch.save((pretrained_emb, word2id), CACHE_PATH)
             self.pretrained_emb = None
 
             # Save pickles
