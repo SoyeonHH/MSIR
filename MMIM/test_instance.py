@@ -61,7 +61,7 @@ class TestMOSEI(object):
         labels_7 = []
 
         # pkl data
-        with open(f"./datasets/MOSEI/mosei.pkl", "rb") as handle:
+        with open(f"../datasets/MOSEI/mosei.pkl", "rb") as handle:
             data = pickle.load(handle)
 
         test_data = data["test"]
@@ -161,18 +161,19 @@ class TestMOSEI(object):
                         preds_7.append('very positive')
 
         count = 0
-        for i in range(len(segment_list)):
-            print(i, "th data")
-            print(segment_list[i])
-            print(words_list[i])
-            print(labels[i])
-            print(labels_2[i])
-            print(labels_7[i])
-            print(preds[i])
-            print(preds_2[i])
-            print(preds_7[i])
+        # for i in range(len(segment_list)):
+        #     print(i, "th data")
+        #     print(segment_list[i])
+        #     print(words_list[i])
+        #     print(labels[i])
+        #     print(labels_2[i])
+        #     print(labels_7[i])
+        #     print(preds[i])
+        #     print(preds_2[i])
+        #     print(preds_7[i])
 
         # sys.stdout.close()
+        return segment_list, preds, preds_2, preds_7
 
 
 class InputFeatures(object):
@@ -201,7 +202,7 @@ def get_dataset(data):
 
         (words, visual, acoustic), label_id, segment = example
 
-        CACHE_PATH = '/home/ubuntu/soyeon/MSIR/datasets/MOSEI/embedding_and_mapping.pt'
+        CACHE_PATH = '/mnt/soyeon/workspace/multimodal/MSIR/datasets/MOSEI/embedding_and_mapping.pt'
         pretrained_emb, word2id = torch.load(CACHE_PATH)
 
         word_ids = []
@@ -347,12 +348,12 @@ class TestMOSI(object):
 
         assert len(segment_list) == len(preds)
 
-        for i in range(len(segment_list)):
-            print(i, "th data")
-            print(segment_list[i])
-            print(preds[i])
-            print(preds_2[i])
-            print(preds_7[i])
+        # for i in range(len(segment_list)):
+        #     print(i, "th data")
+        #     print(segment_list[i])
+        #     print(preds[i])
+        #     print(preds_2[i])
+        #     print(preds_7[i])
 
         # sys.stdout.close()
 
@@ -368,7 +369,8 @@ def get_loader(dataset):
         # for later use we sort the batch in descending order of length
         # batch = sorted(batch, key=lambda x: np.array(x[0][0]).shape[0], reverse=True)
         
-        CACHE_PATH = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/embedding_and_mapping.pt'
+        # CACHE_PATH = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/embedding_and_mapping.pt'
+        CACHE_PATH = '/mnt/soyeon/workspace/multimodal/MSIR/datasets/MOSI/embedding_and_mapping.pt'
         pretrained_emb, word2id = torch.load(CACHE_PATH)
 
         v_lens = []
