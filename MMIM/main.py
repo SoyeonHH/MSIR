@@ -58,6 +58,6 @@ if __name__ == '__main__':
     # Model save
     torch.save(model.state_dict(), "./saved_models_MMIM_mosi.pt")
 
-    # tester = TestMOSI
-    # tester = tester(model)
-    # tester.start()
+    tester = TestMOSI
+    tester = tester(model)
+    tester.start()
