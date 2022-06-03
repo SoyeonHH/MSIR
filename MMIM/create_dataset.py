@@ -57,7 +57,7 @@ class MOSI:
         else:
             sys.path.append(str(config.sdk_dir))
         
-        DATA_PATH = str(config.dataset_dir)
+        DATA_PATH = '/mnt/soyeon/workspace/multimodal/MISA/datasets/MOSI'
         CACHE_PATH = DATA_PATH + '/embedding_and_mapping.pt'
 
         # If cached data if already exists
@@ -74,10 +74,10 @@ class MOSI:
                 check_call(' '.join(['mkdir', '-p', DATA_PATH]), shell=True)
             
             # load pickle file for unaligned acoustic and visual source
-            # pickle_filename = '../datasets/MOSI/mosi_data_noalign.pkl'
-            # csv_filename = '../datasets/MOSI/MOSI-label.csv'
-            pickle_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/mosi_data_noalign.pkl'
-            csv_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/MOSI-label.csv'
+            pickle_filename = '../datasets/MOSI/mosi_data_noalign.pkl'
+            csv_filename = '../datasets/MOSI/MOSI-label.csv'
+            # pickle_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/mosi_data_noalign.pkl'
+            # csv_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/MOSI-label.csv'
 
             with open(pickle_filename,'rb') as f:
                 d = pickle.load(f)
@@ -237,10 +237,10 @@ class MOSEI:
             # first we align to words with averaging, collapse_function receives a list of functions
             # dataset.align(text_field, collapse_functions=[avg])
             # load pickle file for unaligned acoustic and visual source
-            # pickle_filename = '../datasets/MOSEI/mosei_senti_data_noalign.pkl'
-            # csv_filename = '../datasets/MOSEI/MOSEI-label.csv'
-            pickle_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSEI/mosei_senti_data_noalign.pkl'
-            csv_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSEI/MOSEI-label.csv'
+            pickle_filename = '../datasets/MOSEI/mosei_senti_data_noalign.pkl'
+            csv_filename = '../datasets/MOSEI/MOSEI-label.csv'
+            # pickle_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSEI/mosei_senti_data_noalign.pkl'
+            # csv_filename = '/home/ubuntu/soyeon/MSIR/datasets/MOSEI/MOSEI-label.csv'
 
             with open(pickle_filename, 'rb') as f:
                 d = pickle.load(f)
