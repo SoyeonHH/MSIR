@@ -1,0 +1,3425 @@
+0 th data
+c7UH_rxdZv4[0]
+0.3021872341632843
+positive
+Neutral
+1 th data
+c7UH_rxdZv4[1]
+0.24603277444839478
+positive
+Neutral
+2 th data
+c7UH_rxdZv4[2]
+0.16555270552635193
+positive
+Neutral
+3 th data
+c7UH_rxdZv4[3]
+0.20429491996765137
+positive
+Neutral
+4 th data
+c7UH_rxdZv4[4]
+0.20907261967658997
+positive
+Neutral
+5 th data
+c7UH_rxdZv4[5]
+0.20432063937187195
+positive
+Neutral
+6 th data
+c7UH_rxdZv4[6]
+0.17610222101211548
+positive
+Neutral
+7 th data
+c7UH_rxdZv4[7]
+0.22852197289466858
+positive
+Neutral
+8 th data
+c7UH_rxdZv4[8]
+0.20581474900245667
+positive
+Neutral
+9 th data
+c7UH_rxdZv4[9]
+0.2312702238559723
+positive
+Neutral
+10 th data
+c7UH_rxdZv4[10]
+0.17741522192955017
+positive
+Neutral
+11 th data
+c7UH_rxdZv4[11]
+0.2522428631782532
+positive
+Neutral
+12 th data
+c7UH_rxdZv4[12]
+0.24773025512695312
+positive
+Neutral
+13 th data
+c7UH_rxdZv4[13]
+0.16990146040916443
+positive
+Neutral
+14 th data
+c7UH_rxdZv4[14]
+0.2847037613391876
+positive
+Neutral
+15 th data
+c7UH_rxdZv4[15]
+0.30262160301208496
+positive
+Neutral
+16 th data
+c7UH_rxdZv4[16]
+0.29404157400131226
+positive
+Neutral
+17 th data
+c7UH_rxdZv4[17]
+0.12821505963802338
+positive
+Neutral
+18 th data
+c7UH_rxdZv4[18]
+0.3192511796951294
+positive
+Neutral
+19 th data
+c7UH_rxdZv4[19]
+0.32907789945602417
+positive
+Neutral
+20 th data
+c7UH_rxdZv4[20]
+0.254098504781723
+positive
+Neutral
+21 th data
+c7UH_rxdZv4[21]
+0.16267728805541992
+positive
+Neutral
+22 th data
+c7UH_rxdZv4[22]
+0.17791816592216492
+positive
+Neutral
+23 th data
+c7UH_rxdZv4[23]
+0.19330087304115295
+positive
+Neutral
+24 th data
+c7UH_rxdZv4[24]
+0.25000789761543274
+positive
+Neutral
+25 th data
+c7UH_rxdZv4[25]
+0.2615191638469696
+positive
+Neutral
+26 th data
+c7UH_rxdZv4[26]
+0.11860105395317078
+positive
+Neutral
+27 th data
+c7UH_rxdZv4[27]
+0.23814010620117188
+positive
+Neutral
+28 th data
+c7UH_rxdZv4[28]
+0.2505508363246918
+positive
+Neutral
+29 th data
+c7UH_rxdZv4[29]
+0.19107744097709656
+positive
+Neutral
+30 th data
+c7UH_rxdZv4[30]
+0.260029673576355
+positive
+Neutral
+31 th data
+c7UH_rxdZv4[31]
+0.16608454287052155
+positive
+Neutral
+32 th data
+c7UH_rxdZv4[32]
+0.22715622186660767
+positive
+Neutral
+33 th data
+cM3Yna7AavY[0]
+0.19503912329673767
+positive
+Neutral
+34 th data
+cM3Yna7AavY[1]
+0.11649951338768005
+positive
+Neutral
+35 th data
+cM3Yna7AavY[2]
+0.1967450976371765
+positive
+Neutral
+36 th data
+cM3Yna7AavY[3]
+0.210539311170578
+positive
+Neutral
+37 th data
+cM3Yna7AavY[4]
+0.19107764959335327
+positive
+Neutral
+38 th data
+cM3Yna7AavY[5]
+0.17969126999378204
+positive
+Neutral
+39 th data
+cM3Yna7AavY[6]
+0.2864391803741455
+positive
+Neutral
+40 th data
+cM3Yna7AavY[7]
+0.24623429775238037
+positive
+Neutral
+41 th data
+cM3Yna7AavY[8]
+0.2813682556152344
+positive
+Neutral
+42 th data
+cM3Yna7AavY[9]
+0.21284723281860352
+positive
+Neutral
+43 th data
+cM3Yna7AavY[10]
+0.2194623351097107
+positive
+Neutral
+44 th data
+cM3Yna7AavY[11]
+0.18744437396526337
+positive
+Neutral
+45 th data
+cM3Yna7AavY[12]
+0.2330840826034546
+positive
+Neutral
+46 th data
+cM3Yna7AavY[13]
+0.19023728370666504
+positive
+Neutral
+47 th data
+cM3Yna7AavY[14]
+0.28153732419013977
+positive
+Neutral
+48 th data
+cM3Yna7AavY[15]
+0.21639496088027954
+positive
+Neutral
+49 th data
+cW1FSBF59ik[0]
+0.18912217020988464
+positive
+Neutral
+50 th data
+cW1FSBF59ik[1]
+0.3121403455734253
+positive
+Neutral
+51 th data
+cW1FSBF59ik[2]
+0.14102014899253845
+positive
+Neutral
+52 th data
+cW1FSBF59ik[3]
+0.20359952747821808
+positive
+Neutral
+53 th data
+cW1FSBF59ik[4]
+0.2887457013130188
+positive
+Neutral
+54 th data
+cW1FSBF59ik[5]
+0.23019105195999146
+positive
+Neutral
+55 th data
+cW1FSBF59ik[6]
+0.20815259218215942
+positive
+Neutral
+56 th data
+cW1FSBF59ik[7]
+0.2928467094898224
+positive
+Neutral
+57 th data
+cW1FSBF59ik[8]
+0.2535178065299988
+positive
+Neutral
+58 th data
+cW1FSBF59ik[9]
+0.281382292509079
+positive
+Neutral
+59 th data
+cW1FSBF59ik[10]
+0.21238717436790466
+positive
+Neutral
+60 th data
+cW1FSBF59ik[11]
+0.26262518763542175
+positive
+Neutral
+61 th data
+cW1FSBF59ik[12]
+0.26021140813827515
+positive
+Neutral
+62 th data
+cW1FSBF59ik[13]
+0.19160084426403046
+positive
+Neutral
+63 th data
+cW1FSBF59ik[14]
+0.22593814134597778
+positive
+Neutral
+64 th data
+cW1FSBF59ik[15]
+0.2108117640018463
+positive
+Neutral
+65 th data
+cW1FSBF59ik[16]
+0.25863051414489746
+positive
+Neutral
+66 th data
+cW1FSBF59ik[17]
+0.24878430366516113
+positive
+Neutral
+67 th data
+cW1FSBF59ik[18]
+0.2365846037864685
+positive
+Neutral
+68 th data
+cW1FSBF59ik[19]
+0.14560538530349731
+positive
+Neutral
+69 th data
+cW1FSBF59ik[20]
+0.20615452527999878
+positive
+Neutral
+70 th data
+cW1FSBF59ik[21]
+0.10784395039081573
+positive
+Neutral
+71 th data
+cW1FSBF59ik[22]
+0.25829845666885376
+positive
+Neutral
+72 th data
+cW1FSBF59ik[23]
+0.2811447083950043
+positive
+Neutral
+73 th data
+cXypl4FnoZo[0]
+0.37908071279525757
+positive
+Neutral
+74 th data
+cXypl4FnoZo[1]
+0.24845591187477112
+positive
+Neutral
+75 th data
+cXypl4FnoZo[2]
+0.2407614290714264
+positive
+Neutral
+76 th data
+cXypl4FnoZo[3]
+0.1154496818780899
+positive
+Neutral
+77 th data
+cXypl4FnoZo[4]
+0.08689497411251068
+positive
+Neutral
+78 th data
+cXypl4FnoZo[5]
+0.2676970362663269
+positive
+Neutral
+79 th data
+cXypl4FnoZo[6]
+0.20442304015159607
+positive
+Neutral
+80 th data
+cXypl4FnoZo[7]
+0.2208721935749054
+positive
+Neutral
+81 th data
+cXypl4FnoZo[8]
+0.13024049997329712
+positive
+Neutral
+82 th data
+cXypl4FnoZo[9]
+0.21856409311294556
+positive
+Neutral
+83 th data
+cXypl4FnoZo[10]
+0.21447861194610596
+positive
+Neutral
+84 th data
+cXypl4FnoZo[11]
+0.3049930930137634
+positive
+Neutral
+85 th data
+cXypl4FnoZo[12]
+0.1865544617176056
+positive
+Neutral
+86 th data
+cXypl4FnoZo[13]
+0.295698881149292
+positive
+Neutral
+87 th data
+cXypl4FnoZo[14]
+0.16570062935352325
+positive
+Neutral
+88 th data
+cXypl4FnoZo[15]
+0.20437228679656982
+positive
+Neutral
+89 th data
+cXypl4FnoZo[16]
+0.12259425222873688
+positive
+Neutral
+90 th data
+cXypl4FnoZo[17]
+0.12478826940059662
+positive
+Neutral
+91 th data
+cXypl4FnoZo[18]
+0.18837085366249084
+positive
+Neutral
+92 th data
+cXypl4FnoZo[19]
+0.2100759744644165
+positive
+Neutral
+93 th data
+cXypl4FnoZo[20]
+0.12027046084403992
+positive
+Neutral
+94 th data
+cXypl4FnoZo[21]
+0.18816572427749634
+positive
+Neutral
+95 th data
+cXypl4FnoZo[22]
+0.2652600407600403
+positive
+Neutral
+96 th data
+cXypl4FnoZo[23]
+0.20255999267101288
+positive
+Neutral
+97 th data
+cXypl4FnoZo[24]
+0.3124309778213501
+positive
+Neutral
+98 th data
+cXypl4FnoZo[25]
+0.25300002098083496
+positive
+Neutral
+99 th data
+cXypl4FnoZo[26]
+0.20579099655151367
+positive
+Neutral
+100 th data
+cXypl4FnoZo[27]
+0.17921850085258484
+positive
+Neutral
+101 th data
+cXypl4FnoZo[28]
+0.22480279207229614
+positive
+Neutral
+102 th data
+d3_k5Xpfmik[0]
+0.23302128911018372
+positive
+Neutral
+103 th data
+d3_k5Xpfmik[1]
+0.20912492275238037
+positive
+Neutral
+104 th data
+d3_k5Xpfmik[2]
+0.223486065864563
+positive
+Neutral
+105 th data
+d3_k5Xpfmik[3]
+0.22316193580627441
+positive
+Neutral
+106 th data
+d3_k5Xpfmik[4]
+0.2185215950012207
+positive
+Neutral
+107 th data
+d3_k5Xpfmik[5]
+0.16856855154037476
+positive
+Neutral
+108 th data
+d3_k5Xpfmik[6]
+0.1662130355834961
+positive
+Neutral
+109 th data
+d3_k5Xpfmik[7]
+0.18736352026462555
+positive
+Neutral
+110 th data
+d3_k5Xpfmik[8]
+0.14446121454238892
+positive
+Neutral
+111 th data
+d3_k5Xpfmik[9]
+0.2547169625759125
+positive
+Neutral
+112 th data
+d3_k5Xpfmik[10]
+0.1653565913438797
+positive
+Neutral
+113 th data
+d3_k5Xpfmik[11]
+0.21179473400115967
+positive
+Neutral
+114 th data
+d3_k5Xpfmik[12]
+0.0896986871957779
+positive
+Neutral
+115 th data
+d3_k5Xpfmik[13]
+0.1962740123271942
+positive
+Neutral
+116 th data
+d3_k5Xpfmik[14]
+0.21098953485488892
+positive
+Neutral
+117 th data
+d3_k5Xpfmik[15]
+0.15607552230358124
+positive
+Neutral
+118 th data
+d3_k5Xpfmik[16]
+0.20114383101463318
+positive
+Neutral
+119 th data
+d3_k5Xpfmik[17]
+0.26862621307373047
+positive
+Neutral
+120 th data
+d3_k5Xpfmik[18]
+0.27345147728919983
+positive
+Neutral
+121 th data
+d6hH302o4v8[0]
+0.19736383855342865
+positive
+Neutral
+122 th data
+d6hH302o4v8[1]
+0.20853540301322937
+positive
+Neutral
+123 th data
+d6hH302o4v8[2]
+0.2522850036621094
+positive
+Neutral
+124 th data
+d6hH302o4v8[3]
+0.2546465992927551
+positive
+Neutral
+125 th data
+d6hH302o4v8[4]
+0.2391723394393921
+positive
+Neutral
+126 th data
+d6hH302o4v8[5]
+0.21983182430267334
+positive
+Neutral
+127 th data
+d6hH302o4v8[6]
+0.23225301504135132
+positive
+Neutral
+128 th data
+d6hH302o4v8[7]
+0.25263768434524536
+positive
+Neutral
+129 th data
+d6hH302o4v8[8]
+0.22492921352386475
+positive
+Neutral
+130 th data
+d6hH302o4v8[9]
+0.19202256202697754
+positive
+Neutral
+131 th data
+d6hH302o4v8[10]
+0.16808539628982544
+positive
+Neutral
+132 th data
+d6hH302o4v8[11]
+0.23272380232810974
+positive
+Neutral
+133 th data
+d6hH302o4v8[12]
+0.14619845151901245
+positive
+Neutral
+134 th data
+d6hH302o4v8[13]
+0.197843998670578
+positive
+Neutral
+135 th data
+d6hH302o4v8[14]
+0.21626189351081848
+positive
+Neutral
+136 th data
+d6hH302o4v8[15]
+0.27448952198028564
+positive
+Neutral
+137 th data
+d6hH302o4v8[16]
+0.20559626817703247
+positive
+Neutral
+138 th data
+d6hH302o4v8[17]
+0.2218610644340515
+positive
+Neutral
+139 th data
+d6hH302o4v8[18]
+0.19781795144081116
+positive
+Neutral
+140 th data
+d6hH302o4v8[19]
+0.19214990735054016
+positive
+Neutral
+141 th data
+d6hH302o4v8[20]
+0.15093162655830383
+positive
+Neutral
+142 th data
+d6hH302o4v8[21]
+0.2103007435798645
+positive
+Neutral
+143 th data
+d6hH302o4v8[22]
+0.1480119228363037
+positive
+Neutral
+144 th data
+d6hH302o4v8[23]
+0.20386052131652832
+positive
+Neutral
+145 th data
+d6hH302o4v8[24]
+0.2481600046157837
+positive
+Neutral
+146 th data
+d6hH302o4v8[25]
+0.24669423699378967
+positive
+Neutral
+147 th data
+d6hH302o4v8[26]
+0.20717540383338928
+positive
+Neutral
+148 th data
+d6hH302o4v8[27]
+0.14291062951087952
+positive
+Neutral
+149 th data
+d6hH302o4v8[28]
+0.2572024464607239
+positive
+Neutral
+150 th data
+d6hH302o4v8[29]
+0.2748315930366516
+positive
+Neutral
+151 th data
+d6hH302o4v8[30]
+0.1258315145969391
+positive
+Neutral
+152 th data
+d6hH302o4v8[31]
+0.1988137662410736
+positive
+Neutral
+153 th data
+d6hH302o4v8[32]
+0.19469520449638367
+positive
+Neutral
+154 th data
+d6hH302o4v8[33]
+0.20722292363643646
+positive
+Neutral
+155 th data
+d6hH302o4v8[34]
+0.3522260785102844
+positive
+Neutral
+156 th data
+d6hH302o4v8[35]
+0.17358307540416718
+positive
+Neutral
+157 th data
+d6hH302o4v8[36]
+0.25676554441452026
+positive
+Neutral
+158 th data
+d6hH302o4v8[37]
+0.2905471920967102
+positive
+Neutral
+159 th data
+d6hH302o4v8[38]
+0.24985742568969727
+positive
+Neutral
+160 th data
+d6hH302o4v8[39]
+0.2736964523792267
+positive
+Neutral
+161 th data
+d6hH302o4v8[40]
+0.22201013565063477
+positive
+Neutral
+162 th data
+d6hH302o4v8[41]
+0.19376152753829956
+positive
+Neutral
+163 th data
+d6hH302o4v8[42]
+0.18136797845363617
+positive
+Neutral
+164 th data
+dq3Nf_lMPnE[0]
+0.18163412809371948
+positive
+Neutral
+165 th data
+dq3Nf_lMPnE[1]
+0.17048214375972748
+positive
+Neutral
+166 th data
+dq3Nf_lMPnE[2]
+0.20852845907211304
+positive
+Neutral
+167 th data
+dq3Nf_lMPnE[3]
+0.19263115525245667
+positive
+Neutral
+168 th data
+dq3Nf_lMPnE[4]
+0.24681982398033142
+positive
+Neutral
+169 th data
+dq3Nf_lMPnE[5]
+0.3286648392677307
+positive
+Neutral
+170 th data
+dq3Nf_lMPnE[6]
+0.1837066113948822
+positive
+Neutral
+171 th data
+dq3Nf_lMPnE[7]
+0.2216801941394806
+positive
+Neutral
+172 th data
+dq3Nf_lMPnE[8]
+0.12515172362327576
+positive
+Neutral
+173 th data
+dq3Nf_lMPnE[9]
+0.2555638551712036
+positive
+Neutral
+174 th data
+dq3Nf_lMPnE[10]
+0.28006231784820557
+positive
+Neutral
+175 th data
+dq3Nf_lMPnE[11]
+0.2980128526687622
+positive
+Neutral
+176 th data
+dq3Nf_lMPnE[12]
+0.23737990856170654
+positive
+Neutral
+177 th data
+dq3Nf_lMPnE[13]
+0.20620398223400116
+positive
+Neutral
+178 th data
+dq3Nf_lMPnE[14]
+0.21531826257705688
+positive
+Neutral
+179 th data
+etzxEpPuc6I[0]
+0.236261248588562
+positive
+Neutral
+180 th data
+etzxEpPuc6I[1]
+0.15041176974773407
+positive
+Neutral
+181 th data
+etzxEpPuc6I[2]
+0.1955765187740326
+positive
+Neutral
+182 th data
+etzxEpPuc6I[3]
+0.20207101106643677
+positive
+Neutral
+183 th data
+etzxEpPuc6I[4]
+0.21251973509788513
+positive
+Neutral
+184 th data
+etzxEpPuc6I[5]
+0.262281209230423
+positive
+Neutral
+185 th data
+etzxEpPuc6I[6]
+0.15519419312477112
+positive
+Neutral
+186 th data
+etzxEpPuc6I[7]
+0.23422512412071228
+positive
+Neutral
+187 th data
+etzxEpPuc6I[8]
+0.1450093537569046
+positive
+Neutral
+188 th data
+etzxEpPuc6I[9]
+0.1930026412010193
+positive
+Neutral
+189 th data
+etzxEpPuc6I[10]
+0.17044609785079956
+positive
+Neutral
+190 th data
+etzxEpPuc6I[11]
+0.16659483313560486
+positive
+Neutral
+191 th data
+etzxEpPuc6I[12]
+0.2043132185935974
+positive
+Neutral
+192 th data
+etzxEpPuc6I[13]
+0.241758793592453
+positive
+Neutral
+193 th data
+etzxEpPuc6I[14]
+0.19198128581047058
+positive
+Neutral
+194 th data
+etzxEpPuc6I[15]
+0.27812594175338745
+positive
+Neutral
+195 th data
+etzxEpPuc6I[16]
+0.2265220284461975
+positive
+Neutral
+196 th data
+etzxEpPuc6I[17]
+0.1815100908279419
+positive
+Neutral
+197 th data
+etzxEpPuc6I[18]
+0.1868591457605362
+positive
+Neutral
+198 th data
+f9O3YtZ2VfI[0]
+0.17538881301879883
+positive
+Neutral
+199 th data
+f9O3YtZ2VfI[1]
+0.22580289840698242
+positive
+Neutral
+200 th data
+f9O3YtZ2VfI[2]
+0.2791728973388672
+positive
+Neutral
+201 th data
+f9O3YtZ2VfI[3]
+0.1965750753879547
+positive
+Neutral
+202 th data
+f9O3YtZ2VfI[4]
+0.19518551230430603
+positive
+Neutral
+203 th data
+f9O3YtZ2VfI[5]
+0.2681781053543091
+positive
+Neutral
+204 th data
+f9O3YtZ2VfI[6]
+0.1987302005290985
+positive
+Neutral
+205 th data
+f9O3YtZ2VfI[7]
+0.2589048445224762
+positive
+Neutral
+206 th data
+f9O3YtZ2VfI[8]
+0.13714289665222168
+positive
+Neutral
+207 th data
+f9O3YtZ2VfI[9]
+0.2933948338031769
+positive
+Neutral
+208 th data
+f9O3YtZ2VfI[10]
+0.13558627665042877
+positive
+Neutral
+209 th data
+f9O3YtZ2VfI[11]
+0.13235707581043243
+positive
+Neutral
+210 th data
+f9O3YtZ2VfI[12]
+0.33415964245796204
+positive
+Neutral
+211 th data
+f9O3YtZ2VfI[13]
+0.2567785382270813
+positive
+Neutral
+212 th data
+f9O3YtZ2VfI[14]
+0.20183807611465454
+positive
+Neutral
+213 th data
+f9O3YtZ2VfI[15]
+0.18830746412277222
+positive
+Neutral
+214 th data
+f9O3YtZ2VfI[16]
+0.16652357578277588
+positive
+Neutral
+215 th data
+f9O3YtZ2VfI[17]
+0.1471760869026184
+positive
+Neutral
+216 th data
+f9O3YtZ2VfI[18]
+0.11000141501426697
+positive
+Neutral
+217 th data
+f9O3YtZ2VfI[19]
+0.23961317539215088
+positive
+Neutral
+218 th data
+f9O3YtZ2VfI[20]
+0.20584622025489807
+positive
+Neutral
+219 th data
+f9O3YtZ2VfI[21]
+0.18707804381847382
+positive
+Neutral
+220 th data
+f9O3YtZ2VfI[22]
+0.1392485350370407
+positive
+Neutral
+221 th data
+f9O3YtZ2VfI[23]
+0.1532353311777115
+positive
+Neutral
+222 th data
+f9O3YtZ2VfI[24]
+0.1314062923192978
+positive
+Neutral
+223 th data
+f9O3YtZ2VfI[25]
+0.27360060811042786
+positive
+Neutral
+224 th data
+f9O3YtZ2VfI[26]
+0.2463269829750061
+positive
+Neutral
+225 th data
+f9O3YtZ2VfI[27]
+0.1732756793498993
+positive
+Neutral
+226 th data
+f9O3YtZ2VfI[28]
+0.15899047255516052
+positive
+Neutral
+227 th data
+f9O3YtZ2VfI[29]
+0.25532349944114685
+positive
+Neutral
+228 th data
+f_pcplsH_V0[0]
+0.23652911186218262
+positive
+Neutral
+229 th data
+f_pcplsH_V0[1]
+0.22675636410713196
+positive
+Neutral
+230 th data
+f_pcplsH_V0[2]
+0.22668874263763428
+positive
+Neutral
+231 th data
+f_pcplsH_V0[3]
+0.24536830186843872
+positive
+Neutral
+232 th data
+f_pcplsH_V0[4]
+0.21907132863998413
+positive
+Neutral
+233 th data
+f_pcplsH_V0[5]
+0.16364705562591553
+positive
+Neutral
+234 th data
+f_pcplsH_V0[6]
+0.19001765549182892
+positive
+Neutral
+235 th data
+f_pcplsH_V0[7]
+0.20214103162288666
+positive
+Neutral
+236 th data
+f_pcplsH_V0[8]
+0.12635552883148193
+positive
+Neutral
+237 th data
+f_pcplsH_V0[9]
+0.21085116267204285
+positive
+Neutral
+238 th data
+f_pcplsH_V0[10]
+0.15126767754554749
+positive
+Neutral
+239 th data
+f_pcplsH_V0[11]
+0.18226934969425201
+positive
+Neutral
+240 th data
+f_pcplsH_V0[12]
+0.22861099243164062
+positive
+Neutral
+241 th data
+f_pcplsH_V0[13]
+0.3047438859939575
+positive
+Neutral
+242 th data
+f_pcplsH_V0[14]
+0.16074340045452118
+positive
+Neutral
+243 th data
+fvVhgmXxadc[0]
+0.23821741342544556
+positive
+Neutral
+244 th data
+fvVhgmXxadc[1]
+0.2305395007133484
+positive
+Neutral
+245 th data
+fvVhgmXxadc[2]
+0.1859099268913269
+positive
+Neutral
+246 th data
+fvVhgmXxadc[3]
+0.16062794625759125
+positive
+Neutral
+247 th data
+fvVhgmXxadc[4]
+0.15971797704696655
+positive
+Neutral
+248 th data
+fvVhgmXxadc[5]
+0.13383112847805023
+positive
+Neutral
+249 th data
+fvVhgmXxadc[6]
+0.1363493651151657
+positive
+Neutral
+250 th data
+fvVhgmXxadc[7]
+0.16958971321582794
+positive
+Neutral
+251 th data
+fvVhgmXxadc[8]
+0.19997486472129822
+positive
+Neutral
+252 th data
+fvVhgmXxadc[9]
+0.13295193016529083
+positive
+Neutral
+253 th data
+fvVhgmXxadc[10]
+0.19311967492103577
+positive
+Neutral
+254 th data
+fvVhgmXxadc[11]
+0.11041198670864105
+positive
+Neutral
+255 th data
+fvVhgmXxadc[12]
+0.19721749424934387
+positive
+Neutral
+256 th data
+fvVhgmXxadc[13]
+0.22223913669586182
+positive
+Neutral
+257 th data
+iiK8YX8oH1E[0]
+0.24724668264389038
+positive
+Neutral
+258 th data
+iiK8YX8oH1E[1]
+0.20034629106521606
+positive
+Neutral
+259 th data
+iiK8YX8oH1E[2]
+0.2932128608226776
+positive
+Neutral
+260 th data
+iiK8YX8oH1E[3]
+0.1975301057100296
+positive
+Neutral
+261 th data
+iiK8YX8oH1E[4]
+0.21945929527282715
+positive
+Neutral
+262 th data
+iiK8YX8oH1E[5]
+0.20069319009780884
+positive
+Neutral
+263 th data
+iiK8YX8oH1E[6]
+0.2613206207752228
+positive
+Neutral
+264 th data
+iiK8YX8oH1E[7]
+0.23315834999084473
+positive
+Neutral
+265 th data
+iiK8YX8oH1E[8]
+0.17602229118347168
+positive
+Neutral
+266 th data
+iiK8YX8oH1E[9]
+0.2195393443107605
+positive
+Neutral
+267 th data
+iiK8YX8oH1E[10]
+0.18890069425106049
+positive
+Neutral
+268 th data
+iiK8YX8oH1E[11]
+0.25401371717453003
+positive
+Neutral
+269 th data
+iiK8YX8oH1E[12]
+0.20291833579540253
+positive
+Neutral
+270 th data
+iiK8YX8oH1E[13]
+0.2678004801273346
+positive
+Neutral
+271 th data
+iiK8YX8oH1E[14]
+0.20793473720550537
+positive
+Neutral
+272 th data
+iiK8YX8oH1E[15]
+0.27753907442092896
+positive
+Neutral
+273 th data
+iiK8YX8oH1E[16]
+0.18181011080741882
+positive
+Neutral
+274 th data
+iiK8YX8oH1E[17]
+0.27674365043640137
+positive
+Neutral
+275 th data
+jUzDDGyPkXU[0]
+0.2826329171657562
+positive
+Neutral
+276 th data
+jUzDDGyPkXU[1]
+0.2471511960029602
+positive
+Neutral
+277 th data
+jUzDDGyPkXU[2]
+0.19163480401039124
+positive
+Neutral
+278 th data
+jUzDDGyPkXU[3]
+0.24451085925102234
+positive
+Neutral
+279 th data
+jUzDDGyPkXU[4]
+0.20172783732414246
+positive
+Neutral
+280 th data
+jUzDDGyPkXU[5]
+0.20030859112739563
+positive
+Neutral
+281 th data
+jUzDDGyPkXU[6]
+0.2149166464805603
+positive
+Neutral
+282 th data
+jUzDDGyPkXU[7]
+0.20314082503318787
+positive
+Neutral
+283 th data
+jUzDDGyPkXU[8]
+0.25878995656967163
+positive
+Neutral
+284 th data
+jUzDDGyPkXU[9]
+0.16086500883102417
+positive
+Neutral
+285 th data
+jUzDDGyPkXU[10]
+0.2271328568458557
+positive
+Neutral
+286 th data
+jUzDDGyPkXU[11]
+0.23627713322639465
+positive
+Neutral
+287 th data
+jUzDDGyPkXU[12]
+0.23770153522491455
+positive
+Neutral
+288 th data
+jUzDDGyPkXU[13]
+0.28913599252700806
+positive
+Neutral
+289 th data
+jUzDDGyPkXU[14]
+0.2234233319759369
+positive
+Neutral
+290 th data
+jUzDDGyPkXU[15]
+0.25170958042144775
+positive
+Neutral
+291 th data
+jUzDDGyPkXU[16]
+0.25709646940231323
+positive
+Neutral
+292 th data
+jUzDDGyPkXU[17]
+0.2176377773284912
+positive
+Neutral
+293 th data
+jUzDDGyPkXU[18]
+0.17637833952903748
+positive
+Neutral
+294 th data
+jUzDDGyPkXU[19]
+0.27495086193084717
+positive
+Neutral
+295 th data
+jUzDDGyPkXU[20]
+0.2075875997543335
+positive
+Neutral
+296 th data
+jUzDDGyPkXU[21]
+0.1894223690032959
+positive
+Neutral
+297 th data
+jUzDDGyPkXU[22]
+0.22853150963783264
+positive
+Neutral
+298 th data
+jUzDDGyPkXU[23]
+0.12331986427307129
+positive
+Neutral
+299 th data
+jUzDDGyPkXU[24]
+0.18546582758426666
+positive
+Neutral
+300 th data
+jUzDDGyPkXU[25]
+0.18415869772434235
+positive
+Neutral
+301 th data
+jUzDDGyPkXU[26]
+0.198866069316864
+positive
+Neutral
+302 th data
+k5Y_838nuGo[0]
+0.19140297174453735
+positive
+Neutral
+303 th data
+k5Y_838nuGo[1]
+0.20720148086547852
+positive
+Neutral
+304 th data
+k5Y_838nuGo[2]
+0.30534255504608154
+positive
+Neutral
+305 th data
+k5Y_838nuGo[3]
+0.18980443477630615
+positive
+Neutral
+306 th data
+k5Y_838nuGo[4]
+0.2230437695980072
+positive
+Neutral
+307 th data
+k5Y_838nuGo[5]
+0.0931626558303833
+positive
+Neutral
+308 th data
+k5Y_838nuGo[6]
+0.13508740067481995
+positive
+Neutral
+309 th data
+k5Y_838nuGo[7]
+0.17068485915660858
+positive
+Neutral
+310 th data
+k5Y_838nuGo[8]
+0.17360112071037292
+positive
+Neutral
+311 th data
+k5Y_838nuGo[9]
+0.1639505922794342
+positive
+Neutral
+312 th data
+k5Y_838nuGo[10]
+0.17243313789367676
+positive
+Neutral
+313 th data
+k5Y_838nuGo[11]
+0.24433478713035583
+positive
+Neutral
+314 th data
+k5Y_838nuGo[12]
+0.23221564292907715
+positive
+Neutral
+315 th data
+k5Y_838nuGo[13]
+0.2301419973373413
+positive
+Neutral
+316 th data
+k5Y_838nuGo[14]
+0.24947625398635864
+positive
+Neutral
+317 th data
+k5Y_838nuGo[15]
+0.23254796862602234
+positive
+Neutral
+318 th data
+k5Y_838nuGo[16]
+0.16996575891971588
+positive
+Neutral
+319 th data
+k5Y_838nuGo[17]
+0.24102291464805603
+positive
+Neutral
+320 th data
+k5Y_838nuGo[18]
+0.2006237804889679
+positive
+Neutral
+321 th data
+k5Y_838nuGo[19]
+0.19926491379737854
+positive
+Neutral
+322 th data
+k5Y_838nuGo[20]
+0.24465703964233398
+positive
+Neutral
+323 th data
+k5Y_838nuGo[21]
+0.21098509430885315
+positive
+Neutral
+324 th data
+k5Y_838nuGo[22]
+0.2273947298526764
+positive
+Neutral
+325 th data
+k5Y_838nuGo[23]
+0.24738925695419312
+positive
+Neutral
+326 th data
+k5Y_838nuGo[24]
+0.12940660119056702
+positive
+Neutral
+327 th data
+k5Y_838nuGo[25]
+0.22503286600112915
+positive
+Neutral
+328 th data
+k5Y_838nuGo[26]
+0.19946014881134033
+positive
+Neutral
+329 th data
+k5Y_838nuGo[27]
+0.25786733627319336
+positive
+Neutral
+330 th data
+k5Y_838nuGo[28]
+0.2503955364227295
+positive
+Neutral
+331 th data
+k5Y_838nuGo[29]
+0.18766316771507263
+positive
+Neutral
+332 th data
+k5Y_838nuGo[30]
+0.20381498336791992
+positive
+Neutral
+333 th data
+lXPQBPVc5Cw[0]
+0.2104552984237671
+positive
+Neutral
+334 th data
+lXPQBPVc5Cw[1]
+0.25827717781066895
+positive
+Neutral
+335 th data
+lXPQBPVc5Cw[2]
+0.20253702998161316
+positive
+Neutral
+336 th data
+lXPQBPVc5Cw[3]
+0.25231504440307617
+positive
+Neutral
+337 th data
+lXPQBPVc5Cw[4]
+0.194746196269989
+positive
+Neutral
+338 th data
+lXPQBPVc5Cw[5]
+0.19244445860385895
+positive
+Neutral
+339 th data
+lXPQBPVc5Cw[6]
+0.18247005343437195
+positive
+Neutral
+340 th data
+lXPQBPVc5Cw[7]
+0.30178508162498474
+positive
+Neutral
+341 th data
+lXPQBPVc5Cw[8]
+0.09088534116744995
+positive
+Neutral
+342 th data
+lXPQBPVc5Cw[9]
+0.23239895701408386
+positive
+Neutral
+343 th data
+lXPQBPVc5Cw[10]
+0.21049070358276367
+positive
+Neutral
+344 th data
+lXPQBPVc5Cw[11]
+0.1648094654083252
+positive
+Neutral
+345 th data
+lXPQBPVc5Cw[12]
+0.29037588834762573
+positive
+Neutral
+346 th data
+lXPQBPVc5Cw[13]
+0.08504898846149445
+positive
+Neutral
+347 th data
+lXPQBPVc5Cw[14]
+0.20431406795978546
+positive
+Neutral
+348 th data
+lXPQBPVc5Cw[15]
+0.19384880363941193
+positive
+Neutral
+349 th data
+lXPQBPVc5Cw[16]
+0.2479960322380066
+positive
+Neutral
+350 th data
+lXPQBPVc5Cw[17]
+0.24683010578155518
+positive
+Neutral
+351 th data
+lXPQBPVc5Cw[18]
+0.18245148658752441
+positive
+Neutral
+352 th data
+lXPQBPVc5Cw[19]
+0.1857987493276596
+positive
+Neutral
+353 th data
+lXPQBPVc5Cw[20]
+0.1323568969964981
+positive
+Neutral
+354 th data
+lXPQBPVc5Cw[21]
+0.2534305453300476
+positive
+Neutral
+355 th data
+lXPQBPVc5Cw[22]
+0.17103928327560425
+positive
+Neutral
+356 th data
+lXPQBPVc5Cw[23]
+0.272885262966156
+positive
+Neutral
+357 th data
+lXPQBPVc5Cw[24]
+0.1414930522441864
+positive
+Neutral
+358 th data
+lXPQBPVc5Cw[25]
+0.19239789247512817
+positive
+Neutral
+359 th data
+lXPQBPVc5Cw[26]
+0.1579914391040802
+positive
+Neutral
+360 th data
+lXPQBPVc5Cw[27]
+0.18800878524780273
+positive
+Neutral
+361 th data
+lXPQBPVc5Cw[28]
+0.29078274965286255
+positive
+Neutral
+362 th data
+nbWiPyCm4g0[0]
+0.16629935801029205
+positive
+Neutral
+363 th data
+nbWiPyCm4g0[1]
+0.16194534301757812
+positive
+Neutral
+364 th data
+nbWiPyCm4g0[2]
+0.24046289920806885
+positive
+Neutral
+365 th data
+nbWiPyCm4g0[3]
+0.15157291293144226
+positive
+Neutral
+366 th data
+nbWiPyCm4g0[4]
+0.1434866338968277
+positive
+Neutral
+367 th data
+nbWiPyCm4g0[5]
+0.17670351266860962
+positive
+Neutral
+368 th data
+nbWiPyCm4g0[6]
+0.19034543633460999
+positive
+Neutral
+369 th data
+nbWiPyCm4g0[7]
+0.188693106174469
+positive
+Neutral
+370 th data
+nbWiPyCm4g0[8]
+0.15768560767173767
+positive
+Neutral
+371 th data
+nbWiPyCm4g0[9]
+0.21529340744018555
+positive
+Neutral
+372 th data
+nzpVDcQ0ywM[0]
+0.12383158504962921
+positive
+Neutral
+373 th data
+nzpVDcQ0ywM[1]
+0.22935187816619873
+positive
+Neutral
+374 th data
+nzpVDcQ0ywM[2]
+0.2173168957233429
+positive
+Neutral
+375 th data
+nzpVDcQ0ywM[3]
+0.18366706371307373
+positive
+Neutral
+376 th data
+nzpVDcQ0ywM[4]
+0.25520622730255127
+positive
+Neutral
+377 th data
+nzpVDcQ0ywM[5]
+0.14829368889331818
+positive
+Neutral
+378 th data
+nzpVDcQ0ywM[6]
+0.2408197522163391
+positive
+Neutral
+379 th data
+nzpVDcQ0ywM[7]
+0.23641341924667358
+positive
+Neutral
+380 th data
+nzpVDcQ0ywM[8]
+0.24257823824882507
+positive
+Neutral
+381 th data
+nzpVDcQ0ywM[9]
+0.18300437927246094
+positive
+Neutral
+382 th data
+nzpVDcQ0ywM[10]
+0.1178523600101471
+positive
+Neutral
+383 th data
+nzpVDcQ0ywM[11]
+0.1933746188879013
+positive
+Neutral
+384 th data
+nzpVDcQ0ywM[12]
+0.27957385778427124
+positive
+Neutral
+385 th data
+nzpVDcQ0ywM[13]
+0.26385581493377686
+positive
+Neutral
+386 th data
+nzpVDcQ0ywM[14]
+0.21706584095954895
+positive
+Neutral
+387 th data
+nzpVDcQ0ywM[15]
+0.22316834330558777
+positive
+Neutral
+388 th data
+nzpVDcQ0ywM[16]
+0.2581271529197693
+positive
+Neutral
+389 th data
+nzpVDcQ0ywM[17]
+0.22138351202011108
+positive
+Neutral
+390 th data
+nzpVDcQ0ywM[18]
+0.2540442943572998
+positive
+Neutral
+391 th data
+nzpVDcQ0ywM[19]
+0.31305578351020813
+positive
+Neutral
+392 th data
+nzpVDcQ0ywM[20]
+0.1218017190694809
+positive
+Neutral
+393 th data
+nzpVDcQ0ywM[21]
+0.2534466087818146
+positive
+Neutral
+394 th data
+nzpVDcQ0ywM[22]
+0.27346697449684143
+positive
+Neutral
+395 th data
+nzpVDcQ0ywM[23]
+0.14235657453536987
+positive
+Neutral
+396 th data
+ob23OKe5a9Q[0]
+0.2106250822544098
+positive
+Neutral
+397 th data
+ob23OKe5a9Q[1]
+0.20277279615402222
+positive
+Neutral
+398 th data
+ob23OKe5a9Q[2]
+0.19800248742103577
+positive
+Neutral
+399 th data
+ob23OKe5a9Q[3]
+0.24750983715057373
+positive
+Neutral
+400 th data
+ob23OKe5a9Q[4]
+0.15878967940807343
+positive
+Neutral
+401 th data
+ob23OKe5a9Q[5]
+0.28434377908706665
+positive
+Neutral
+402 th data
+ob23OKe5a9Q[6]
+0.21285569667816162
+positive
+Neutral
+403 th data
+ob23OKe5a9Q[7]
+0.16624951362609863
+positive
+Neutral
+404 th data
+ob23OKe5a9Q[8]
+0.21076679229736328
+positive
+Neutral
+405 th data
+ob23OKe5a9Q[9]
+0.2545509934425354
+positive
+Neutral
+406 th data
+ob23OKe5a9Q[10]
+0.28155386447906494
+positive
+Neutral
+407 th data
+ob23OKe5a9Q[11]
+0.23454397916793823
+positive
+Neutral
+408 th data
+ob23OKe5a9Q[12]
+0.15758246183395386
+positive
+Neutral
+409 th data
+ob23OKe5a9Q[13]
+0.1728323996067047
+positive
+Neutral
+410 th data
+pLTX3ipuDJI[0]
+0.2549588978290558
+positive
+Neutral
+411 th data
+pLTX3ipuDJI[1]
+0.2325679063796997
+positive
+Neutral
+412 th data
+pLTX3ipuDJI[2]
+0.20084050297737122
+positive
+Neutral
+413 th data
+pLTX3ipuDJI[3]
+0.21413153409957886
+positive
+Neutral
+414 th data
+pLTX3ipuDJI[4]
+0.24402236938476562
+positive
+Neutral
+415 th data
+pLTX3ipuDJI[5]
+0.2569745182991028
+positive
+Neutral
+416 th data
+pLTX3ipuDJI[6]
+0.18149088323116302
+positive
+Neutral
+417 th data
+pLTX3ipuDJI[7]
+0.14230594038963318
+positive
+Neutral
+418 th data
+pLTX3ipuDJI[8]
+0.16520291566848755
+positive
+Neutral
+419 th data
+pLTX3ipuDJI[9]
+0.14136886596679688
+positive
+Neutral
+420 th data
+pLTX3ipuDJI[10]
+0.09795169532299042
+positive
+Neutral
+421 th data
+pLTX3ipuDJI[11]
+0.265135794878006
+positive
+Neutral
+422 th data
+pLTX3ipuDJI[12]
+0.2564511299133301
+positive
+Neutral
+423 th data
+pLTX3ipuDJI[13]
+0.22486796975135803
+positive
+Neutral
+424 th data
+pLTX3ipuDJI[14]
+0.24456632137298584
+positive
+Neutral
+425 th data
+pLTX3ipuDJI[15]
+0.188369020819664
+positive
+Neutral
+426 th data
+phBUpBr1hSo[0]
+0.27053970098495483
+positive
+Neutral
+427 th data
+phBUpBr1hSo[1]
+0.24232572317123413
+positive
+Neutral
+428 th data
+phBUpBr1hSo[2]
+0.1886332631111145
+positive
+Neutral
+429 th data
+phBUpBr1hSo[3]
+0.15731705725193024
+positive
+Neutral
+430 th data
+phBUpBr1hSo[4]
+0.16048507392406464
+positive
+Neutral
+431 th data
+phBUpBr1hSo[5]
+0.2631019353866577
+positive
+Neutral
+432 th data
+phBUpBr1hSo[6]
+0.15702089667320251
+positive
+Neutral
+433 th data
+phBUpBr1hSo[7]
+0.185115784406662
+positive
+Neutral
+434 th data
+phBUpBr1hSo[8]
+0.2579203248023987
+positive
+Neutral
+435 th data
+phBUpBr1hSo[9]
+0.2271113395690918
+positive
+Neutral
+436 th data
+phBUpBr1hSo[10]
+0.22714093327522278
+positive
+Neutral
+437 th data
+phBUpBr1hSo[11]
+0.08702391386032104
+positive
+Neutral
+438 th data
+phBUpBr1hSo[12]
+0.11018192768096924
+positive
+Neutral
+439 th data
+phBUpBr1hSo[13]
+0.22253528237342834
+positive
+Neutral
+440 th data
+phBUpBr1hSo[14]
+0.15043076872825623
+positive
+Neutral
+441 th data
+phBUpBr1hSo[15]
+0.21532326936721802
+positive
+Neutral
+442 th data
+phBUpBr1hSo[16]
+0.2592792510986328
+positive
+Neutral
+443 th data
+phBUpBr1hSo[17]
+0.19483216106891632
+positive
+Neutral
+444 th data
+phBUpBr1hSo[18]
+0.19705423712730408
+positive
+Neutral
+445 th data
+phBUpBr1hSo[19]
+0.2606044411659241
+positive
+Neutral
+446 th data
+phBUpBr1hSo[20]
+0.22698470950126648
+positive
+Neutral
+447 th data
+rnaNMUZpvvg[0]
+0.1339370608329773
+positive
+Neutral
+448 th data
+rnaNMUZpvvg[1]
+0.19104993343353271
+positive
+Neutral
+449 th data
+rnaNMUZpvvg[2]
+0.17770296335220337
+positive
+Neutral
+450 th data
+rnaNMUZpvvg[3]
+0.18356025218963623
+positive
+Neutral
+451 th data
+rnaNMUZpvvg[4]
+0.23764753341674805
+positive
+Neutral
+452 th data
+rnaNMUZpvvg[5]
+0.1432400941848755
+positive
+Neutral
+453 th data
+rnaNMUZpvvg[6]
+0.17272457480430603
+positive
+Neutral
+454 th data
+rnaNMUZpvvg[7]
+0.1720687747001648
+positive
+Neutral
+455 th data
+rnaNMUZpvvg[8]
+0.1792009323835373
+positive
+Neutral
+456 th data
+rnaNMUZpvvg[9]
+0.20741908252239227
+positive
+Neutral
+457 th data
+rnaNMUZpvvg[10]
+0.08620737493038177
+positive
+Neutral
+458 th data
+rnaNMUZpvvg[11]
+0.24765640497207642
+positive
+Neutral
+459 th data
+rnaNMUZpvvg[12]
+0.16074150800704956
+positive
+Neutral
+460 th data
+rnaNMUZpvvg[13]
+0.17515331506729126
+positive
+Neutral
+461 th data
+rnaNMUZpvvg[14]
+0.20755931735038757
+positive
+Neutral
+462 th data
+rnaNMUZpvvg[15]
+0.2121482789516449
+positive
+Neutral
+463 th data
+rnaNMUZpvvg[16]
+0.19837212562561035
+positive
+Neutral
+464 th data
+rnaNMUZpvvg[17]
+0.19931015372276306
+positive
+Neutral
+465 th data
+rnaNMUZpvvg[18]
+0.15554094314575195
+positive
+Neutral
+466 th data
+rnaNMUZpvvg[19]
+0.13711777329444885
+positive
+Neutral
+467 th data
+rnaNMUZpvvg[20]
+0.2404329478740692
+positive
+Neutral
+468 th data
+rnaNMUZpvvg[21]
+0.25830480456352234
+positive
+Neutral
+469 th data
+tIrG4oNLFzE[0]
+0.18492156267166138
+positive
+Neutral
+470 th data
+tIrG4oNLFzE[1]
+0.23039236664772034
+positive
+Neutral
+471 th data
+tIrG4oNLFzE[2]
+0.143527090549469
+positive
+Neutral
+472 th data
+tIrG4oNLFzE[3]
+0.20875412225723267
+positive
+Neutral
+473 th data
+tIrG4oNLFzE[4]
+0.2505772113800049
+positive
+Neutral
+474 th data
+tIrG4oNLFzE[5]
+0.17890456318855286
+positive
+Neutral
+475 th data
+tIrG4oNLFzE[6]
+0.19611264765262604
+positive
+Neutral
+476 th data
+tIrG4oNLFzE[7]
+0.16908079385757446
+positive
+Neutral
+477 th data
+tIrG4oNLFzE[8]
+0.20341426134109497
+positive
+Neutral
+478 th data
+tIrG4oNLFzE[9]
+0.18254944682121277
+positive
+Neutral
+479 th data
+tIrG4oNLFzE[10]
+0.17709776759147644
+positive
+Neutral
+480 th data
+tIrG4oNLFzE[11]
+0.1940593421459198
+positive
+Neutral
+481 th data
+tIrG4oNLFzE[12]
+0.15568068623542786
+positive
+Neutral
+482 th data
+tIrG4oNLFzE[13]
+0.11442390084266663
+positive
+Neutral
+483 th data
+tIrG4oNLFzE[14]
+0.20844373106956482
+positive
+Neutral
+484 th data
+tIrG4oNLFzE[15]
+0.16480764746665955
+positive
+Neutral
+485 th data
+tIrG4oNLFzE[16]
+0.24178707599639893
+positive
+Neutral
+486 th data
+tIrG4oNLFzE[17]
+0.20262369513511658
+positive
+Neutral
+487 th data
+tStelxIAHjw[0]
+0.2879822850227356
+positive
+Neutral
+488 th data
+tStelxIAHjw[1]
+0.20696362853050232
+positive
+Neutral
+489 th data
+tStelxIAHjw[2]
+0.1836629956960678
+positive
+Neutral
+490 th data
+tStelxIAHjw[3]
+0.19204933941364288
+positive
+Neutral
+491 th data
+tStelxIAHjw[4]
+0.16463279724121094
+positive
+Neutral
+492 th data
+tStelxIAHjw[5]
+0.21942585706710815
+positive
+Neutral
+493 th data
+tStelxIAHjw[6]
+0.22142165899276733
+positive
+Neutral
+494 th data
+tStelxIAHjw[7]
+0.23496249318122864
+positive
+Neutral
+495 th data
+tStelxIAHjw[8]
+0.1691165566444397
+positive
+Neutral
+496 th data
+tStelxIAHjw[9]
+0.18285265564918518
+positive
+Neutral
+497 th data
+tStelxIAHjw[10]
+0.19464024901390076
+positive
+Neutral
+498 th data
+tStelxIAHjw[11]
+0.17348915338516235
+positive
+Neutral
+499 th data
+tStelxIAHjw[12]
+0.21962100267410278
+positive
+Neutral
+500 th data
+tStelxIAHjw[13]
+0.28434258699417114
+positive
+Neutral
+501 th data
+tStelxIAHjw[14]
+0.18243801593780518
+positive
+Neutral
+502 th data
+tStelxIAHjw[15]
+0.2924236059188843
+positive
+Neutral
+503 th data
+tmZoasNr4rU[0]
+0.22111356258392334
+positive
+Neutral
+504 th data
+tmZoasNr4rU[1]
+0.1885993629693985
+positive
+Neutral
+505 th data
+tmZoasNr4rU[2]
+0.2059938907623291
+positive
+Neutral
+506 th data
+tmZoasNr4rU[3]
+0.24248471856117249
+positive
+Neutral
+507 th data
+tmZoasNr4rU[4]
+0.2992342412471771
+positive
+Neutral
+508 th data
+tmZoasNr4rU[5]
+0.2777799963951111
+positive
+Neutral
+509 th data
+tmZoasNr4rU[6]
+0.1956780105829239
+positive
+Neutral
+510 th data
+tmZoasNr4rU[7]
+0.231602281332016
+positive
+Neutral
+511 th data
+tmZoasNr4rU[8]
+0.26848652958869934
+positive
+Neutral
+512 th data
+tmZoasNr4rU[9]
+0.2785814702510834
+positive
+Neutral
+513 th data
+tmZoasNr4rU[10]
+0.255475252866745
+positive
+Neutral
+514 th data
+tmZoasNr4rU[11]
+0.21516266465187073
+positive
+Neutral
+515 th data
+tmZoasNr4rU[12]
+0.179849773645401
+positive
+Neutral
+516 th data
+tmZoasNr4rU[13]
+0.20440474152565002
+positive
+Neutral
+517 th data
+tmZoasNr4rU[14]
+0.1421213448047638
+positive
+Neutral
+518 th data
+tmZoasNr4rU[15]
+0.22085025906562805
+positive
+Neutral
+519 th data
+tmZoasNr4rU[16]
+0.19556228816509247
+positive
+Neutral
+520 th data
+tmZoasNr4rU[17]
+0.2425554394721985
+positive
+Neutral
+521 th data
+tmZoasNr4rU[18]
+0.22232216596603394
+positive
+Neutral
+522 th data
+tmZoasNr4rU[19]
+0.1721586436033249
+positive
+Neutral
+523 th data
+v0zCBqDeKcE[0]
+0.18030309677124023
+positive
+Neutral
+524 th data
+v0zCBqDeKcE[1]
+0.2278582751750946
+positive
+Neutral
+525 th data
+v0zCBqDeKcE[2]
+0.20065578818321228
+positive
+Neutral
+526 th data
+v0zCBqDeKcE[3]
+0.1978980302810669
+positive
+Neutral
+527 th data
+v0zCBqDeKcE[4]
+0.28696316480636597
+positive
+Neutral
+528 th data
+v0zCBqDeKcE[5]
+0.20792049169540405
+positive
+Neutral
+529 th data
+v0zCBqDeKcE[6]
+0.2081042230129242
+positive
+Neutral
+530 th data
+v0zCBqDeKcE[7]
+0.19717246294021606
+positive
+Neutral
+531 th data
+v0zCBqDeKcE[8]
+0.2730698585510254
+positive
+Neutral
+532 th data
+v0zCBqDeKcE[9]
+0.22639471292495728
+positive
+Neutral
+533 th data
+v0zCBqDeKcE[10]
+0.18919886648654938
+positive
+Neutral
+534 th data
+v0zCBqDeKcE[11]
+0.13145811855793
+positive
+Neutral
+535 th data
+v0zCBqDeKcE[12]
+0.22626325488090515
+positive
+Neutral
+536 th data
+v0zCBqDeKcE[13]
+0.354423463344574
+positive
+Neutral
+537 th data
+v0zCBqDeKcE[14]
+0.2393307089805603
+positive
+Neutral
+538 th data
+v0zCBqDeKcE[15]
+0.18479377031326294
+positive
+Neutral
+539 th data
+vvZ4IcEtiZc[0]
+0.23820245265960693
+positive
+Neutral
+540 th data
+vvZ4IcEtiZc[1]
+0.20164328813552856
+positive
+Neutral
+541 th data
+vvZ4IcEtiZc[2]
+0.13377660512924194
+positive
+Neutral
+542 th data
+vvZ4IcEtiZc[3]
+0.24770182371139526
+positive
+Neutral
+543 th data
+vvZ4IcEtiZc[4]
+0.30672556161880493
+positive
+Neutral
+544 th data
+vvZ4IcEtiZc[5]
+0.264512836933136
+positive
+Neutral
+545 th data
+vvZ4IcEtiZc[6]
+0.20442646741867065
+positive
+Neutral
+546 th data
+vvZ4IcEtiZc[7]
+0.15765480697155
+positive
+Neutral
+547 th data
+vvZ4IcEtiZc[8]
+0.2376580536365509
+positive
+Neutral
+548 th data
+vvZ4IcEtiZc[9]
+0.15975913405418396
+positive
+Neutral
+549 th data
+vvZ4IcEtiZc[10]
+0.2015637904405594
+positive
+Neutral
+550 th data
+vvZ4IcEtiZc[11]
+0.16207268834114075
+positive
+Neutral
+551 th data
+vyB00TXsimI[0]
+0.2678954303264618
+positive
+Neutral
+552 th data
+vyB00TXsimI[1]
+0.25760409235954285
+positive
+Neutral
+553 th data
+vyB00TXsimI[2]
+0.23600822687149048
+positive
+Neutral
+554 th data
+vyB00TXsimI[3]
+0.3007861077785492
+positive
+Neutral
+555 th data
+vyB00TXsimI[4]
+0.2776402235031128
+positive
+Neutral
+556 th data
+vyB00TXsimI[5]
+0.20614878833293915
+positive
+Neutral
+557 th data
+vyB00TXsimI[6]
+0.22750085592269897
+positive
+Neutral
+558 th data
+vyB00TXsimI[7]
+0.2268432378768921
+positive
+Neutral
+559 th data
+vyB00TXsimI[8]
+0.2013874351978302
+positive
+Neutral
+560 th data
+vyB00TXsimI[9]
+0.206849604845047
+positive
+Neutral
+561 th data
+vyB00TXsimI[10]
+0.19860292971134186
+positive
+Neutral
+562 th data
+vyB00TXsimI[11]
+0.23403382301330566
+positive
+Neutral
+563 th data
+vyB00TXsimI[12]
+0.19982755184173584
+positive
+Neutral
+564 th data
+vyB00TXsimI[13]
+0.2797006368637085
+positive
+Neutral
+565 th data
+vyB00TXsimI[14]
+0.19088214635849
+positive
+Neutral
+566 th data
+vyB00TXsimI[15]
+0.2172468900680542
+positive
+Neutral
+567 th data
+vyB00TXsimI[16]
+0.22657358646392822
+positive
+Neutral
+568 th data
+vyB00TXsimI[17]
+0.2675630450248718
+positive
+Neutral
+569 th data
+vyB00TXsimI[18]
+0.1897210329771042
+positive
+Neutral
+570 th data
+vyB00TXsimI[19]
+0.29675233364105225
+positive
+Neutral
+571 th data
+vyB00TXsimI[20]
+0.3062283992767334
+positive
+Neutral
+572 th data
+vyB00TXsimI[21]
+0.19481968879699707
+positive
+Neutral
+573 th data
+wMbj6ajWbic[0]
+0.17595189809799194
+positive
+Neutral
+574 th data
+wMbj6ajWbic[1]
+0.1595352292060852
+positive
+Neutral
+575 th data
+wMbj6ajWbic[2]
+0.18413351476192474
+positive
+Neutral
+576 th data
+wMbj6ajWbic[3]
+0.1694577932357788
+positive
+Neutral
+577 th data
+wMbj6ajWbic[4]
+0.21383321285247803
+positive
+Neutral
+578 th data
+wMbj6ajWbic[5]
+0.23321372270584106
+positive
+Neutral
+579 th data
+wMbj6ajWbic[6]
+0.16965052485466003
+positive
+Neutral
+580 th data
+wMbj6ajWbic[7]
+0.28425532579421997
+positive
+Neutral
+581 th data
+wMbj6ajWbic[8]
+0.16399550437927246
+positive
+Neutral
+582 th data
+wMbj6ajWbic[9]
+0.17629343271255493
+positive
+Neutral
+583 th data
+wMbj6ajWbic[10]
+0.1864495575428009
+positive
+Neutral
+584 th data
+wMbj6ajWbic[11]
+0.20857542753219604
+positive
+Neutral
+585 th data
+wMbj6ajWbic[12]
+0.1645672768354416
+positive
+Neutral
+586 th data
+wMbj6ajWbic[13]
+0.28860723972320557
+positive
+Neutral
+587 th data
+wMbj6ajWbic[14]
+0.22781887650489807
+positive
+Neutral
+588 th data
+wMbj6ajWbic[15]
+0.28101277351379395
+positive
+Neutral
+589 th data
+wMbj6ajWbic[16]
+0.2322068214416504
+positive
+Neutral
+590 th data
+wMbj6ajWbic[17]
+0.18691280484199524
+positive
+Neutral
+591 th data
+wMbj6ajWbic[18]
+0.29152435064315796
+positive
+Neutral
+592 th data
+wMbj6ajWbic[19]
+0.2641616463661194
+positive
+Neutral
+593 th data
+wMbj6ajWbic[20]
+0.2711621820926666
+positive
+Neutral
+594 th data
+wMbj6ajWbic[21]
+0.26352235674858093
+positive
+Neutral
+595 th data
+wMbj6ajWbic[22]
+0.21973401308059692
+positive
+Neutral
+596 th data
+wMbj6ajWbic[23]
+0.23097819089889526
+positive
+Neutral
+597 th data
+wMbj6ajWbic[24]
+0.22437843680381775
+positive
+Neutral
+598 th data
+wMbj6ajWbic[25]
+0.28018879890441895
+positive
+Neutral
+599 th data
+wMbj6ajWbic[26]
+0.2544982135295868
+positive
+Neutral
+600 th data
+wMbj6ajWbic[27]
+0.18869079649448395
+positive
+Neutral
+601 th data
+wMbj6ajWbic[28]
+0.1694324016571045
+positive
+Neutral
+602 th data
+wMbj6ajWbic[29]
+0.3142913579940796
+positive
+Neutral
+603 th data
+yDtzw_Y-7RU[0]
+0.24914959073066711
+positive
+Neutral
+604 th data
+yDtzw_Y-7RU[1]
+0.19109638035297394
+positive
+Neutral
+605 th data
+yDtzw_Y-7RU[2]
+0.14589062333106995
+positive
+Neutral
+606 th data
+yDtzw_Y-7RU[3]
+0.1651601791381836
+positive
+Neutral
+607 th data
+yDtzw_Y-7RU[4]
+0.24202537536621094
+positive
+Neutral
+608 th data
+yDtzw_Y-7RU[5]
+0.2001168131828308
+positive
+Neutral
+609 th data
+yDtzw_Y-7RU[6]
+0.23991060256958008
+positive
+Neutral
+610 th data
+yDtzw_Y-7RU[7]
+0.21618908643722534
+positive
+Neutral
+611 th data
+yDtzw_Y-7RU[8]
+0.2627727687358856
+positive
+Neutral
+612 th data
+yDtzw_Y-7RU[9]
+0.13896310329437256
+positive
+Neutral
+613 th data
+yDtzw_Y-7RU[10]
+0.26016920804977417
+positive
+Neutral
+614 th data
+yDtzw_Y-7RU[11]
+0.1493748128414154
+positive
+Neutral
+615 th data
+yDtzw_Y-7RU[12]
+0.09165194630622864
+positive
+Neutral
+616 th data
+yDtzw_Y-7RU[13]
+0.22057604789733887
+positive
+Neutral
+617 th data
+yDtzw_Y-7RU[14]
+0.19328853487968445
+positive
+Neutral
+618 th data
+yDtzw_Y-7RU[15]
+0.1547553837299347
+positive
+Neutral
+619 th data
+yDtzw_Y-7RU[16]
+0.1072227954864502
+positive
+Neutral
+620 th data
+yDtzw_Y-7RU[17]
+0.2797589898109436
+positive
+Neutral
+621 th data
+yDtzw_Y-7RU[18]
+0.2087535262107849
+positive
+Neutral
+622 th data
+yDtzw_Y-7RU[19]
+0.16096091270446777
+positive
+Neutral
+623 th data
+yDtzw_Y-7RU[20]
+0.2517971992492676
+positive
+Neutral
+624 th data
+yDtzw_Y-7RU[21]
+0.2150946855545044
+positive
+Neutral
+625 th data
+yDtzw_Y-7RU[22]
+0.12702342867851257
+positive
+Neutral
+626 th data
+yDtzw_Y-7RU[23]
+0.1830526888370514
+positive
+Neutral
+627 th data
+yvsjCA6Y5Fc[0]
+0.2432129681110382
+positive
+Neutral
+628 th data
+yvsjCA6Y5Fc[1]
+0.2533847689628601
+positive
+Neutral
+629 th data
+yvsjCA6Y5Fc[2]
+0.19755370914936066
+positive
+Neutral
+630 th data
+yvsjCA6Y5Fc[3]
+0.19362488389015198
+positive
+Neutral
+631 th data
+yvsjCA6Y5Fc[4]
+0.13721898198127747
+positive
+Neutral
+632 th data
+yvsjCA6Y5Fc[5]
+0.1685369610786438
+positive
+Neutral
+633 th data
+yvsjCA6Y5Fc[6]
+0.24809014797210693
+positive
+Neutral
+634 th data
+yvsjCA6Y5Fc[7]
+0.13301333785057068
+positive
+Neutral
+635 th data
+yvsjCA6Y5Fc[8]
+0.17174597084522247
+positive
+Neutral
+636 th data
+yvsjCA6Y5Fc[9]
+0.202821284532547
+positive
+Neutral
+637 th data
+yvsjCA6Y5Fc[10]
+0.23078298568725586
+positive
+Neutral
+638 th data
+yvsjCA6Y5Fc[11]
+0.06675924360752106
+positive
+Neutral
+639 th data
+yvsjCA6Y5Fc[12]
+0.20907273888587952
+positive
+Neutral
+640 th data
+yvsjCA6Y5Fc[13]
+0.24571245908737183
+positive
+Neutral
+641 th data
+yvsjCA6Y5Fc[14]
+0.17480702698230743
+positive
+Neutral
+642 th data
+yvsjCA6Y5Fc[15]
+0.18256224691867828
+positive
+Neutral
+643 th data
+yvsjCA6Y5Fc[16]
+0.1768072247505188
+positive
+Neutral
+644 th data
+yvsjCA6Y5Fc[17]
+0.16956129670143127
+positive
+Neutral
+645 th data
+yvsjCA6Y5Fc[18]
+0.16975465416908264
+positive
+Neutral
+646 th data
+yvsjCA6Y5Fc[19]
+0.1631028652191162
+positive
+Neutral
+647 th data
+yvsjCA6Y5Fc[20]
+0.21339178085327148
+positive
+Neutral
+648 th data
+yvsjCA6Y5Fc[21]
+0.247502863407135
+positive
+Neutral
+649 th data
+yvsjCA6Y5Fc[22]
+0.1828327178955078
+positive
+Neutral
+650 th data
+zhpQhgha_KU[0]
+0.21206218004226685
+positive
+Neutral
+651 th data
+zhpQhgha_KU[1]
+0.2396070659160614
+positive
+Neutral
+652 th data
+zhpQhgha_KU[2]
+0.17872489988803864
+positive
+Neutral
+653 th data
+zhpQhgha_KU[3]
+0.22384071350097656
+positive
+Neutral
+654 th data
+zhpQhgha_KU[4]
+0.14807778596878052
+positive
+Neutral
+655 th data
+zhpQhgha_KU[5]
+0.20253443717956543
+positive
+Neutral
+656 th data
+zhpQhgha_KU[6]
+0.25323259830474854
+positive
+Neutral
+657 th data
+zhpQhgha_KU[7]
+0.1763804852962494
+positive
+Neutral
+658 th data
+zhpQhgha_KU[8]
+0.21229007840156555
+positive
+Neutral
+659 th data
+zhpQhgha_KU[9]
+0.23265624046325684
+positive
+Neutral
+660 th data
+zhpQhgha_KU[10]
+0.2156428098678589
+positive
+Neutral
+661 th data
+zhpQhgha_KU[11]
+0.18360355496406555
+positive
+Neutral
+662 th data
+zhpQhgha_KU[12]
+0.19212205708026886
+positive
+Neutral
+663 th data
+zhpQhgha_KU[13]
+0.2113616168498993
+positive
+Neutral
+664 th data
+zhpQhgha_KU[14]
+0.14731046557426453
+positive
+Neutral
+665 th data
+zhpQhgha_KU[15]
+0.2918677031993866
+positive
+Neutral
+666 th data
+zhpQhgha_KU[16]
+0.3299921154975891
+positive
+Neutral
+667 th data
+zhpQhgha_KU[17]
+0.1630738377571106
+positive
+Neutral
+668 th data
+zhpQhgha_KU[18]
+0.04285842552781105
+positive
+Neutral
+669 th data
+zhpQhgha_KU[19]
+0.19948294758796692
+positive
+Neutral
+670 th data
+zhpQhgha_KU[20]
+0.1411576271057129
+positive
+Neutral
+671 th data
+zhpQhgha_KU[21]
+0.17372402548789978
+positive
+Neutral
+672 th data
+zhpQhgha_KU[22]
+0.16749298572540283
+positive
+Neutral
+673 th data
+zhpQhgha_KU[23]
+0.1294688880443573
+positive
+Neutral
+674 th data
+zhpQhgha_KU[24]
+0.19245734810829163
+positive
+Neutral
+675 th data
+zhpQhgha_KU[25]
+0.2593660354614258
+positive
+Neutral
+676 th data
+zhpQhgha_KU[26]
+0.17711439728736877
+positive
+Neutral
+677 th data
+zhpQhgha_KU[27]
+0.20642173290252686
+positive
+Neutral
+678 th data
+zhpQhgha_KU[28]
+0.0982208400964737
+positive
+Neutral
+679 th data
+zhpQhgha_KU[29]
+0.16134008765220642
+positive
+Neutral
+680 th data
+zhpQhgha_KU[30]
+0.18807631731033325
+positive
+Neutral
+681 th data
+zhpQhgha_KU[31]
+0.21782249212265015
+positive
+Neutral
+682 th data
+zhpQhgha_KU[32]
+0.24338793754577637
+positive
+Neutral
+683 th data
+zhpQhgha_KU[33]
+0.2663255035877228
+positive
+Neutral
+684 th data
+zhpQhgha_KU[34]
+0.1819368600845337
+positive
+Neutral

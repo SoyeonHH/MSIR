@@ -33,14 +33,14 @@ import models
 DEVICE = torch.device("cuda:0")
 
 # MOSI SETTING
-# ACOUSTIC_DIM = 74
-# VISUAL_DIM = 47
-# TEXT_DIM = 768
+ACOUSTIC_DIM = 74
+VISUAL_DIM = 47
+TEXT_DIM = 768
 
 # MOSEI SETTING
-ACOUSTIC_DIM = 74
-VISUAL_DIM = 35
-TEXT_DIM = 768
+# ACOUSTIC_DIM = 74
+# VISUAL_DIM = 35
+# TEXT_DIM = 768
 
 max_seq_length = 50
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -51,7 +51,7 @@ class TestMOSEI(object):
         self.model = model
 
     def start(self):
-        sys.stdout = open('/mnt/soyeon/workspace/multimodal/MISA/MISA_mosei.txt', 'w')
+        sys.stdout = open('/home/ubuntu/soyeon/MSIR/MISA/MISA_mosei.txt', 'w')
         self.model.eval()
         segment_list = []
         preds = []
@@ -59,7 +59,7 @@ class TestMOSEI(object):
         preds_7 = []
 
         # pkl data
-        with open(f"../datasets/MOSEI/mosei.pkl", "rb") as handle:
+        with open(f"../../datasets/MOSEI/mosei.pkl", "rb") as handle:
             data = pickle.load(handle)
 
         test_data = data["test"]
@@ -148,7 +148,7 @@ class TestMOSI(object):
         self.model = model
 
     def start(self):
-        sys.stdout = open('/mnt/soyeon/workspace/multimodal/MISA/MISA_mosi.txt', 'w')
+        sys.stdout = open('/home/ubuntu/soyeon/MSIR/MISA/MISA_mosi.txt', 'w')
         self.model.eval()
         segment_list = []
         preds = []
@@ -156,7 +156,7 @@ class TestMOSI(object):
         preds_7 = []
 
         # pkl data
-        with open(f"../datasets/MOSI/mosi.pkl", "rb") as handle:
+        with open(f"../../datasets/MOSI/mosi.pkl", "rb") as handle:
             mosi_data = pickle.load(handle)
 
         test_data = mosi_data["test"]
@@ -232,7 +232,8 @@ def get_loader(dataset):
         # for later use we sort the batch in descending order of length
         # batch = sorted(batch, key=lambda x: np.array(x[0][0]).shape[0], reverse=True)
         
-        CACHE_PATH = '/mnt/soyeon/workspace/multimodal/MISA/datasets/MOSEI/embedding_and_mapping.pt'
+        # CACHE_PATH = '/mnt/soyeon/workspace/multimodal/MISA/datasets/MOSEI/embedding_and_mapping.pt'
+        CACHE_PATH = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/embedding_and_mapping.pt'
         pretrained_emb, word2id = torch.load(CACHE_PATH)
         
         sentences = []

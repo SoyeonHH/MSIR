@@ -50,6 +50,6 @@ if __name__ == '__main__':
     solver.train()
 
     # Make test result file by instance
-    tester = TestMOSEI
+    tester = TestMOSI
     tester = tester(model)
     tester.start()

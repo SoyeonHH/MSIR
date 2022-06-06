@@ -57,7 +57,8 @@ class MOSI:
         else:
             sys.path.append(str(config.sdk_dir))
         
-        DATA_PATH = '/mnt/soyeon/workspace/multimodal/MSIR/datasets/MOSI'
+        # DATA_PATH = '/mnt/soyeon/workspace/multimodal/MSIR/datasets/MOSI'
+        DATA_PATH = '/home/ubuntu/soyeon/MSIR/datasets/MOSI'
         CACHE_PATH = DATA_PATH + '/embedding_and_mapping.pt'
 
         # If cached data if already exists
