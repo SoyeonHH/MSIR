@@ -51,7 +51,7 @@ class TestMOSEI(object):
         self.model = model
 
     def start(self):
-        sys.stdout = open('/home/ubuntu/soyeon/MSIR/MISA/MISA_mosei.txt', 'w')
+        # sys.stdout = open('/home/ubuntu/soyeon/MSIR/MISA/MISA_mosei.txt', 'w')
         self.model.eval()
         segment_list = []
         preds = []
@@ -138,7 +138,8 @@ class TestMOSEI(object):
             print(preds_2[i])
             print(preds_7[i])
 
-        sys.stdout.close()
+        # sys.stdout.close()
+        return segment_list, preds, preds_2, preds_7
 
 
 
@@ -148,7 +149,7 @@ class TestMOSI(object):
         self.model = model
 
     def start(self):
-        sys.stdout = open('/home/ubuntu/soyeon/MSIR/MISA/MISA_mosi.txt', 'w')
+        # sys.stdout = open('/home/ubuntu/soyeon/MSIR/MISA/MISA_mosi.txt', 'w')
         self.model.eval()
         segment_list = []
         preds = []
@@ -220,7 +221,8 @@ class TestMOSI(object):
             print(preds_2[i])
             print(preds_7[i])
 
-        sys.stdout.close()
+        # sys.stdout.close()
+        return segment_list, preds, preds_2, preds_7
 
 
 def get_loader(dataset):

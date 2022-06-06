@@ -52,4 +52,4 @@ if __name__ == '__main__':
     # Make test result file by instance
     tester = TestMOSI
     tester = tester(model)
-    tester.start()
+    segment_list, preds, preds_2, preds_7 = tester.start()
