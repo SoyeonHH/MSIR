@@ -369,8 +369,8 @@ def get_loader(dataset):
         # for later use we sort the batch in descending order of length
         # batch = sorted(batch, key=lambda x: np.array(x[0][0]).shape[0], reverse=True)
         
-        CACHE_PATH = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/embedding_and_mapping.pt'
-        # CACHE_PATH = '/mnt/soyeon/workspace/multimodal/MSIR/datasets/MOSI/embedding_and_mapping.pt'
+        # CACHE_PATH = '/home/ubuntu/soyeon/MSIR/datasets/MOSI/embedding_and_mapping.pt'
+        CACHE_PATH = '/mnt/soyeon/workspace/multimodal/MSIR/datasets/MOSI/embedding_and_mapping.pt'
         pretrained_emb, word2id = torch.load(CACHE_PATH)
 
         v_lens = []
