@@ -1,12 +1,12 @@
 import sys
-# import mmsdk
+import mmsdk
 import os
 import re
 import pickle
 import numpy as np
 from tqdm import tqdm_notebook
 from collections import defaultdict
-# from mmsdk import mmdatasdk as md
+from mmsdk import mmdatasdk as md
 from subprocess import check_call, CalledProcessError
 
 import torch
@@ -67,158 +67,158 @@ class MOSI:
         CACHE_PATH = DATA_PATH + '/embedding_and_mapping.pt'
 
         # If cached data if already exists
-        # try:
-        self.train = load_pickle(DATA_PATH + '/train.pkl')
-        self.dev = load_pickle(DATA_PATH + '/dev.pkl')
-        self.test = load_pickle(DATA_PATH + '/test.pkl')
-        self.pretrained_emb, self.word2id = torch.load(CACHE_PATH)
+        try:
+            self.train = load_pickle(DATA_PATH + '/train.pkl')
+            self.dev = load_pickle(DATA_PATH + '/dev.pkl')
+            self.test = load_pickle(DATA_PATH + '/test.pkl')
+            self.pretrained_emb, self.word2id = torch.load(CACHE_PATH)
 
-        # except:
+        except:
 
-        #     # create folders for storing the data
-        #     if not os.path.exists(DATA_PATH):
-        #         check_call(' '.join(['mkdir', '-p', DATA_PATH]), shell=True)
+            # create folders for storing the data
+            if not os.path.exists(DATA_PATH):
+                check_call(' '.join(['mkdir', '-p', DATA_PATH]), shell=True)
 
 
-        #     # download highlevel features, low-level (raw) data and labels for the dataset MOSI
-        #     # if the files are already present, instead of downloading it you just load it yourself.
-        #     # here we use CMU_MOSI dataset as example.
-        #     DATASET = md.cmu_mosi
-        #     try:
-        #         md.mmdataset(DATASET.highlevel, DATA_PATH)
-        #     except RuntimeError:
-        #         print("High-level features have been downloaded previously.")
+            # download highlevel features, low-level (raw) data and labels for the dataset MOSI
+            # if the files are already present, instead of downloading it you just load it yourself.
+            # here we use CMU_MOSI dataset as example.
+            DATASET = md.cmu_mosi
+            try:
+                md.mmdataset(DATASET.highlevel, DATA_PATH)
+            except RuntimeError:
+                print("High-level features have been downloaded previously.")
 
-        #     try:
-        #         md.mmdataset(DATASET.raw, DATA_PATH)
-        #     except RuntimeError:
-        #         print("Raw data have been downloaded previously.")
+            try:
+                md.mmdataset(DATASET.raw, DATA_PATH)
+            except RuntimeError:
+                print("Raw data have been downloaded previously.")
                 
-        #     try:
-        #         md.mmdataset(DATASET.labels, DATA_PATH)
-        #     except RuntimeError:
-        #         print("Labels have been downloaded previously.")
+            try:
+                md.mmdataset(DATASET.labels, DATA_PATH)
+            except RuntimeError:
+                print("Labels have been downloaded previously.")
             
-        #     # define your different modalities - refer to the filenames of the CSD files
-        #     visual_field = 'CMU_MOSI_VisualFacet_4.1'
-        #     acoustic_field = 'CMU_MOSI_COVAREP'
-        #     text_field = 'CMU_MOSI_TimestampedWords'
+            # define your different modalities - refer to the filenames of the CSD files
+            visual_field = 'CMU_MOSI_VisualFacet_4.1'
+            acoustic_field = 'CMU_MOSI_COVAREP'
+            text_field = 'CMU_MOSI_TimestampedWords'
 
 
-        #     features = [
-        #         text_field, 
-        #         visual_field, 
-        #         acoustic_field
-        #     ]
+            features = [
+                text_field, 
+                visual_field, 
+                acoustic_field
+            ]
 
-        #     recipe = {feat: os.path.join(DATA_PATH, feat) + '.csd' for feat in features}
-        #     print(recipe)
-        #     dataset = md.mmdataset(recipe)
+            recipe = {feat: os.path.join(DATA_PATH, feat) + '.csd' for feat in features}
+            print(recipe)
+            dataset = md.mmdataset(recipe)
 
-        #     # we define a simple averaging function that does not depend on intervals
-        #     def avg(intervals: np.array, features: np.array) -> np.array:
-        #         try:
-        #             return np.average(features, axis=0)
-        #         except:
-        #             return features
+            # we define a simple averaging function that does not depend on intervals
+            def avg(intervals: np.array, features: np.array) -> np.array:
+                try:
+                    return np.average(features, axis=0)
+                except:
+                    return features
 
-        #     # first we align to words with averaging, collapse_function receives a list of functions
-        #     dataset.align(text_field, collapse_functions=[avg])
+            # first we align to words with averaging, collapse_function receives a list of functions
+            dataset.align(text_field, collapse_functions=[avg])
 
-        #     label_field = 'CMU_MOSI_Opinion_Labels'
+            label_field = 'CMU_MOSI_Opinion_Labels'
 
-        #     # we add and align to lables to obtain labeled segments
-        #     # this time we don't apply collapse functions so that the temporal sequences are preserved
-        #     label_recipe = {label_field: os.path.join(DATA_PATH, label_field + '.csd')}
-        #     dataset.add_computational_sequences(label_recipe, destination=None)
-        #     dataset.align(label_field)
+            # we add and align to lables to obtain labeled segments
+            # this time we don't apply collapse functions so that the temporal sequences are preserved
+            label_recipe = {label_field: os.path.join(DATA_PATH, label_field + '.csd')}
+            dataset.add_computational_sequences(label_recipe, destination=None)
+            dataset.align(label_field)
 
-        #     # obtain the train/dev/test splits - these splits are based on video IDs
-        #     train_split = DATASET.standard_folds.standard_train_fold
-        #     dev_split = DATASET.standard_folds.standard_valid_fold
-        #     test_split = DATASET.standard_folds.standard_test_fold
+            # obtain the train/dev/test splits - these splits are based on video IDs
+            train_split = DATASET.standard_folds.standard_train_fold
+            dev_split = DATASET.standard_folds.standard_valid_fold
+            test_split = DATASET.standard_folds.standard_test_fold
 
 
-        #     # a sentinel epsilon for safe division, without it we will replace illegal values with a constant
-        #     EPS = 1e-6
+            # a sentinel epsilon for safe division, without it we will replace illegal values with a constant
+            EPS = 1e-6
 
             
 
-        #     # place holders for the final train/dev/test dataset
-        #     self.train = train = []
-        #     self.dev = dev = []
-        #     self.test = test = []
-        #     self.word2id = word2id
+            # place holders for the final train/dev/test dataset
+            self.train = train = []
+            self.dev = dev = []
+            self.test = test = []
+            self.word2id = word2id
 
-        #     # define a regular expression to extract the video ID out of the keys
-        #     pattern = re.compile('(.*)\[.*\]')
-        #     num_drop = 0 # a counter to count how many data points went into some processing issues
+            # define a regular expression to extract the video ID out of the keys
+            pattern = re.compile('(.*)\[.*\]')
+            num_drop = 0 # a counter to count how many data points went into some processing issues
 
-        #     for segment in dataset[label_field].keys():
+            for segment in dataset[label_field].keys():
                 
-        #         # get the video ID and the features out of the aligned dataset
-        #         vid = re.search(pattern, segment).group(1)
-        #         label = dataset[label_field][segment]['features']
-        #         _words = dataset[text_field][segment]['features']
-        #         _visual = dataset[visual_field][segment]['features']
-        #         _acoustic = dataset[acoustic_field][segment]['features']
+                # get the video ID and the features out of the aligned dataset
+                vid = re.search(pattern, segment).group(1)
+                label = dataset[label_field][segment]['features']
+                _words = dataset[text_field][segment]['features']
+                _visual = dataset[visual_field][segment]['features']
+                _acoustic = dataset[acoustic_field][segment]['features']
 
-        #         # if the sequences are not same length after alignment, there must be some problem with some modalities
-        #         # we should drop it or inspect the data again
-        #         if not _words.shape[0] == _visual.shape[0] == _acoustic.shape[0]:
-        #             print(f"Encountered datapoint {vid} with text shape {_words.shape}, visual shape {_visual.shape}, acoustic shape {_acoustic.shape}")
-        #             num_drop += 1
-        #             continue
+                # if the sequences are not same length after alignment, there must be some problem with some modalities
+                # we should drop it or inspect the data again
+                if not _words.shape[0] == _visual.shape[0] == _acoustic.shape[0]:
+                    print(f"Encountered datapoint {vid} with text shape {_words.shape}, visual shape {_visual.shape}, acoustic shape {_acoustic.shape}")
+                    num_drop += 1
+                    continue
 
-        #         # remove nan values
-        #         label = np.nan_to_num(label)
-        #         _visual = np.nan_to_num(_visual)
-        #         _acoustic = np.nan_to_num(_acoustic)
+                # remove nan values
+                label = np.nan_to_num(label)
+                _visual = np.nan_to_num(_visual)
+                _acoustic = np.nan_to_num(_acoustic)
 
-        #         # remove speech pause tokens - this is in general helpful
-        #         # we should remove speech pauses and corresponding visual/acoustic features together
-        #         # otherwise modalities would no longer be aligned
-        #         actual_words = []
-        #         words = []
-        #         visual = []
-        #         acoustic = []
-        #         for i, word in enumerate(_words):
-        #             if word[0] != b'sp':
-        #                 actual_words.append(word[0].decode('utf-8'))
-        #                 words.append(word2id[word[0].decode('utf-8')]) # SDK stores strings as bytes, decode into strings here
-        #                 visual.append(_visual[i, :])
-        #                 acoustic.append(_acoustic[i, :])
+                # remove speech pause tokens - this is in general helpful
+                # we should remove speech pauses and corresponding visual/acoustic features together
+                # otherwise modalities would no longer be aligned
+                actual_words = []
+                words = []
+                visual = []
+                acoustic = []
+                for i, word in enumerate(_words):
+                    if word[0] != b'sp':
+                        actual_words.append(word[0].decode('utf-8'))
+                        words.append(word2id[word[0].decode('utf-8')]) # SDK stores strings as bytes, decode into strings here
+                        visual.append(_visual[i, :])
+                        acoustic.append(_acoustic[i, :])
 
-        #         words = np.asarray(words)
-        #         visual = np.asarray(visual)
-        #         acoustic = np.asarray(acoustic)
+                words = np.asarray(words)
+                visual = np.asarray(visual)
+                acoustic = np.asarray(acoustic)
 
 
-        #         # z-normalization per instance and remove nan/infs
-        #         visual = np.nan_to_num((visual - visual.mean(0, keepdims=True)) / (EPS + np.std(visual, axis=0, keepdims=True)))
-        #         acoustic = np.nan_to_num((acoustic - acoustic.mean(0, keepdims=True)) / (EPS + np.std(acoustic, axis=0, keepdims=True)))
+                # z-normalization per instance and remove nan/infs
+                visual = np.nan_to_num((visual - visual.mean(0, keepdims=True)) / (EPS + np.std(visual, axis=0, keepdims=True)))
+                acoustic = np.nan_to_num((acoustic - acoustic.mean(0, keepdims=True)) / (EPS + np.std(acoustic, axis=0, keepdims=True)))
 
-        #         if vid in train_split:
-        #             train.append(((words, visual, acoustic, actual_words), label, segment))
-        #         elif vid in dev_split:
-        #             dev.append(((words, visual, acoustic, actual_words), label, segment))
-        #         elif vid in test_split:
-        #             test.append(((words, visual, acoustic, actual_words), label, segment))
-        #         else:
-        #             print(f"Found video that doesn't belong to any splits: {vid}")
+                if vid in train_split:
+                    train.append(((words, visual, acoustic, actual_words), label, segment))
+                elif vid in dev_split:
+                    dev.append(((words, visual, acoustic, actual_words), label, segment))
+                elif vid in test_split:
+                    test.append(((words, visual, acoustic, actual_words), label, segment))
+                else:
+                    print(f"Found video that doesn't belong to any splits: {vid}")
 
-        #     print(f"Total number of {num_drop} datapoints have been dropped.")
+            print(f"Total number of {num_drop} datapoints have been dropped.")
 
-        #     word2id.default_factory = return_unk
+            word2id.default_factory = return_unk
 
-        #     # Save glove embeddings cache too
-        #     self.pretrained_emb = pretrained_emb = load_emb(word2id, config.word_emb_path)
-        #     torch.save((pretrained_emb, word2id), CACHE_PATH)
+            # Save glove embeddings cache too
+            self.pretrained_emb = pretrained_emb = load_emb(word2id, config.word_emb_path)
+            torch.save((pretrained_emb, word2id), CACHE_PATH)
 
-        #     # Save pickles
-        #     to_pickle(train, DATA_PATH + '/train.pkl')
-        #     to_pickle(dev, DATA_PATH + '/dev.pkl')
-        #     to_pickle(test, DATA_PATH + '/test.pkl')
+            # Save pickles
+            to_pickle(train, DATA_PATH + '/train.pkl')
+            to_pickle(dev, DATA_PATH + '/dev.pkl')
+            to_pickle(test, DATA_PATH + '/test.pkl')
 
     def get_data(self, mode):
 
