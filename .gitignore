@@ -5,3 +5,4 @@ __pycache__
 *.csd
 *.zip
 checkpoints
+*.txt
