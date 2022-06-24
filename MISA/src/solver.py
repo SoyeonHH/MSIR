@@ -185,9 +185,9 @@ class Solver(object):
                     lr_scheduler.step()
                     print(f"Current learning rate: {self.optimizer.state_dict()['param_groups'][0]['lr']}")
             
-            if num_trials <= 0:
-                print("Running out of patience, early stopping.")
-                break
+            # if num_trials <= 0:
+            #     print("Running out of patience, early stopping.")
+            #     break
 
         self.eval(mode="test", to_print=True)
 

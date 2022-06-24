@@ -1,5 +1,6 @@
 import os
 import pickle
+import sys
 from pyexpat import model
 import numpy as np
 from random import random
@@ -15,6 +16,8 @@ from torch.nn import functional as F
 
 
 if __name__ == '__main__':
+
+    sys.stdout = open('./print_log.txt', 'w')
     
     # Setting random seed
     random_name = str(random())
@@ -49,7 +52,11 @@ if __name__ == '__main__':
     # Train the model (test scores will be returned based on dev performance)
     solver.train()
 
+    torch.save(model.state_dict(), "./saved_models_MISA_mosi.pt")
+
     # Make test result file by instance
-    tester = TestMOSI
-    tester = tester(model)
-    segment_list, preds, preds_2, preds_7 = tester.start()
+    # tester = TestMOSI
+    # tester = tester(model)
+    # segment_list, preds, preds_2, preds_7 = tester.start()
+
+    sys.stdout.close()
