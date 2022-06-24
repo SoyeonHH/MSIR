@@ -74,12 +74,12 @@ def get_loader(hp, config, shuffle=True):
         ids = []
 
         for sample in batch:
-            if len(sample[0]) > 4: # unaligned case
-                v_lens.append(torch.IntTensor([sample[0][4]]))
-                a_lens.append(torch.IntTensor([sample[0][5]]))
-            else:   # aligned cases
-                v_lens.append(torch.IntTensor([len(sample[0][3])]))
-                a_lens.append(torch.IntTensor([len(sample[0][3])]))
+            # if len(sample[0]) > 4: # unaligned case
+            #     v_lens.append(torch.IntTensor([sample[0][4]]))
+            #     a_lens.append(torch.IntTensor([sample[0][5]]))
+            # else:   # aligned cases
+            v_lens.append(torch.IntTensor([len(sample[0][3])]))
+            a_lens.append(torch.IntTensor([len(sample[0][3])]))
             labels.append(torch.from_numpy(sample[1]))
             ids.append(sample[2])
         vlens = torch.cat(v_lens)

@@ -265,7 +265,7 @@ def get_appropriate_dataset(data):
 
 
 def set_up_data_loader():
-    with open(f"../../datasets/{args.dataset}.pkl", "rb") as handle:
+    with open(f"../data/{args.dataset}.pkl", "rb") as handle:
         data = pickle.load(handle)
 
     train_data = data["train"]
@@ -534,7 +534,7 @@ def test_instance(model: nn.Module, test_tokenizer):
     labels_2 = []
     labels_7 = []
 
-    with open(f"../../datasets/{args.dataset}.pkl", "rb") as handle:
+    with open(f"../data/MOSI/{args.dataset}.pkl", "rb") as handle:
         data = pickle.load(handle)
 
     # test_data[idx] = (words, visual, acoustic), label, segment
@@ -573,11 +573,11 @@ def test_instance(model: nn.Module, test_tokenizer):
         elif label < -9/7:
             labels_7.append('negative')
         elif label < -3/7:
-            labels_7.append('slightly negative')
+            labels_7.append('weakly negative')
         elif label < 3/7:
             labels_7.append('Neutral')
         elif label < 9/7:
-            labels_7.append('slightly positive')
+            labels_7.append('weakly positive')
         elif label < 15/7:
             labels_7.append('positive')
         else:
@@ -622,11 +622,11 @@ def test_instance(model: nn.Module, test_tokenizer):
                 elif logit < -9/7:
                     preds_7.append('negative')
                 elif logit < -3/7:
-                    preds_7.append('slightly negative')
+                    preds_7.append('weakly negative')
                 elif logit < 3/7:
                     preds_7.append('Neutral')
                 elif logit < 9/7:
-                    preds_7.append('slightly positive')
+                    preds_7.append('weakly positive')
                 elif logit < 15/7:
                     preds_7.append('positive')
                 else:
@@ -635,16 +635,18 @@ def test_instance(model: nn.Module, test_tokenizer):
             
 
     count = 0
-    for i in range(len(segment_list)):
-        print(i, "th data")
-        print(segment_list[i])
-        print(words_list[i])
-        print(labels[i])
-        print(labels_2[i])
-        print(labels_7[i])
-        print(preds[i])
-        print(preds_2[i])
-        print(preds_7[i])
+    test_dict = \
+            {'segment': segment_list,
+            'labels': labels,
+            'labels_2': labels_2,
+            'labels_7': labels_7,
+            'preds': preds,
+            'preds_2': preds_2,
+            'preds_7': preds_7,
+            }
+
+    with open('/home/ubuntu/soyeon/MSIR/results/MAG.pkl', 'wb') as f:
+        pickle.dump(test_dict, f)
 
 
 def train(
@@ -720,8 +722,8 @@ def main():
         test_tokenizer
     )
 
-    # test_instance(model, test_tokenizer)
-    torch.save(model.statedict(), "./models")
+    test_instance(model, test_tokenizer)
+    torch.save(model.state_dict(), "./best_model.pt")
     
 
 

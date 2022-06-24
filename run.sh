@@ -1,3 +1,4 @@
 python src/main.py \
 --dataset mosi \
---model_name MAG
+--model_name TFN
+--modaltiy fusion

@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from solver import Solver
 from config import get_args, get_config, output_dim_dict, criterion_dict
 from data_loader import get_loader
-from test_instance import TestMOSI, TestMOSEI
+from test_instance import TestMOSI
 
 def set_seed(seed):
     # torch.set_default_tensor_type('torch.FloatTensor')
@@ -53,11 +53,7 @@ if __name__ == '__main__':
 
     solver = Solver(args, train_loader=train_loader, dev_loader=valid_loader,
                     test_loader=test_loader, is_train=True)
-    model = solver.train_and_eval()
+    # model = solver.train_and_eval()
 
-    # Model save
-    torch.save(model.state_dict(), "./saved_models_MMIM_mosi.pt")
-
-    tester = TestMOSI
-    tester = tester(model)
+    tester = TestMOSI(args, solver)
     tester.start()
