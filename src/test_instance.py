@@ -6,11 +6,11 @@ import math
 from math import isnan
 import re
 import pickle
-from data_loader import get_loader
+from src.data_loader import get_loader
 import gensim
-from create_dataset import PAD
-from config import *
-from utils.tools import *
+from src.create_dataset import PAD
+from src.config import *
+from src.utils.tools import *
 import numpy as np
 from tqdm import tqdm
 from tqdm import tqdm_notebook
@@ -68,6 +68,8 @@ def sent2class(test_preds_sent):
 class TestMOSI(object):
     def __init__(self, hp, solver):
         self.hp = hp
+        self.modality = hp.modality
+        self.model_name = hp.model_name
 
         dataset = str.lower(hp.dataset.strip())
 
@@ -88,7 +90,7 @@ class TestMOSI(object):
 
                 text, visual, vlens, audio, alens, y, lengths, \
                     bert_sent, bert_sent_type, bert_sent_mask, ids = batch
-                
+
                 segment_list.extend(ids)
                 
                 # Gold-truth
@@ -99,18 +101,17 @@ class TestMOSI(object):
                 text, audio, visual, y = text.to(device), audio.to(device), visual.to(device), y.to(device)
                 lengths = lengths.to(device)
                 bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
+
+                if self.modality == 'fusion' and self.model_name == 'TFN':
+                    logits, H = model(audio, visual, alens, vlens, text, bert_sent, bert_sent_type, bert_sent_mask)
+                elif self.modality == 'text' and self.model_name == 'TFN':
+                    logits, U, H = model(text, bert_sent, bert_sent_type, bert_sent_mask)
+                elif self.modality == 'acoustic' and self.model_name == 'TFN':
+                    logits, U, H = model(audio, alens)
+                elif self.modality == 'visual' and self.model_name == 'TFN':
+                    logits, U, H = model(visual, vlens)
                 
-                if self.hp.modality == 'fusion' and self.hp.model_name == 'TFN':
-                    logits, H = model(text, visual, audio, vlens, alens, 
-                                    bert_sent, bert_sent_type, bert_sent_mask, y)
-                elif self.hp.modality == 'text' and self.hp.model_name == 'TFN':
-                    logits, H = model(text, bert_sent, bert_sent_type, bert_sent_mask, y)
-                elif self.hp.modality == 'acoustic' and self.hp.model_name == 'TFN':
-                    logits, H = model(audio, alens, y)
-                elif self.hp.modality == 'visual' and self.hp.model_name == 'TFN':
-                    logits, H = model(visual, vlens, y)
-                
-                preds.extend(logits)
+                preds.extend(logits.cpu().detach().numpy())
 
             labels_2, labels_7 = sent2class(labels)
             preds_2, preds_7 = sent2class(preds)
@@ -125,5 +126,6 @@ class TestMOSI(object):
             'preds_7': preds_7,
             }
         
-        path = '/home/ubuntu/soyeon/MSIR/results/' + self.hp.model_name + '_' + self.hp.modality + '.pkl'
+        # path = '/home/ubuntu/soyeon/MSIR/results/' + self.hp.model_name + '_' + self.hp.modality + '.pkl'
+        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/' + self.hp.model_name + '_' + self.hp.modality + '.pkl'
         to_pickle(test_dict, path)

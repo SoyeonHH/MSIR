@@ -36,6 +36,7 @@ class Solver(object):
         
         self.model_name = model_name = hp.model_name
         self.modality = modality = hp.modality
+        self.U = []
         self.H = []
 
         # Training hyperarams
@@ -127,14 +128,13 @@ class Solver(object):
                 batch_size = y.size(0)
 
                 if self.modality == 'fusion' and self.model_name == 'TFN':
-                    preds, H = model(text, visual, audio, vlens, alens, 
-                                    bert_sent, bert_sent_type, bert_sent_mask, y)
+                    preds, H = model(audio, visual, alens, vlens, text, bert_sent, bert_sent_type, bert_sent_mask)
                 elif self.modality == 'text' and self.model_name == 'TFN':
-                    preds, H = model(text, bert_sent, bert_sent_type, bert_sent_mask, y)
+                    preds, U, H = model(text, bert_sent, bert_sent_type, bert_sent_mask)
                 elif self.modality == 'acoustic' and self.model_name == 'TFN':
-                    preds, H = model(audio, alens, y)
+                    preds, U, H = model(audio, alens)
                 elif self.modality == 'visual' and self.model_name == 'TFN':
-                    preds, H = model(visual, vlens, y)
+                    preds, U, H = model(visual, vlens)
                 
                 loss = criterion(preds, y)
                 loss.backward()
@@ -180,15 +180,16 @@ class Solver(object):
                     batch_size = lengths.size(0) # bert_sent in size (bs, seq_len, emb_size)
 
                     if self.modality == 'fusion' and self.model_name == 'TFN':
-                        preds, H = model(text, visual, audio, vlens, alens, 
-                                        bert_sent, bert_sent_type, bert_sent_mask, y)
+                        preds, H = model(audio, visual, alens, vlens, text, bert_sent, bert_sent_type, bert_sent_mask)
                     elif self.modality == 'text' and self.model_name == 'TFN':
-                        preds, H = model(text, bert_sent, bert_sent_type, bert_sent_mask, y)
+                        preds, U, H = model(text, bert_sent, bert_sent_type, bert_sent_mask)
                     elif self.modality == 'acoustic' and self.model_name == 'TFN':
-                        preds, H = model(audio, alens, y)
+                        preds, U, H = model(audio, alens)
                     elif self.modality == 'visual' and self.model_name == 'TFN':
-                        preds, H = model(visual, vlens, y)
+                        preds, U, H = model(visual, vlens)
 
+                    if self.modality != 'fusion':
+                        self.U.extend(U)
                     self.H.extend(H)
                     
                     if self.hp.dataset in ['mosi', 'mosei', 'mosei_senti'] and test:
@@ -204,7 +205,7 @@ class Solver(object):
 
             results = torch.cat(results)
             truths = torch.cat(truths)
-            return avg_loss, results, truths, H
+            return avg_loss, results, truths
 
         best_valid = 1e8
         best_mae = 1e8
@@ -217,8 +218,8 @@ class Solver(object):
 
             train_loss = train(model, optimizer, criterion)
 
-            val_loss, _, _, _ = evaluate(model, criterion, test=False)
-            test_loss, results, truths, H = evaluate(model, criterion, test=True)
+            val_loss, _, _ = evaluate(model, criterion, test=False)
+            test_loss, results, truths = evaluate(model, criterion, test=True)
 
             end = time.time()
             duration = end-start
@@ -260,5 +261,7 @@ class Solver(object):
 
         # save_hidden(self.H, self.modality)
         # save_hidden(self.H_out, self.modality + '_out')
-        save_hidden(H, self.model_name + '_' + self.modality)
+        if self.modality != 'fusion':
+            save_hidden(self.U, self.model_name + '_' + self.modality + '_embedding')
+        save_hidden(self.H, self.model_name + '_' + self.modality)
         sys.stdout.flush()

@@ -1,7 +1,10 @@
+from ast import Sub
 import torch
 from torch import nn
 from torch.nn import CrossEntropyLoss, MSELoss
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence, pad_packed_sequence
+from torch.autograd import Variable
+from torch.nn.parameter import Parameter
 
 from transformers.models.bert.modeling_bert import BertPreTrainedModel
 from transformers.activations import gelu, gelu_new
@@ -21,25 +24,59 @@ class TextOnly(nn.Module):
         super().__init__()
         self.hp = hp
         hp.d_tout = hp.d_tin
+        self.text_in, self.text_out = hp.d_tin, hp.d_tout
+        self.hidden = hp.pretrain_emb
+        self.post_fusion_dim = hp.d_tfn
+        self.post_fusion_prob = hp.dropout_prj
+
         self.text_enc = LanguageEmbeddingLayer(hp)
-        self.prj = SubNet(
-            in_size=hp.d_tout,
-            hidden_size=hp.d_tout,
-            n_class=hp.n_class,
-            dropout=hp.dropout_prj
-        )
+
+        # define the post_fusion layers
+        self.post_fusion_dropout = nn.Dropout(p=hp.dropout_prob)
+        self.post_fusion_layer_1 = nn.Linear(self.hidden + 1, self.post_fusion_dim)
+        self.post_fusion_layer_2 = nn.Linear(self.post_fusion_dim, self.post_fusion_dim)
+        self.post_fusion_layer_3 = nn.Linear(self.post_fusion_dim, 1)
+
+        # in TFN we are doing a regression with constrained output range: (-3, 3), hence we'll apply sigmoid to output
+        # shrink it to (0, 1), and scale\shift it back to range (-3, 3)
+        self.output_range = Parameter(torch.FloatTensor([6]), requires_grad=False)
+        self.output_shift = Parameter(torch.FloatTensor([-3]), requires_grad=False)
     
-    def forward(self, sentences, bert_sent, bert_sent_type, bert_sent_mask, y=None):
+    def forward(self, sentences, bert_sent, bert_sent_type, bert_sent_mask):
         enc_word = self.text_enc(sentences, bert_sent, bert_sent_type, bert_sent_mask) # (batch_size, seq_len, emb_size)
-        text_embedding = enc_word[:,0,:] # (batch_size, emb_size)
-        text_out, preds = self.prj(text_embedding)
-        return preds, text_embedding
+        text_h = enc_word[:,0,:] # (batch_size, emb_size)
+        batch_size = text_h.shape[0]
+
+        if text_h.is_cuda:
+            DTYPE = torch.cuda.FloatTensor
+        else:
+            DTYPE = torch.FloatTensor
+
+        _text_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), text_h), dim=1)
+        # fusion_tensor = torch.bmm(_text_h.unsqueeze(2), _text_h.unsqueeze(1))
+        # fusion_tensor = fusion_tensor.view(-1, (self.hidden + 1) * (self.hidden + 1), 1)
+        # fusion_tensor = torch.bmm(fusion_tensor, _text_h).unsqueeze(1).view(batch_size, -1)
+        fusion_tensor = _text_h.unsqueeze(1).view(batch_size, -1)
+
+        post_fusion_dropped = self.post_fusion_dropout(fusion_tensor)
+        post_fusion_y_1 = F.relu(self.post_fusion_layer_1(post_fusion_dropped))
+        post_fusion_y_2 = F.relu(self.post_fusion_layer_2(post_fusion_y_1))
+        post_fusion_y_3 = F.sigmoid(self.post_fusion_layer_3(post_fusion_y_2))
+        output = post_fusion_y_3 * self.output_range + self.output_shift
+
+        return output, text_h, fusion_tensor
 
 class AcousticOnly(nn.Module):
     def __init__(self, hp):
         super().__init__()
         self.hp = hp
-        self.acoustic_enc = RNNEncoder(
+        self.audio_in = hp.d_ain
+        self.audio_hidden = hp.d_ah
+        self.post_fusion_dim = hp.d_ah
+        self.audio_prob = hp.dropout_a
+        self.post_fusion_prob = hp.dropout_prj
+
+        self.audio_enc = RNNEncoder(
             in_size=hp.d_ain,
             hidden_size=hp.d_ah,
             out_size=hp.d_aout,
@@ -47,99 +84,175 @@ class AcousticOnly(nn.Module):
             dropout=hp.dropout_a if hp.n_layer > 1 else 0.0,
             bidirectional=hp.bidirectional
         )
-        self.prj = SubNet(
-            in_size=hp.d_aout,
-            hidden_size=hp.d_aout,
-            n_class=hp.n_class,
-            dropout=hp.dropout_prj
-        )
+        self.post_fusion_dropout = nn.Dropout(p=self.post_fusion_prob)
+        self.post_fusion_layer_1 = nn.Linear(self.audio_hidden + 1, self.post_fusion_dim)
+        self.post_fusion_layer_2 = nn.Linear(self.post_fusion_dim, self.post_fusion_dim)
+        self.post_fusion_layer_3 = nn.Linear(self.post_fusion_dim, 1)
+
+        self.output_range = Parameter(torch.FloatTensor([6]), requires_grad=False)
+        self.output_shift = Parameter(torch.FloatTensor([-3]), requires_grad=False)
     
-    def forward(self, acoustic, a_len, y=None):
-        acoustic_embedding = self.acoustic_enc(acoustic, a_len)
-        acoustic_out, preds = self.prj(acoustic_embedding)
-        return preds, acoustic_embedding
+    def forward(self, audio_x, a_len):
+        audio_h = self.audio_enc(audio_x, a_len)
+        batch_size = audio_h.data.shape[0]
+        if audio_h.is_cuda:
+            DTYPE = torch.cuda.FloatTensor
+        else:
+            DTYPE = torch.FloatTensor
+
+        _audio_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), audio_h), dim=1)
+        # fusion_tensor = torch.bmm(_audio_h.unsqueeze(2), _audio_h.unsqueeze(1))
+        # fusion_tensor = fusion_tensor.view(-1, (self.audio_hidden + 1) * (self.audio_hidden + 1), 1)
+        # fusion_tensor = torch.bmm(fusion_tensor, _audio_h.unsqueeze(1)).view(batch_size, -1)
+        fusion_tensor = _audio_h.unsqueeze(1).view(batch_size, -1)
+
+        post_fusion_dropped = self.post_fusion_dropout(fusion_tensor)
+        post_fusion_y_1 = F.relu(self.post_fusion_layer_1(post_fusion_dropped))
+        post_fusion_y_2 = F.relu(self.post_fusion_layer_2(post_fusion_y_1))
+        post_fusion_y_3 = F.sigmoid(self.post_fusion_layer_3(post_fusion_y_2))
+        output = post_fusion_y_3 * self.output_range + self.output_shift
+
+        return output, audio_h, fusion_tensor
 
 class VisualOnly(nn.Module):
     def __init__(self, hp):
         super().__init__()
         self.hp = hp
-        self.visual_enc = RNNEncoder(
-            in_size=hp.d_vin,
-            hidden_size=hp.d_vh,
-            out_size=hp.d_vout,
-            num_layers=hp.n_layer,
-            dropout=hp.dropout_v if hp.n_layer > 1 else 0.0,
-            bidirectional=hp.bidirectional
+        self.video_in = hp.d_vin
+        self.video_hidden = hp.d_vh
+        self.post_fusion_dim = hp.d_vh
+        self.video_prob = hp.dropout_v
+        self.post_fusion_prob = hp.dropout_prj
+
+        self.video_enc = RNNEncoder(
+            in_size = hp.d_vin,
+            hidden_size = hp.d_vh,
+            out_size = hp.d_vout,
+            num_layers = hp.n_layer,
+            dropout = hp.dropout_v if hp.n_layer > 1 else 0.0,
+            bidirectional = hp.bidirectional
         )
-        self.prj = SubNet(
-            in_size=hp.d_vout,
-            hidden_size=hp.d_vout,
-            n_class=hp.n_class,
-            dropout=hp.dropout_prj
-        )
+        self.post_fusion_dropout = nn.Dropout(p=self.post_fusion_prob)
+        self.post_fusion_layer_1 = nn.Linear(self.video_hidden + 1, self.post_fusion_dim)
+        self.post_fusion_layer_2 = nn.Linear(self.post_fusion_dim, self.post_fusion_dim)
+        self.post_fusion_layer_3 = nn.Linear(self.post_fusion_dim, 1)
+
+        self.output_range = Parameter(torch.FloatTensor([6]), requires_grad=False)
+        self.output_shift = Parameter(torch.FloatTensor([-3]), requires_grad=False)
     
-    def forward(self, visual, v_len, y=None):
-        visual_embedding = self.visual_enc(visual, v_len)
-        visual_out, preds = self.prj(visual_embedding)
-        return preds, visual_embedding
+    def forward(self, video_x, v_len):
+        video_h = self.video_enc(video_x, v_len)
+        batch_size = video_h.data.shape[0]
+        if video_h.is_cuda:
+            DTYPE = torch.cuda.FloatTensor
+        else:
+            DTYPE = torch.FloatTensor
+
+        _video_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), video_h), dim=1)
+        # fusion_tensor = torch.bmm(_video_h.unsqueeze(2), _video_h.unsqueeze(1))
+        # fusion_tensor = fusion_tensor.view(-1, (self.video_hidden + 1) * (self.video_hidden + 1), 1)
+        # fusion_tensor = torch.bmm(fusion_tensor, _video_h.unsqueeze(1)).view(batch_size, -1)
+        fusion_tensor = _video_h.unsqueeze(1).view(batch_size, -1)
+
+        post_fusion_dropped = self.post_fusion_dropout(fusion_tensor)
+        post_fusion_y_1 = F.relu(self.post_fusion_layer_1(post_fusion_dropped))
+        post_fusion_y_2 = F.relu(self.post_fusion_layer_2(post_fusion_y_1))
+        post_fusion_y_3 = F.sigmoid(self.post_fusion_layer_3(post_fusion_y_2))
+        output = post_fusion_y_3 * self.output_range + self.output_shift
+
+        return output, video_h, fusion_tensor
 
 class TFN(nn.Module):
+    '''
+    Implements the Tensor Fusion Networks for multimodal sentiment analysis as is described in:
+    Zadeh, Amir, et al. "Tensor fusion network for multimodal sentiment analysis." EMNLP 2017 Oral.
+    '''
     def __init__(self, hp):
         super().__init__()
         self.hp = hp
         self.add_va = hp.add_va
         hp.d_tout = hp.d_tin
 
+        self.audio_in = hp.d_ain
+        self.video_in = hp.d_vin
+        self.text_in = hp.d_tin
+
+        self.text_hideen = self.text_out = hp.d_th
+        self.audio_hidden = hp.d_ah
+        self.video_hidden = hp.d_vh
+        self.post_fusion_dim = hp.d_tfn
+        self.post_fusion_prob = hp.dropout_prj
+
         self.text_enc = LanguageEmbeddingLayer(hp)
-        self.visual_enc = RNNEncoder(
-            in_size=hp.d_vin,
-            hidden_size=hp.d_vh,
-            out_size=hp.d_vout,
-            num_layers=hp.n_layer,
-            dropout=hp.dropout_v if hp.n_layer > 1 else 0.0,
-            bidirectional=hp.bidirectional
-        )
-        self.acoustic_enc = RNNEncoder(
+        self.audio_enc = RNNEncoder(
             in_size=hp.d_ain,
             hidden_size=hp.d_ah,
             out_size=hp.d_aout,
             num_layers=hp.n_layer,
-            dropout=hp.dropout_v if hp.n_layer > 1 else 0.0,
+            dropout=hp.dropout_a if hp.n_layer > 1 else 0.0,
             bidirectional=hp.bidirectional
         )
-
-        dim_sum = hp.d_aout + hp.d_vout + hp.d_tout
-
-        # Trimodal Settings
-        self.fusion_prj = SubNet(
-            in_size=dim_sum,
-            hidden_size=hp.d_prjh,
-            n_class=hp.n_class,
-            dropout=hp.dropout_prj
+        self.video_enc = RNNEncoder(
+            in_size = hp.d_vin,
+            hidden_size = hp.d_vh,
+            out_size = hp.d_vout,
+            num_layers = hp.n_layer,
+            dropout = hp.dropout_v if hp.n_layer > 1 else 0.0,
+            bidirectional = hp.bidirectional
         )
+
+        # define the post_fusion layers
+        self.post_fusion_dropout = nn.Dropout(p=self.post_fusion_prob)
+        self.post_fusion_layer_1 = nn.Linear((hp.pretrain_emb + 1) * (self.audio_hidden + 1) * (self.video_hidden  + 1), self.post_fusion_dim)
+        self.post_fusion_layer_2 = nn.Linear(self.post_fusion_dim, self.post_fusion_dim)
+        self.post_fusion_layer_3 = nn.Linear(self.post_fusion_dim, 1)
+
+        # in TFN we are doing a regression with constrained output range: (-3, 3), hence we'll apply sigmoid to output
+        # shrink it to (0, 1), and scale\shift it back to range (-3, 3)
+        self.output_range = Parameter(torch.FloatTensor([6]), requires_grad=False)
+        self.output_shift = Parameter(torch.FloatTensor([-3]), requires_grad=False)
     
-    def forward(self, sentences, visual, acoustic, v_len, a_len, bert_sent, bert_sent_type, bert_sent_mask, y=None):
-        """
-        text, audio, and vision should have dimension [batch_size, seq_len, n_features]
-        For Bert input, the length of text is "seq_len + 2"
-        """
+    def forward(self, audio_x, video_x, a_len, v_len, sentences, bert_sent, bert_sent_type, bert_sent_mask):
+        '''
+        Args:
+            audio_x: tensor of shape (batch_size, audio_in)
+            video_x: tensor of shape (batch_size, video_in)
+            text_x: tensor of shape (batch_size, sequence_len, text_in)
+        '''
         enc_word = self.text_enc(sentences, bert_sent, bert_sent_type, bert_sent_mask) # (batch_size, seq_len, emb_size)
-        text = enc_word[:,0,:] # (batch_size, emb_size)
+        text_h = enc_word[:,0,:] # (batch_size, emb_size)
 
-        acoustic = self.acoustic_enc(acoustic, a_len)
-        visual = self.visual_enc(visual, v_len)
+        audio_h = self.audio_enc(audio_x, a_len)
+        video_h = self.video_enc(video_x, v_len)
+        batch_size = audio_h.data.shape[0]
 
-        H, preds = self.fusion_prj(torch.cat([text, acoustic, visual], dim=1))
+        # next we perform "tensor fusion", which is essentially appending 1s to the tensors and take Kronecker product
+        if audio_h.is_cuda:
+            DTYPE = torch.cuda.FloatTensor
+        else:
+            DTYPE = torch.FloatTensor
 
-        return preds, H
+        _audio_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), audio_h), dim=1)
+        _video_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), video_h), dim=1)
+        _text_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), text_h), dim=1)
 
-"""
-MMIM reference: https://github.com/declare-lab/Multimodal-Infomax
-"""
+        fusion_tensor = torch.bmm(_audio_h.unsqueeze(2), _video_h.unsqueeze(1))
+        fusion_tensor = fusion_tensor.view(-1, (self.audio_hidden + 1) * (self.video_hidden + 1), 1)
+        fusion_tensor = torch.bmm(fusion_tensor, _text_h.unsqueeze(1)).view(batch_size, -1)
+
+        post_fusion_dropped = self.post_fusion_dropout(fusion_tensor)
+        post_fusion_y_1 = F.relu(self.post_fusion_layer_1(post_fusion_dropped))
+        post_fusion_y_2 = F.relu(self.post_fusion_layer_2(post_fusion_y_1))
+        post_fusion_y_3 = torch.sigmoid(self.post_fusion_layer_3(post_fusion_y_2))
+        output = post_fusion_y_3 * self.output_range + self.output_shift
+
+        return output, fusion_tensor
 
 class MMIM(nn.Module):
     def __init__(self, hp):
         """Construct MultiMoldal InfoMax model.
+        Reference:
+            https://github.com/declare-lab/Multimodal-Infomax
         Args: 
             hp (dict): a dict stores training and model configurations
         """

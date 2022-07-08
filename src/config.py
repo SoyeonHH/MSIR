@@ -24,14 +24,14 @@ TEXT_DIM = 768
 
 XLNET_INJECTION_INDEX = 1
 
-word_emb_path = '/home/ubuntu/soyeon/glove.840B.300d.txt'
-# word_emb_path = '/mnt/soyeon/workspace/glove.840B.300d.txt'
+# word_emb_path = '/home/ubuntu/soyeon/glove.840B.300d.txt'
+word_emb_path = '/mnt/soyeon/workspace/glove.840B.300d.txt'
 assert(word_emb_path is not None)
 
-sdk_dir = Path('/home/ubuntu/soyeon/CMU-MultimodalSDK')
-data_dir = Path('/home/ubuntu/soyeon/MSIR/data')
-# sdk_dir = Path('/mnt/soyeon/workspace/multimodal/CMU-MultimodalSDK')
-# data_dir = Path('/mnt/soyeon/workspace/MSIR/data')
+# sdk_dir = Path('/home/ubuntu/soyeon/CMU-MultimodalSDK')
+# data_dir = Path('/home/ubuntu/soyeon/MSIR/data')
+sdk_dir = Path('/mnt/soyeon/workspace/multimodal/CMU-MultimodalSDK')
+data_dir = Path('/mnt/soyeon/workspace/multimodal/MSIR/datasets')
 data_dict = {'mosi': data_dir.joinpath('MOSI'), 'mosei': data_dir.joinpath('MOSEI')}
 optimizer_dict = {'RMSprop': optim.RMSprop, 'Adam': optim.Adam}
 activation_dict = {'elu': nn.ELU, "hardshrink": nn.Hardshrink, "hardtanh": nn.Hardtanh,
@@ -67,11 +67,11 @@ def get_args():
     )
 
     # Dropouts
-    parser.add_argument('--dropout_a', type=float, default=0.1,
+    parser.add_argument('--dropout_a', type=float, default=0.15,
                         help='dropout of acoustic LSTM out layer')
-    parser.add_argument('--dropout_v', type=float, default=0.1,
+    parser.add_argument('--dropout_v', type=float, default=0.15,
                         help='dropout of visual LSTM out layer')
-    parser.add_argument('--dropout_prj', type=float, default=0.1,
+    parser.add_argument('--dropout_prj', type=float, default=0.15,
                         help='dropout of projection layer')
 
     # Architecture
@@ -82,6 +82,8 @@ def get_args():
                         help='number of layers in LSTM encoders (default: 1)')
     parser.add_argument('--cpc_layers', type=int, default=1,
                         help='number of layers in CPC NCE estimator (default: 1)')
+    parser.add_argument('--d_th', type=int, default=128,
+                        help='hidden size in text rnn')
     parser.add_argument('--d_vh', type=int, default=16,
                         help='hidden size in visual rnn')
     parser.add_argument('--d_ah', type=int, default=16,
@@ -95,6 +97,8 @@ def get_args():
                         help='hidden size in projection network')
     parser.add_argument('--pretrain_emb', type=int, default=768,
                         help='dimension of pretrained model output')
+    parser.add_argument('--d_tfn', type=int, default=32,
+                        help='dimension of post tensor fusion network')
 
     # MAG
     parser.add_argument('--max_seq_length', type=int, default=50)
