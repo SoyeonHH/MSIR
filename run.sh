@@ -1,4 +1,3 @@
 python src/main.py \
 --dataset mosi \
---model_name TFN \
---modality visual
+--model_name TFN

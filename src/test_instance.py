@@ -68,7 +68,6 @@ def sent2class(test_preds_sent):
 class TestMOSI(object):
     def __init__(self, hp, solver):
         self.hp = hp
-        self.modality = hp.modality
         self.model_name = hp.model_name
 
         dataset = str.lower(hp.dataset.strip())
@@ -76,14 +75,20 @@ class TestMOSI(object):
         test_config = get_config(dataset, mode='test',  batch_size=hp.batch_size)
         self.test_loader = get_loader(hp, test_config, shuffle=False)
         self.model = solver.model
+        self.text_emb = solver.text_emb
+        self.text_enc = solver.text_enc
+        self.audio_enc = solver.audio_enc
+        self.video_enc = solver.video_enc
 
     def start(self):
         segment_list, labels, labels_2, labels_7, preds, preds_2, preds_7 = \
             [], [], [], [], [], [], []
+        preds_text, preds_audio, preds_video = [], [], []
+        text_2, text_7, audio_2, audio_7, video_2, video_7 = [], [], [], [], [], []
 
         model = self.model
         
-        model.load_state_dict(torch.load(f"pre_trained_models/best_model_{self.hp.model_name}_{self.hp.modality}.pt"))
+        model.load_state_dict(torch.load(f"pre_trained_models/best_model_{self.hp.model_name}.pt"))
         model.eval()
         with torch.no_grad():
             for i, batch in enumerate(tqdm(self.test_loader)):
@@ -102,19 +107,29 @@ class TestMOSI(object):
                 lengths = lengths.to(device)
                 bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
 
-                if self.modality == 'fusion' and self.model_name == 'TFN':
-                    logits, H = model(audio, visual, alens, vlens, text, bert_sent, bert_sent_type, bert_sent_mask)
-                elif self.modality == 'text' and self.model_name == 'TFN':
-                    logits, U, H = model(text, bert_sent, bert_sent_type, bert_sent_mask)
-                elif self.modality == 'acoustic' and self.model_name == 'TFN':
-                    logits, U, H = model(audio, alens)
-                elif self.modality == 'visual' and self.model_name == 'TFN':
-                    logits, U, H = model(visual, vlens)
+                audio = audio[0,:,:]
+                visual = visual[0,:,:]
+                
+                text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
+                text_h = self.text_enc(text_emb)
+                audio_h = self.audio_enc(audio)
+                video_h = self.video_enc(visual)
+
+                logits, H = model(audio_h, video_h, text_h)
+                logits_text, H_text = model(text_h, text_h, text_h)
+                logits_video, H_video = model(video_h, video_h, video_h)
+                logits_audio, H_audio = model(audio_h, audio_h, audio_h)
                 
                 preds.extend(logits.cpu().detach().numpy())
+                preds_text.extend(logits_text.cpu().detach().numpy())
+                preds_video.extend(logits_video.cpu().detach().numpy())
+                preds_audio.extend(logits_audio.cpu().detach().numpy())
 
             labels_2, labels_7 = sent2class(labels)
             preds_2, preds_7 = sent2class(preds)
+            text_2, text_7 = sent2class(preds_text)
+            video_2, video_7 = sent2class(preds_video)
+            audio_2, audio_7 = sent2class(preds_audio)
             
         test_dict = \
             {'segment': segment_list,
@@ -124,8 +139,17 @@ class TestMOSI(object):
             'preds': preds,
             'preds_2': preds_2,
             'preds_7': preds_7,
+            'preds_text': preds_text,
+            'text_2': text_2,
+            'text_7': text_7,
+            'preds_video': preds_video,
+            'video_2': video_2,
+            'video_7': video_7,
+            'preds_audio': preds_audio,
+            'audio_2': audio_2,
+            'audio_7': audio_7
             }
         
         # path = '/home/ubuntu/soyeon/MSIR/results/' + self.hp.model_name + '_' + self.hp.modality + '.pkl'
-        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/' + self.hp.model_name + '_' + self.hp.modality + '.pkl'
+        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/' + self.hp.model_name + '.pkl'
         to_pickle(test_dict, path)

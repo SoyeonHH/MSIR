@@ -35,9 +35,44 @@ class Solver(object):
         self.model = model
         
         self.model_name = model_name = hp.model_name
-        self.modality = modality = hp.modality
         self.U = []
         self.H = []
+
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        else:
+            self.device = torch.device("cpu")
+
+        # Pre-encoding per unimodal for frozen model architecture
+        '''
+        Args:
+            audio_x: tensor of shape (batch_size, audio_in)
+            video_x: tensor of shape (batch_size, video_in)
+            text_x: tensor of shape (batch_size, sequence_len, text_in)
+        '''
+        self.text_emb = LanguageEmbeddingLayer(hp)
+        self.text_enc = TextSubNet(hp.d_tin, hp.d_th, hp.d_tout, dropout=0.15)
+        # self.audio_enc = RNNEncoder(
+        #     in_size=hp.d_ain,
+        #     hidden_size=hp.d_ah,
+        #     out_size=hp.d_aout,
+        #     num_layers=hp.n_layer,
+        #     dropout=hp.dropout_a if hp.n_layer > 1 else 0.0,
+        #     bidirectional=hp.bidirectional
+        # )
+        # self.video_enc = RNNEncoder(
+        #     in_size = hp.d_vin,
+        #     hidden_size = hp.d_vh,
+        #     out_size = hp.d_vout,
+        #     num_layers = hp.n_layer,
+        #     dropout = hp.dropout_v if hp.n_layer > 1 else 0.0,
+        #     bidirectional = hp.bidirectional
+        # )
+        self.audio_enc = SubNet(hp.d_ain, hp.d_ah, hp.dropout_a)
+        self.video_enc = SubNet(hp.d_vin, hp.d_vh, hp.dropout_v)
+
+        self.text_emb, self.text_enc, self.audio_enc, self.video_enc = \
+            self.text_emb.to(self.device), self.text_enc.to(self.device), self.audio_enc.to(self.device), self.video_enc.to(self.device)
 
         # Training hyperarams
         self.alpha = hp.alpha
@@ -46,13 +81,7 @@ class Solver(object):
         self.update_batch = hp.update_batch
 
         # initialize the model
-        if modality == 'text' and model_name == 'TFN':
-            self.model = model = TextOnly(hp)
-        elif modality == 'visual' and model_name == 'TFN':
-            self.model = model = VisualOnly(hp)
-        elif modality == 'acoustic' and model_name == 'TFN':
-            self.model = model = AcousticOnly(hp)
-        elif modality == 'fusion' and model_name == 'TFN':
+        if model_name == 'TFN':
             self.model = model = TFN(hp)
         elif model_name == 'MIM':
             self.model = model = MMIM(hp)
@@ -65,8 +94,8 @@ class Solver(object):
             )
         else:
             print("The Configuration no exist.")
-        
-        model.to(DEVICE)
+
+        self.model = model = self.model.to(self.device)
 
         # criterion - mosi and mosei are regression datasets
         self.criterion = criterion = nn.L1Loss(reduction="mean")
@@ -119,22 +148,22 @@ class Solver(object):
             for i_batch, batch_data in enumerate(tqdm(self.train_loader)):
                 text, visual, vlens, audio, alens, y, l, bert_sent, bert_sent_type, \
                     bert_sent_mask, ids = batch_data
-                
-                device = torch.device('cuda')
+
+                device = self.device
                 text, visual, audio, y, l, bert_sent, bert_sent_type, bert_sent_mask = \
-                text.to(device), visual.to(device), audio.to(device), y.to(device), l.to(device), bert_sent.to(device), \
-                bert_sent_type.to(device), bert_sent_mask.to(device)
+                    text.to(device), visual.to(device), audio.to(device), y.to(device), l.to(device), bert_sent.to(device), \
+                        bert_sent_type.to(device), bert_sent_mask.to(device)
 
                 batch_size = y.size(0)
+                audio = audio[0,:,:]
+                visual = visual[0,:,:]
 
-                if self.modality == 'fusion' and self.model_name == 'TFN':
-                    preds, H = model(audio, visual, alens, vlens, text, bert_sent, bert_sent_type, bert_sent_mask)
-                elif self.modality == 'text' and self.model_name == 'TFN':
-                    preds, U, H = model(text, bert_sent, bert_sent_type, bert_sent_mask)
-                elif self.modality == 'acoustic' and self.model_name == 'TFN':
-                    preds, U, H = model(audio, alens)
-                elif self.modality == 'visual' and self.model_name == 'TFN':
-                    preds, U, H = model(visual, vlens)
+                text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
+                text_h = self.text_enc(text_emb)
+                audio_h = self.audio_enc(audio)
+                video_h = self.video_enc(visual)
+
+                preds, H = model(audio_h, video_h, text_h)
                 
                 loss = criterion(preds, y)
                 loss.backward()
@@ -178,18 +207,15 @@ class Solver(object):
                     bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
                     
                     batch_size = lengths.size(0) # bert_sent in size (bs, seq_len, emb_size)
+                    audio = audio[0,:,:]
+                    visual = visual[0,:,:]
 
-                    if self.modality == 'fusion' and self.model_name == 'TFN':
-                        preds, H = model(audio, visual, alens, vlens, text, bert_sent, bert_sent_type, bert_sent_mask)
-                    elif self.modality == 'text' and self.model_name == 'TFN':
-                        preds, U, H = model(text, bert_sent, bert_sent_type, bert_sent_mask)
-                    elif self.modality == 'acoustic' and self.model_name == 'TFN':
-                        preds, U, H = model(audio, alens)
-                    elif self.modality == 'visual' and self.model_name == 'TFN':
-                        preds, U, H = model(visual, vlens)
+                    text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
+                    text_h = self.text_enc(text_emb)
+                    audio_h = self.audio_enc(audio)
+                    video_h = self.video_enc(visual)
 
-                    if self.modality != 'fusion':
-                        self.U.extend(U)
+                    preds, H = model(audio_h, video_h, text_h)
                     self.H.extend(H)
                     
                     if self.hp.dataset in ['mosi', 'mosei', 'mosei_senti'] and test:
@@ -247,7 +273,7 @@ class Solver(object):
                     best_results = results
                     best_truths = truths
                     print(f"Saved model at pre_trained_models/MM.pt!")
-                    save_model(model, self.model_name + '_' + self.modality)
+                    save_model(model, self.model_name)
             else:
                 patience -= 1
                 if patience == 0:
@@ -261,7 +287,5 @@ class Solver(object):
 
         # save_hidden(self.H, self.modality)
         # save_hidden(self.H_out, self.modality + '_out')
-        if self.modality != 'fusion':
-            save_hidden(self.U, self.model_name + '_' + self.modality + '_embedding')
-        save_hidden(self.H, self.model_name + '_' + self.modality)
+        save_hidden(self.H, self.model_name)
         sys.stdout.flush()

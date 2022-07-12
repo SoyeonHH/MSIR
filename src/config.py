@@ -61,10 +61,10 @@ def get_args():
     parser.add_argument('--model_name', type=str, default='TFN',
     choices=['TFN', 'MAG', 'MIM'], help='model name (default: TFN)'
     )
-    parser.add_argument('--modality', type=str, default='fusion',
-    choices=['fusion', 'text', 'visual', 'acoustic'], 
-    help='modality to use (default: fusion)'
-    )
+    # parser.add_argument('--modality', type=str, default='fusion',
+    # choices=['fusion', 'text', 'visual', 'acoustic'], 
+    # help='modality to use (default: fusion)'
+    # )
 
     # Dropouts
     parser.add_argument('--dropout_a', type=float, default=0.15,
@@ -82,15 +82,17 @@ def get_args():
                         help='number of layers in LSTM encoders (default: 1)')
     parser.add_argument('--cpc_layers', type=int, default=1,
                         help='number of layers in CPC NCE estimator (default: 1)')
-    parser.add_argument('--d_th', type=int, default=128,
+    parser.add_argument('--d_th', type=int, default=40,
                         help='hidden size in text rnn')
-    parser.add_argument('--d_vh', type=int, default=16,
+    parser.add_argument('--d_vh', type=int, default=40,
                         help='hidden size in visual rnn')
-    parser.add_argument('--d_ah', type=int, default=16,
+    parser.add_argument('--d_ah', type=int, default=40,
                         help='hidden size in acoustic rnn')
-    parser.add_argument('--d_vout', type=int, default=16,
+    parser.add_argument('--d_tout', type=int, default=40,
+                        help='output size in text rnn')
+    parser.add_argument('--d_vout', type=int, default=40,
                         help='output size in visual rnn')
-    parser.add_argument('--d_aout', type=int, default=16,
+    parser.add_argument('--d_aout', type=int, default=40,
                         help='output size in acoustic rnn')
     parser.add_argument('--bidirectional', action='store_true', help='Whether to use bidirectional rnn')
     parser.add_argument('--d_prjh', type=int, default=128,
