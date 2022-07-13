@@ -1,3 +1,3 @@
 python src/main.py \
---dataset mosi \
+--dataset mosei \
 --model_name TFN

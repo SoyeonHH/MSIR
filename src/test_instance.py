@@ -88,7 +88,7 @@ class TestMOSI(object):
 
         model = self.model
         
-        model.load_state_dict(torch.load(f"pre_trained_models/best_model_{self.hp.model_name}.pt"))
+        model.load_state_dict(torch.load(f"pre_trained_models/best_model_{self.hp.model_name}_mosei.pt"))
         model.eval()
         with torch.no_grad():
             for i, batch in enumerate(tqdm(self.test_loader)):
@@ -107,8 +107,10 @@ class TestMOSI(object):
                 lengths = lengths.to(device)
                 bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
 
-                audio = audio[0,:,:]
-                visual = visual[0,:,:]
+                audio = np.mean(audio, axis=0, keepdims=True)
+                visual = np.mean(visual, axis=0, keepdims=True)
+                # audio = audio[0,:,:]
+                # visual = visual[0,:,:]
                 
                 text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
                 text_h = self.text_enc(text_emb)
@@ -151,5 +153,5 @@ class TestMOSI(object):
             }
         
         # path = '/home/ubuntu/soyeon/MSIR/results/' + self.hp.model_name + '_' + self.hp.modality + '.pkl'
-        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/' + self.hp.model_name + '.pkl'
+        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/' + self.hp.model_name + '_mosei.pkl'
         to_pickle(test_dict, path)

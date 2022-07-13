@@ -155,8 +155,10 @@ class Solver(object):
                         bert_sent_type.to(device), bert_sent_mask.to(device)
 
                 batch_size = y.size(0)
-                audio = audio[0,:,:]
-                visual = visual[0,:,:]
+                audio = np.mean(audio, axis=0, keepdims=True)
+                visual = np.mean(visual, axis=0, keepdims=True)
+                # audio = audio[0,:,:]
+                # visual = visual[0,:,:]
 
                 text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
                 text_h = self.text_enc(text_emb)
@@ -207,8 +209,10 @@ class Solver(object):
                     bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
                     
                     batch_size = lengths.size(0) # bert_sent in size (bs, seq_len, emb_size)
-                    audio = audio[0,:,:]
-                    visual = visual[0,:,:]
+                    audio = np.mean(audio, axis=0, keepdims=True)
+                    visual = np.mean(visual, axis=0, keepdims=True)
+                    # audio = audio[0,:,:]
+                    # visual = visual[0,:,:]
 
                     text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
                     text_h = self.text_enc(text_emb)
@@ -273,7 +277,7 @@ class Solver(object):
                     best_results = results
                     best_truths = truths
                     print(f"Saved model at pre_trained_models/MM.pt!")
-                    save_model(model, self.model_name)
+                    save_model(model, self.model_name + '_mosei')
             else:
                 patience -= 1
                 if patience == 0:
@@ -287,5 +291,5 @@ class Solver(object):
 
         # save_hidden(self.H, self.modality)
         # save_hidden(self.H_out, self.modality + '_out')
-        save_hidden(self.H, self.model_name)
+        save_hidden(self.H, self.model_name + '_mosei')
         sys.stdout.flush()
