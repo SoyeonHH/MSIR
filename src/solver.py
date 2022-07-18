@@ -1,5 +1,5 @@
 import torch
-from torch import nn
+from torch import float32, nn
 import sys
 import torch.optim as optim
 import numpy as np
@@ -44,30 +44,8 @@ class Solver(object):
             self.device = torch.device("cpu")
 
         # Pre-encoding per unimodal for frozen model architecture
-        '''
-        Args:
-            audio_x: tensor of shape (batch_size, audio_in)
-            video_x: tensor of shape (batch_size, video_in)
-            text_x: tensor of shape (batch_size, sequence_len, text_in)
-        '''
         self.text_emb = LanguageEmbeddingLayer(hp)
         self.text_enc = TextSubNet(hp.d_tin, hp.d_th, hp.d_tout, dropout=0.15)
-        # self.audio_enc = RNNEncoder(
-        #     in_size=hp.d_ain,
-        #     hidden_size=hp.d_ah,
-        #     out_size=hp.d_aout,
-        #     num_layers=hp.n_layer,
-        #     dropout=hp.dropout_a if hp.n_layer > 1 else 0.0,
-        #     bidirectional=hp.bidirectional
-        # )
-        # self.video_enc = RNNEncoder(
-        #     in_size = hp.d_vin,
-        #     hidden_size = hp.d_vh,
-        #     out_size = hp.d_vout,
-        #     num_layers = hp.n_layer,
-        #     dropout = hp.dropout_v if hp.n_layer > 1 else 0.0,
-        #     bidirectional = hp.bidirectional
-        # )
         self.audio_enc = SubNet(hp.d_ain, hp.d_ah, hp.dropout_a)
         self.video_enc = SubNet(hp.d_vin, hp.d_vh, hp.dropout_v)
 
@@ -146,6 +124,7 @@ class Solver(object):
             left_batch = self.update_batch
 
             for i_batch, batch_data in enumerate(tqdm(self.train_loader)):
+                
                 text, visual, vlens, audio, alens, y, l, bert_sent, bert_sent_type, \
                     bert_sent_mask, ids = batch_data
 
@@ -155,16 +134,22 @@ class Solver(object):
                         bert_sent_type.to(device), bert_sent_mask.to(device)
 
                 batch_size = y.size(0)
-                audio = np.mean(audio, axis=0, keepdims=True)
-                visual = np.mean(visual, axis=0, keepdims=True)
-                # audio = audio[0,:,:]
-                # visual = visual[0,:,:]
 
+                '''
+                audio: tensor of shape (batch_size, audio_in)
+                visual: tensor of shape (batch_size, video_in)
+                text_emb: tensor of shape (batch_size, sequence_len, text_in)'''
+                audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
+                visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
+                audio = audio[0,:,:]
+                visual = visual[0,:,:]
                 text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
+
+                '''_h = tensor of shape (batch_size, hidden_size)'''
                 text_h = self.text_enc(text_emb)
                 audio_h = self.audio_enc(audio)
                 video_h = self.video_enc(visual)
-
+                
                 preds, H = model(audio_h, video_h, text_h)
                 
                 loss = criterion(preds, y)
@@ -209,10 +194,10 @@ class Solver(object):
                     bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
                     
                     batch_size = lengths.size(0) # bert_sent in size (bs, seq_len, emb_size)
-                    audio = np.mean(audio, axis=0, keepdims=True)
-                    visual = np.mean(visual, axis=0, keepdims=True)
-                    # audio = audio[0,:,:]
-                    # visual = visual[0,:,:]
+                    audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
+                    visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
+                    audio = audio[0,:,:]
+                    visual = visual[0,:,:]
 
                     text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
                     text_h = self.text_enc(text_emb)
@@ -277,7 +262,7 @@ class Solver(object):
                     best_results = results
                     best_truths = truths
                     print(f"Saved model at pre_trained_models/MM.pt!")
-                    save_model(model, self.model_name + '_mosei')
+                    save_model(model, self.model_name + '_origin_mosei')
             else:
                 patience -= 1
                 if patience == 0:
@@ -291,5 +276,5 @@ class Solver(object):
 
         # save_hidden(self.H, self.modality)
         # save_hidden(self.H_out, self.modality + '_out')
-        save_hidden(self.H, self.model_name + '_mosei')
+        save_hidden(self.H, self.model_name + '_origin_mosei')
         sys.stdout.flush()

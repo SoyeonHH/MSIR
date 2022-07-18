@@ -265,7 +265,7 @@ def get_appropriate_dataset(data):
 
 
 def set_up_data_loader():
-    with open(f"../data/{args.dataset}.pkl", "rb") as handle:
+    with open(f"../datasets/{args.dataset.upper()}/{args.dataset}.pkl", "rb") as handle:
         data = pickle.load(handle)
 
     train_data = data["train"]
@@ -722,8 +722,8 @@ def main():
         test_tokenizer
     )
 
-    test_instance(model, test_tokenizer)
-    torch.save(model.state_dict(), "./best_model.pt")
+    # test_instance(model, test_tokenizer)
+    torch.save(model.state_dict(), f'pre_trained_models/MAG_{args.dataset}.pt')
     
 
 

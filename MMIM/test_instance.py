@@ -81,7 +81,7 @@ class TestMOSI(object):
 
         model = self.model
         
-        model.load_state_dict(torch.load(f"pre_trained_models/best_model.pt"))
+        model.load_state_dict(torch.load(f"pre_trained_models/best_model_{self.hp.dataset}.pt"))
         model.eval()
         with torch.no_grad():
             for i, batch in enumerate(tqdm(self.test_loader)):
@@ -102,7 +102,7 @@ class TestMOSI(object):
                 
                 _, _, logits, _, _ = model(text, visual, audio, vlens, alens, bert_sent, bert_sent_type, bert_sent_mask)
 
-                preds.extend(logits)
+                preds.extend(logits.cpu().detach().numpy())
 
             labels_2, labels_7 = sent2class(labels)
             preds_2, preds_7 = sent2class(preds)
@@ -117,5 +117,5 @@ class TestMOSI(object):
             'preds_7': preds_7,
             }
         
-        path = '/home/ubuntu/soyeon/MSIR/results/MIM.pkl'
+        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/MMIM_' + self.hp.dataset + '.pkl'
         to_pickle(test_dict, path)

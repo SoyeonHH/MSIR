@@ -88,7 +88,7 @@ class TestMOSI(object):
 
         model = self.model
         
-        model.load_state_dict(torch.load(f"pre_trained_models/best_model_{self.hp.model_name}_mosei.pt"))
+        model.load_state_dict(torch.load(f"pre_trained_models/best_model_{self.hp.model_name}_origin_mosei.pt"))
         model.eval()
         with torch.no_grad():
             for i, batch in enumerate(tqdm(self.test_loader)):
@@ -107,10 +107,10 @@ class TestMOSI(object):
                 lengths = lengths.to(device)
                 bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
 
-                audio = np.mean(audio, axis=0, keepdims=True)
-                visual = np.mean(visual, axis=0, keepdims=True)
-                # audio = audio[0,:,:]
-                # visual = visual[0,:,:]
+                audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
+                visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
+                audio = audio[0,:,:]
+                visual = visual[0,:,:]
                 
                 text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
                 text_h = self.text_enc(text_emb)
@@ -118,20 +118,20 @@ class TestMOSI(object):
                 video_h = self.video_enc(visual)
 
                 logits, H = model(audio_h, video_h, text_h)
-                logits_text, H_text = model(text_h, text_h, text_h)
-                logits_video, H_video = model(video_h, video_h, video_h)
-                logits_audio, H_audio = model(audio_h, audio_h, audio_h)
+                # logits_text, H_text = model(text_h, text_h, text_h)
+                # logits_video, H_video = model(video_h, video_h, video_h)
+                # logits_audio, H_audio = model(audio_h, audio_h, audio_h)
                 
                 preds.extend(logits.cpu().detach().numpy())
-                preds_text.extend(logits_text.cpu().detach().numpy())
-                preds_video.extend(logits_video.cpu().detach().numpy())
-                preds_audio.extend(logits_audio.cpu().detach().numpy())
+                # preds_text.extend(logits_text.cpu().detach().numpy())
+                # preds_video.extend(logits_video.cpu().detach().numpy())
+                # preds_audio.extend(logits_audio.cpu().detach().numpy())
 
             labels_2, labels_7 = sent2class(labels)
             preds_2, preds_7 = sent2class(preds)
-            text_2, text_7 = sent2class(preds_text)
-            video_2, video_7 = sent2class(preds_video)
-            audio_2, audio_7 = sent2class(preds_audio)
+            # text_2, text_7 = sent2class(preds_text)
+            # video_2, video_7 = sent2class(preds_video)
+            # audio_2, audio_7 = sent2class(preds_audio)
             
         test_dict = \
             {'segment': segment_list,
@@ -141,17 +141,17 @@ class TestMOSI(object):
             'preds': preds,
             'preds_2': preds_2,
             'preds_7': preds_7,
-            'preds_text': preds_text,
-            'text_2': text_2,
-            'text_7': text_7,
-            'preds_video': preds_video,
-            'video_2': video_2,
-            'video_7': video_7,
-            'preds_audio': preds_audio,
-            'audio_2': audio_2,
-            'audio_7': audio_7
+            # 'preds_text': preds_text,
+            # 'text_2': text_2,
+            # 'text_7': text_7,
+            # 'preds_video': preds_video,
+            # 'video_2': video_2,
+            # 'video_7': video_7,
+            # 'preds_audio': preds_audio,
+            # 'audio_2': audio_2,
+            # 'audio_7': audio_7
             }
         
         # path = '/home/ubuntu/soyeon/MSIR/results/' + self.hp.model_name + '_' + self.hp.modality + '.pkl'
-        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/' + self.hp.model_name + '_mosei.pkl'
+        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/' + self.hp.model_name + '_origin_mosei.pkl'
         to_pickle(test_dict, path)
