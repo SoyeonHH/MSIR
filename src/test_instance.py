@@ -6,11 +6,11 @@ import math
 from math import isnan
 import re
 import pickle
-from src.data_loader import get_loader
+from data_loader import get_loader
 import gensim
-from src.create_dataset import PAD
-from src.config import *
-from src.utils.tools import *
+from create_dataset import PAD
+from config import *
+from utils.tools import *
 import numpy as np
 from tqdm import tqdm
 from tqdm import tqdm_notebook
