@@ -5,7 +5,6 @@ import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset
 from transformers import *
-from transformers import BertTokenizer, BertForMaskedLM
 
 from create_dataset import MOSI, MOSEI, PAD, UNK
 
