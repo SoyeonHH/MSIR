@@ -153,5 +153,5 @@ class TestMOSI(object):
             }
         
         # path = '/home/ubuntu/soyeon/MSIR/results/' + self.hp.model_name + '_' + self.hp.modality + '.pkl'
-        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/' + self.hp.model_name + '_origin_mosei.pkl'
+        path = os.getcwd() + 'src/dist/' + self.hp.model_name + '_origin_mosei.pkl'
         to_pickle(test_dict, path)
