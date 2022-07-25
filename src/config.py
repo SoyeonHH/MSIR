@@ -56,12 +56,8 @@ def get_args():
     parser.add_argument('--data_path', type=str, default='datasets',
                         help='path for storing the dataset')
     parser.add_argument('--model_name', type=str, default='TFN',
-    choices=['TFN', 'MAG', 'MIM'], help='model name (default: TFN)'
+    choices=['TFN', 'MAG', 'MIM', 'Glove', 'Facet', 'COVAREP'], help='model name (default: TFN)'
     )
-    # parser.add_argument('--modality', type=str, default='fusion',
-    # choices=['fusion', 'text', 'visual', 'acoustic'], 
-    # help='modality to use (default: fusion)'
-    # )
 
     # Dropouts
     parser.add_argument('--dropout_a', type=float, default=0.15,

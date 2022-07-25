@@ -262,7 +262,7 @@ class Solver(object):
                     best_results = results
                     best_truths = truths
                     print(f"Saved model at pre_trained_models/MM.pt!")
-                    save_model(model, self.model_name + '_origin_mosei')
+                    save_model(model, self.model_name, self.hp.dataset)
             else:
                 patience -= 1
                 if patience == 0:
@@ -276,5 +276,5 @@ class Solver(object):
 
         # save_hidden(self.H, self.modality)
         # save_hidden(self.H_out, self.modality + '_out')
-        save_hidden(self.H, self.model_name + '_origin_mosei')
+        save_hidden(self.H, self.model_name, self.hp.dataset)
         sys.stdout.flush()
