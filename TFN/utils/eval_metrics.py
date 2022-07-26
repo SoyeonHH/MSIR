@@ -31,7 +31,7 @@ def extreme_mae(preds, truths):
         if abs(truth) > 2.:
             extreme_preds.append(preds[idx])
             extreme_truths.append(truth)
-    mae = np.mean(np.absolute(np.array(extreme_preds) - np.array(extreme_truths)))
+    mae = np.mean(np.absolute(extreme_truths - extreme_preds))
     return mae
 
 def eval_mosei_senti(results, truths, exclude_zero=False):
@@ -60,7 +60,6 @@ def eval_mosei_senti(results, truths, exclude_zero=False):
     binary_preds_has0 = test_preds >= 0
     acc_2 = accuracy_score(binary_truth_has0, binary_preds_has0)
     f_score = f1_score(binary_truth_has0, binary_preds_has0, average='weighted')
-    
 
     print("MAE: ", mae)
     print("Correlation Coefficient: ", corr)

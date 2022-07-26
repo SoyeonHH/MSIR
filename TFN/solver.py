@@ -15,7 +15,6 @@ from sklearn.metrics import accuracy_score, f1_score
 from utils.eval_metrics import *
 from utils.tools import *
 from model import *
-from encoder import *
 import pickle
 
 class MultimodalConfig(object):
@@ -32,53 +31,26 @@ class Solver(object):
         self.test_loader = test_loader
 
         self.is_train = is_train
-        self.model = model
-        
-        self.model_name = model_name = hp.model_name
+        self.model_name = hp.model_name
         self.U = []
         self.H = []
+
+        model = TFN((hp.d_ain, hp.d_vin, hp.d_tin), (32, 32, 128), 128, (0.15, 0.15, 0.15, 0.15), 128)
 
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
         else:
             self.device = torch.device("cpu")
 
-        # Pre-encoding per unimodal for frozen model architecture
-        self.text_emb = LanguageEmbeddingLayer(hp)
-        self.text_enc = TextSubNet(hp.d_tin, hp.d_th, hp.d_tout, dropout=0.15)
-        self.audio_enc = SubNet(hp.d_ain, hp.d_ah, hp.dropout_a)
-        self.video_enc = SubNet(hp.d_vin, hp.d_vh, hp.dropout_v)
-
-        self.text_emb, self.text_enc, self.audio_enc, self.video_enc = \
-            self.text_emb.to(self.device), self.text_enc.to(self.device), self.audio_enc.to(self.device), self.video_enc.to(self.device)
-
-        self.update_batch = hp.update_batch
-
-        # initialize the model
-        if model_name == 'TFN':
-            self.model = model = TFN(hp)
-        elif model_name == 'Glove':
-            self.model = model = Text(hp)
-        elif model_name == 'Facet':
-            self.model = model = Visual(hp)
-        elif model_name == 'COVAREP':
-            self.model = model = Acoustic(hp)
-
-        self.model = model = self.model.to(self.device)
-
-        # criterion - mosi and mosei are regression datasets
-        self.criterion = nn.L1Loss(reduction="mean")
-
-        # optimizer
-        self.optimizer = optim.Adam(model.parameters(), lr=hp.learning_rate, weight_decay=hp.weight_decay)
-        self.scheduler = ReduceLROnPlateau(self.optimizer, mode='min', patience=hp.when, factor=0.5, verbose=True)
-
+        self.model = model = model.to(self.device)
+        print("Model initialized")
+        self.criterion = nn.L1Loss(size_average=False)
+        self.optimizer = optim.Adam(list(model.parameters())[2:]) # don't optimize the first 2 params, they should be fixed (output_range and shift)
 
     # trianing and evalution
     def train_and_eval(self):
         model = self.model
         optimizer = self.optimizer
-        scheduler = self.scheduler
 
         # creterion for downstream task
         criterion = self.criterion
@@ -87,22 +59,17 @@ class Solver(object):
             epoch_loss = 0
 
             model.train()
-            model.zero_grad()
             num_batches = self.hp.n_train // self.hp.batch_size
             proc_loss, proc_size = 0, 0
             start_time = time.time()
 
-            left_batch = self.update_batch
-
             for i_batch, batch_data in enumerate(tqdm(self.train_loader)):
                 
-                text, visual, vlens, audio, alens, y, l, glove_sent, bert_sent, bert_sent_type, \
-                    bert_sent_mask, ids = batch_data
+                text, visual, audio, y, _ = batch_data
 
                 device = self.device
-                text, visual, audio, y, l, glove_sent, bert_sent, bert_sent_type, bert_sent_mask = \
-                    text.to(device), visual.to(device), audio.to(device), y.to(device), l.to(device), \
-                        glove_sent.to(device), bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
+                text, visual, audio, y = \
+                    text.to(device), visual.to(device), audio.to(device), y.to(device)
 
                 batch_size = y.size(0)
 
@@ -114,30 +81,15 @@ class Solver(object):
                 visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
                 audio = audio[0,:,:]
                 visual = visual[0,:,:]
-                if self.hp.model_name == 'Glove':
-                    text_emb = glove_sent
-                else:
-                    text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
-
-                '''_h = tensor of shape (batch_size, hidden_size)'''
-                text_h = self.text_enc(text_emb)
-                audio_h = self.audio_enc(audio)
-                video_h = self.video_enc(visual)
                 
-                preds, H = model(audio_h, video_h, text_h)
-                
+                preds, H = model(audio, visual, text)
                 loss = criterion(preds, y)
                 loss.backward()
-
-                left_batch -= 1
-                if left_batch == 0:
-                    left_batch = self.update_batch
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), self.hp.clip)
-                    optimizer.step()
 
                 proc_loss += loss.item() * batch_size
                 proc_size += batch_size
                 epoch_loss += loss.item() * batch_size
+                optimizer.step()
                 
                 if i_batch % self.hp.log_interval == 0 and i_batch > 0:
                     avg_loss = proc_loss / proc_size
@@ -159,33 +111,21 @@ class Solver(object):
 
             with torch.no_grad():
                 for batch in loader:
-                    text, visual, vlens, audio, alens, y, lengths, glove_sent, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
+                    text, visual, audio, y, _ = batch
 
                     # with torch.cuda.device(0):
-                    device = torch.device('cuda')
-                    text, visual, audio, y, l, glove_sent, bert_sent, bert_sent_type, bert_sent_mask = \
-                        text.to(device), visual.to(device), audio.to(device), y.to(device), lengths.to(device), \
-                            glove_sent.to(device), bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
+                    device = self.device
+                    text, visual, audio, y = \
+                        text.to(device), visual.to(device), audio.to(device), y.to(device)
                     
-                    batch_size = lengths.size(0) # bert_sent in size (bs, seq_len, emb_size)
+                    batch_size = y.size(0) # bert_sent in size (bs, seq_len, emb_size)
                     audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
                     visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
                     audio = audio[0,:,:]
                     visual = visual[0,:,:]
 
-                    if self.hp.model_name == 'Glove':
-                        text_emb = glove_sent
-                    else:
-                        text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
-                    text_h = self.text_enc(text_emb)
-                    audio_h = self.audio_enc(audio)
-                    video_h = self.video_enc(visual)
-                    
-                    preds, H = model(audio_h, video_h, text_h)
-                    # self.H.extend(H)
-                    
-                    if self.hp.dataset in ['mosi', 'mosei', 'mosei_senti'] and test:
-                        criterion = nn.L1Loss()
+                    preds, H = model(audio, visual, text)
+                    self.H.extend(H)
 
                     total_loss += criterion(preds, y).item() * batch_size
 
@@ -215,7 +155,6 @@ class Solver(object):
 
             end = time.time()
             duration = end-start
-            scheduler.step(val_loss)    # Decay learning rate by validation loss
 
             # validation F1
             print("-"*50)
@@ -253,5 +192,5 @@ class Solver(object):
 
         # save_hidden(self.H, self.modality)
         # save_hidden(self.H_out, self.modality + '_out')
-        # save_hidden(self.H, self.model_name, self.hp.dataset)
+        save_hidden(self.H, self.model_name, self.hp.dataset)
         sys.stdout.flush()

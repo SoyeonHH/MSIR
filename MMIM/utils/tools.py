@@ -14,7 +14,7 @@ def save_load_name(args, name=''):
 
 def save_model(args, model, name=''):
     # name = save_load_name(args, name)
-    name = 'best_model'
+    name = 'best_model_' + args.dataset
     if not os.path.exists('pre_trained_models'):
         os.mkdir('pre_trained_models')
     torch.save(model.state_dict(), f'pre_trained_models/{name}.pt')

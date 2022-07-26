@@ -414,7 +414,7 @@ class MOSEI:
 
         if mode == "train":
             return self.train, self.word2id, self.pretrained_emb
-        elif mode == "dev":
+        elif mode == "valid":
             return self.dev, self.word2id, self.pretrained_emb
         elif mode == "test":
             return self.test, self.word2id, self.pretrained_emb

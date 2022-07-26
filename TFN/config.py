@@ -9,21 +9,6 @@ import torch
 from torch import optim
 import torch.nn as nn
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-DEVICE = torch.device("cuda:0")
-
-# MOSI Setting
-ACOUSTIC_DIM = 74
-VISUAL_DIM = 47
-TEXT_DIM = 768
-
-# MOSEI SETTING
-# ACOUSTIC_DIM = 74
-# VISUAL_DIM = 35
-# TEXT_DIM = 768
-
-XLNET_INJECTION_INDEX = 1
-
 word_emb_path = '/home/iknow/workspace/multimodal/glove.840B.300d.txt'
 assert(word_emb_path is not None)
 
@@ -55,64 +40,23 @@ def get_args():
                         help='dataset to use (default: mosei)')
     parser.add_argument('--data_path', type=str, default='datasets',
                         help='path for storing the dataset')
-    parser.add_argument('--model_name', type=str, default='TFN',
-    choices=['TFN', 'MAG', 'MIM', 'Glove', 'Facet', 'COVAREP'], help='model name (default: TFN)'
-    )
-
-    # Dropouts
-    parser.add_argument('--dropout_a', type=float, default=0.1,
-                        help='dropout of acoustic LSTM out layer')
-    parser.add_argument('--dropout_v', type=float, default=0.1,
-                        help='dropout of visual LSTM out layer')
-    parser.add_argument('--dropout_prj', type=float, default=0.1,
-                        help='dropout of projection layer')
-
-    # Architecture
-    parser.add_argument('--multiseed', action='store_true', help='training using multiple seed')
-    parser.add_argument('--contrast', action='store_true', help='using contrast learning')
-    parser.add_argument('--add_va', action='store_true', help='if add va MMILB module')
-    parser.add_argument('--n_layer', type=int, default=1,
-                        help='number of layers in LSTM encoders (default: 1)')
-    parser.add_argument('--cpc_layers', type=int, default=1,
-                        help='number of layers in CPC NCE estimator (default: 1)')
-    parser.add_argument('--d_th', type=int, default=128,
-                        help='hidden size in text rnn')
-    parser.add_argument('--d_vh', type=int, default=32,
-                        help='hidden size in visual rnn')
-    parser.add_argument('--d_ah', type=int, default=32,
-                        help='hidden size in acoustic rnn')
-    parser.add_argument('--d_tout', type=int, default=128,
-                        help='output size in text rnn')
-    parser.add_argument('--d_vout', type=int, default=32,
-                        help='output size in visual rnn')
-    parser.add_argument('--d_aout', type=int, default=32,
-                        help='output size in acoustic rnn')
-    parser.add_argument('--bidirectional', action='store_true', help='Whether to use bidirectional rnn')
-    parser.add_argument('--d_prjh', type=int, default=128,
-                        help='hidden size in projection network')
-    parser.add_argument('--pretrain_emb', type=int, default=768,
-                        help='dimension of pretrained model output')
-    parser.add_argument('--d_tfn', type=int, default=32,
-                        help='dimension of post tensor fusion network')
+    parser.add_argument('--model_name', type=str, default='TFN')
 
     # Training Setting
     parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                         help='batch size (default: 32)')
     parser.add_argument('--clip', type=float, default=1.0,
                         help='gradient clip value (default: 0.8)')
-    parser.add_argument('--learning_rate', type=float, default=3e-4,
+    parser.add_argument('--learning_rate', type=float, default=5e4,
                         help='initial learning rate for main model parameters (default: 1e-3)')
-
-    parser.add_argument('--weight_decay', type=float, default=1e-4,
-                        help='L2 penalty factor of the main Adam optimizer')
         
     parser.add_argument('--optim', type=str, default='Adam',
                         help='optimizer to use (default: Adam)')
     parser.add_argument('--num_epochs', type=int, default=50,
-                        help='number of epochs (default: 40)')
+                        help='number of epochs (default: 50)')
     parser.add_argument('--when', type=int, default=20,
                         help='when to decay learning rate (default: 20)')
-    parser.add_argument('--patience', type=int, default=30,
+    parser.add_argument('--patience', type=int, default=20,
                         help='when to stop training if best never change')
     parser.add_argument('--update_batch', type=int, default=1,
                         help='update batch interval')
@@ -124,6 +68,7 @@ def get_args():
                         help='random seed')
     args = parser.parse_args()
     return args
+
 
 def str2bool(v):
     """string to boolean"""

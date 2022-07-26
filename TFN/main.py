@@ -1,3 +1,4 @@
+from test_instance import TestMOSI
 import torch
 import argparse
 import numpy as np
@@ -5,9 +6,8 @@ import numpy as np
 from utils import *
 from torch.utils.data import DataLoader
 from solver import Solver
-from config import get_args, get_config, output_dim_dict, criterion_dict
+from config import *
 from data_loader import get_loader
-from test_instance import TestMOSI
 
 def set_seed(seed):
     # torch.set_default_tensor_type('torch.FloatTensor')
@@ -51,9 +51,10 @@ if __name__ == '__main__':
     args.n_class = output_dim_dict.get(dataset, 1)
     args.criterion = criterion_dict.get(dataset, 'MSELoss')
 
+    # Fusion Network
     solver = Solver(args, train_loader=train_loader, dev_loader=valid_loader,
                     test_loader=test_loader, is_train=True)
-    # model = solver.train_and_eval()
-
+    solver.train_and_eval()
+    
     tester = TestMOSI(args, solver)
     tester.start()
