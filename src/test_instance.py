@@ -75,10 +75,6 @@ class TestMOSI(object):
         test_config = get_config(dataset, mode='test',  batch_size=hp.batch_size)
         self.test_loader = get_loader(hp, test_config, shuffle=False)
         self.model = solver.model
-        self.text_emb = solver.text_emb
-        self.text_enc = solver.text_enc
-        self.audio_enc = solver.audio_enc
-        self.video_enc = solver.video_enc
         self.H = []
 
     def start(self):
@@ -104,24 +100,22 @@ class TestMOSI(object):
                 
                 # Predictions
                 device = torch.device('cuda')
-                text, visual, audio, y, l, glove_sent, bert_sent, bert_sent_type, bert_sent_mask = \
-                    text.to(device), visual.to(device), audio.to(device), y.to(device), lengths.to(device), \
-                        glove_sent.to(device), bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
+                text, visual, audio, y, l, glove_sent = \
+                    text.to(device), visual.to(device), audio.to(device), y.to(device), lengths.to(device), glove_sent.to(device)
 
                 audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
                 visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
                 audio = audio[0,:,:]
                 visual = visual[0,:,:]
-                
-                if self.hp.model_name == 'Glove':
-                    text_emb = glove_sent
-                else:
-                    text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
-                text_h = self.text_enc(text_emb)
-                audio_h = self.audio_enc(audio)
-                video_h = self.video_enc(visual)
 
-                logits, H = model(audio_h, video_h, text_h)
+                if self.hp.model_name == 'TFN':
+                    logits, H = model(audio, visual, glove_sent)
+                elif self.hp.model_name == 'Glove':
+                    logits, H = model(glove_sent)
+                elif self.hp.model_name == 'Facet':
+                    logits, H = model(visual)
+                elif self.hp.model_name == 'COVAREP':
+                    logits, H = model(audio)
                 self.H.extend(H)
                 # logits_text, H_text = model(text_h, text_h, text_h)
                 # logits_video, H_video = model(video_h, video_h, video_h)

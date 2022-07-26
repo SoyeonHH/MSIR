@@ -32,10 +32,7 @@ class MSADataset(Dataset):
 
     @property
     def tva_dim(self):
-        if self.hp.model_name == 'Glove':
-            t_dim = 300
-        else:
-            t_dim = 768
+        t_dim = 300
         return t_dim, self.data[0][0][1].shape[1], self.data[0][0][2].shape[1]
     
     def __getitem__(self, index):
