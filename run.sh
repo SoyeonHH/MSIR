@@ -1,8 +1,8 @@
-## Experiments
-# python src/main.py --dataset mosi --model_name Glove
+## Experiments (model_name: TFN, Glove, Facet, COVAREP)
+python src/main.py --dataset mosi --model_name COVAREP
 
 ## TFN
-python TFN/main.py --dataset mosi --model_name TFN
+# python TFN/main.py --dataset mosi --model_name TFN
 
 ## MMIM
 # python main.py --dataset mosi --contrast

@@ -25,6 +25,15 @@ def weighted_accuracy(test_preds_emo, test_truth_emo):
 
     return (tp * (n/p) +tn) / (2*n)
 
+def extreme_mae(preds, truths):
+    extreme_preds, extreme_truths = [], []
+    for idx, truth in enumerate(truths):
+        if abs(truth) > 2.:
+            extreme_preds.append(preds[idx])
+            extreme_truths.append(truth)
+    mae = np.mean(np.absolute(extreme_truths - extreme_preds))
+    return mae
+
 def eval_mosei_senti(results, truths, exclude_zero=False):
     test_preds = results.view(-1).cpu().detach().numpy()
     test_truth = truths.view(-1).cpu().detach().numpy()
@@ -51,7 +60,6 @@ def eval_mosei_senti(results, truths, exclude_zero=False):
     binary_preds_has0 = test_preds >= 0
     acc_2 = accuracy_score(binary_truth_has0, binary_preds_has0)
     f_score = f1_score(binary_truth_has0, binary_preds_has0, average='weighted')
-    
 
     print("MAE: ", mae)
     print("Correlation Coefficient: ", corr)
@@ -59,6 +67,7 @@ def eval_mosei_senti(results, truths, exclude_zero=False):
     print("mult_acc_5: ", mult_a5)
     print("F1 score all/non0: {}/{} over {}/{}".format(np.round(f_score,4), np.round(f_score_non0,4), binary_truth_has0.shape[0], binary_truth_non0.shape[0]))
     print("Accuracy all/non0: {}/{}".format(np.round(acc_2,4), np.round(acc_2_non0,4)))
+    print("Extreme Intensity MAE: ", extreme_mae(test_preds, test_truth))
 
     print("-" * 50)
     return {'mae':mae, 'corr':corr, 'mult':mult_a7, 'f1':f_score, 'acc2':acc_2}

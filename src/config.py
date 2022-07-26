@@ -60,11 +60,11 @@ def get_args():
     )
 
     # Dropouts
-    parser.add_argument('--dropout_a', type=float, default=0.15,
+    parser.add_argument('--dropout_a', type=float, default=0.1,
                         help='dropout of acoustic LSTM out layer')
-    parser.add_argument('--dropout_v', type=float, default=0.15,
+    parser.add_argument('--dropout_v', type=float, default=0.1,
                         help='dropout of visual LSTM out layer')
-    parser.add_argument('--dropout_prj', type=float, default=0.15,
+    parser.add_argument('--dropout_prj', type=float, default=0.1,
                         help='dropout of projection layer')
 
     # Architecture
@@ -81,7 +81,7 @@ def get_args():
                         help='hidden size in visual rnn')
     parser.add_argument('--d_ah', type=int, default=32,
                         help='hidden size in acoustic rnn')
-    parser.add_argument('--d_tout', type=int, default=32,
+    parser.add_argument('--d_tout', type=int, default=128,
                         help='output size in text rnn')
     parser.add_argument('--d_vout', type=int, default=32,
                         help='output size in visual rnn')
@@ -95,53 +95,24 @@ def get_args():
     parser.add_argument('--d_tfn', type=int, default=32,
                         help='dimension of post tensor fusion network')
 
-    # MAG
-    parser.add_argument('--max_seq_length', type=int, default=50)
-    parser.add_argument('--beta_shift', type=float, default=1.0)
-    parser.add_argument('--dropout_prob', type=float, default=0.5)
-    parser.add_argument(
-    "--model",
-    type=str,
-    choices=["bert-base-uncased", "xlnet-base-cased"],
-    default="bert-base-uncased",
-    )
-
-    # Activations
-    parser.add_argument('--mmilb_mid_activation', type=str, default='ReLU',
-                        help='Activation layer type in the middle of all MMILB modules')
-    parser.add_argument('--mmilb_last_activation', type=str, default='Tanh',
-                        help='Activation layer type at the end of all MMILB modules')
-    parser.add_argument('--cpc_activation', type=str, default='Tanh',
-                        help='Activation layer type in all CPC modules')
-
     # Training Setting
     parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                         help='batch size (default: 32)')
     parser.add_argument('--clip', type=float, default=1.0,
                         help='gradient clip value (default: 0.8)')
-    parser.add_argument('--lr_main', type=float, default=1e-3,
+    parser.add_argument('--learning_rate', type=float, default=3e-4,
                         help='initial learning rate for main model parameters (default: 1e-3)')
-    parser.add_argument('--lr_bert', type=float, default=5e-5,
-                        help='initial learning rate for bert parameters (default: 5e-5)')
-    parser.add_argument('--lr_mmilb', type=float, default=1e-3,
-                        help='initial learning rate for mmilb parameters (default: 1e-3)')
-    parser.add_argument('--alpha', type=float, default=0.1, help='weight for CPC NCE estimation item (default: 0.1)')
-    parser.add_argument('--beta', type=float, default=0.1, help='weight for lld item (default: 0.1)')
 
-    parser.add_argument('--weight_decay_main', type=float, default=1e-4,
-                        help='L2 penalty factor of the main Adam optimizer')
-    parser.add_argument('--weight_decay_bert', type=float, default=1e-4,
-                        help='L2 penalty factor of the main Adam optimizer')
-    parser.add_argument('--weight_decay_club', type=float, default=1e-4,
+    parser.add_argument('--weight_decay', type=float, default=1e-4,
                         help='L2 penalty factor of the main Adam optimizer')
         
     parser.add_argument('--optim', type=str, default='Adam',
                         help='optimizer to use (default: Adam)')
-    parser.add_argument('--num_epochs', type=int, default=40,
+    parser.add_argument('--num_epochs', type=int, default=50,
                         help='number of epochs (default: 40)')
     parser.add_argument('--when', type=int, default=20,
                         help='when to decay learning rate (default: 20)')
-    parser.add_argument('--patience', type=int, default=10,
+    parser.add_argument('--patience', type=int, default=30,
                         help='when to stop training if best never change')
     parser.add_argument('--update_batch', type=int, default=1,
                         help='update batch interval')

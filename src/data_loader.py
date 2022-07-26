@@ -11,8 +11,9 @@ from create_dataset import MOSI, MOSEI, PAD, UNK
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 
 class MSADataset(Dataset):
-    def __init__(self, config):
+    def __init__(self, config, hp):
         self.config = config
+        self.hp = hp
 
         ## Fetch dataset
         if "mosi" in str(config.data_dir).lower():
@@ -31,7 +32,10 @@ class MSADataset(Dataset):
 
     @property
     def tva_dim(self):
-        t_dim = 768
+        if self.hp.model_name == 'Glove':
+            t_dim = 300
+        else:
+            t_dim = 768
         return t_dim, self.data[0][0][1].shape[1], self.data[0][0][2].shape[1]
     
     def __getitem__(self, index):
@@ -44,7 +48,7 @@ class MSADataset(Dataset):
 def get_loader(hp, config, shuffle=True):
     """Load DataLoader of given DialogDataset"""
 
-    dataset = MSADataset(config)
+    dataset = MSADataset(config, hp)
     
     print(config.mode)
     config.data_len = len(dataset)
@@ -111,15 +115,21 @@ def get_loader(hp, config, shuffle=True):
         sentences = pad_sequence([torch.LongTensor(sample[0][0]) for sample in batch],padding_value=PAD)
         visual = pad_sequence([torch.FloatTensor(sample[0][1]) for sample in batch], target_len=vlens.max().item())
         acoustic = pad_sequence([torch.FloatTensor(sample[0][2]) for sample in batch],target_len=alens.max().item())
-        # visual = pad_sequence([torch.FloatTensor(sample[0][1]) for sample in batch])
-        # acoustic = pad_sequence([torch.FloatTensor(sample[0][2]) for sample in batch])
+
+        ## Glove-based features input prep
+        glove_sentences = []
+        for sample in batch:
+            sent = []
+            for word in sample[0][3]:
+                sent.append(np.array(dataset.pretrained_emb[dataset.word2id[word]]))
+            glove_sentences.append(torch.as_tensor(sent))
+        glove_sentences = pad_sequence(glove_sentences, target_len=50, batch_first=True, padding_value=PAD)
 
         ## BERT-based features input prep
 
         # SENT_LEN = min(sentences.size(0),50)
         SENT_LEN = 50
         # Create bert indices using tokenizer
-
         bert_details = []
         for sample in batch:
             text = " ".join(sample[0][3])
@@ -137,7 +147,7 @@ def get_loader(hp, config, shuffle=True):
         if (vlens <= 0).sum() > 0:
             vlens[np.where(vlens == 0)] = 1
 
-        return sentences, visual, vlens, acoustic, alens, labels, lengths, bert_sentences, bert_sentence_types, bert_sentence_att_mask, ids
+        return sentences, visual, vlens, acoustic, alens, labels, lengths, glove_sentences, bert_sentences, bert_sentence_types, bert_sentence_att_mask, ids
 
     data_loader = DataLoader(
         dataset=dataset,

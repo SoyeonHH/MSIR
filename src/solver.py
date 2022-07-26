@@ -52,55 +52,25 @@ class Solver(object):
         self.text_emb, self.text_enc, self.audio_enc, self.video_enc = \
             self.text_emb.to(self.device), self.text_enc.to(self.device), self.audio_enc.to(self.device), self.video_enc.to(self.device)
 
-        # Training hyperarams
-        self.alpha = hp.alpha
-        self.beta = hp.beta
-
         self.update_batch = hp.update_batch
 
         # initialize the model
         if model_name == 'TFN':
             self.model = model = TFN(hp)
-        elif model_name == 'MIM':
-            self.model = model = MMIM(hp)
-        elif model_name == 'MAG':
-            multimodal_config = MultimodalConfig(
-            beta_shift=hp.beta_shift, dropout_prob=hp.dropout_prob
-            )  
-            self.model = model = MAG_BertForSequenceClassification.from_pretrained(
-                'bert-base-uncased', multimodal_config=multimodal_config, num_labels=1
-            )
-        else:
-            print("The Configuration no exist.")
+        elif model_name == 'Glove':
+            self.model = model = Text(hp)
+        elif model_name == 'Facet':
+            self.model = model = Visual(hp)
+        elif model_name == 'COVAREP':
+            self.model = model = Acoustic(hp)
 
         self.model = model = self.model.to(self.device)
 
         # criterion - mosi and mosei are regression datasets
-        self.criterion = criterion = nn.L1Loss(reduction="mean")
+        self.criterion = nn.L1Loss(reduction="mean")
 
         # optimizer
-        self.optimizer={}
-
-        if self.is_train:
-            main_param = []
-            bert_param = []
-
-            for name, p in model.named_parameters():
-                if p.requires_grad:
-                    if 'bert' in name:
-                        bert_param.append(p)
-                    else:
-                        main_param.append(p)
-                
-        optimizer_group = [
-            {'params': bert_param, 'weight_decay': hp.weight_decay_bert, 'lr': hp.lr_bert},
-            {'params': main_param, 'weight_decay': hp.weight_decay_main, 'lr': hp.lr_main}
-        ]
-
-        self.optimizer = getattr(torch.optim, self.hp.optim)(
-            optimizer_group
-        )
-
+        self.optimizer = optim.Adam(model.parameters(), lr=hp.learning_rate, weight_decay=hp.weight_decay)
         self.scheduler = ReduceLROnPlateau(self.optimizer, mode='min', patience=hp.when, factor=0.5, verbose=True)
 
 
@@ -117,6 +87,7 @@ class Solver(object):
             epoch_loss = 0
 
             model.train()
+            model.zero_grad()
             num_batches = self.hp.n_train // self.hp.batch_size
             proc_loss, proc_size = 0, 0
             start_time = time.time()
@@ -125,13 +96,13 @@ class Solver(object):
 
             for i_batch, batch_data in enumerate(tqdm(self.train_loader)):
                 
-                text, visual, vlens, audio, alens, y, l, bert_sent, bert_sent_type, \
+                text, visual, vlens, audio, alens, y, l, glove_sent, bert_sent, bert_sent_type, \
                     bert_sent_mask, ids = batch_data
 
                 device = self.device
-                text, visual, audio, y, l, bert_sent, bert_sent_type, bert_sent_mask = \
-                    text.to(device), visual.to(device), audio.to(device), y.to(device), l.to(device), bert_sent.to(device), \
-                        bert_sent_type.to(device), bert_sent_mask.to(device)
+                text, visual, audio, y, l, glove_sent, bert_sent, bert_sent_type, bert_sent_mask = \
+                    text.to(device), visual.to(device), audio.to(device), y.to(device), l.to(device), \
+                        glove_sent.to(device), bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
 
                 batch_size = y.size(0)
 
@@ -143,7 +114,10 @@ class Solver(object):
                 visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
                 audio = audio[0,:,:]
                 visual = visual[0,:,:]
-                text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
+                if self.hp.model_name == 'Glove':
+                    text_emb = glove_sent
+                else:
+                    text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
 
                 '''_h = tensor of shape (batch_size, hidden_size)'''
                 text_h = self.text_enc(text_emb)
@@ -185,13 +159,13 @@ class Solver(object):
 
             with torch.no_grad():
                 for batch in loader:
-                    text, visual, vlens, audio, alens, y, lengths, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
+                    text, visual, vlens, audio, alens, y, lengths, glove_sent, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
                     # with torch.cuda.device(0):
                     device = torch.device('cuda')
-                    text, audio, visual, y = text.to(device), audio.to(device), visual.to(device), y.to(device)
-                    lengths = lengths.to(device)
-                    bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
+                    text, visual, audio, y, l, glove_sent, bert_sent, bert_sent_type, bert_sent_mask = \
+                        text.to(device), visual.to(device), audio.to(device), y.to(device), lengths.to(device), \
+                            glove_sent.to(device), bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
                     
                     batch_size = lengths.size(0) # bert_sent in size (bs, seq_len, emb_size)
                     audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
@@ -199,13 +173,16 @@ class Solver(object):
                     audio = audio[0,:,:]
                     visual = visual[0,:,:]
 
-                    text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
+                    if self.hp.model_name == 'Glove':
+                        text_emb = glove_sent
+                    else:
+                        text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
                     text_h = self.text_enc(text_emb)
                     audio_h = self.audio_enc(audio)
                     video_h = self.video_enc(visual)
-
+                    
                     preds, H = model(audio_h, video_h, text_h)
-                    self.H.extend(H)
+                    # self.H.extend(H)
                     
                     if self.hp.dataset in ['mosi', 'mosei', 'mosei_senti'] and test:
                         criterion = nn.L1Loss()
@@ -276,5 +253,5 @@ class Solver(object):
 
         # save_hidden(self.H, self.modality)
         # save_hidden(self.H_out, self.modality + '_out')
-        save_hidden(self.H, self.model_name, self.hp.dataset)
+        # save_hidden(self.H, self.model_name, self.hp.dataset)
         sys.stdout.flush()
