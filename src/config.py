@@ -100,7 +100,7 @@ def get_args():
                         help='batch size (default: 32)')
     parser.add_argument('--clip', type=float, default=1.0,
                         help='gradient clip value (default: 0.8)')
-    parser.add_argument('--learning_rate', type=float, default=3e-4,
+    parser.add_argument('--learning_rate', type=float, default=1e-3,
                         help='initial learning rate for main model parameters (default: 1e-3)')
 
     parser.add_argument('--weight_decay', type=float, default=1e-4,
