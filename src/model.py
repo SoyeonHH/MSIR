@@ -90,7 +90,6 @@ class Text(nn.Module):
     def __init__(self, hp):
         super().__init__()
         self.hp = hp
-
         # define encoder
         self.text_subnet = TextSubNet(hp.d_tin, hp.d_th, hp.d_tout, dropout=hp.dropout_prj)
         
