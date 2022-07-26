@@ -21,7 +21,7 @@ def save_model(model, name='', dataset=''):
 
 def load_model(name='', dataset=''):
     # name = save_load_name(args, name)
-    with open(f'pre_trained_models/{name}_{dataset}.pt', 'rb') as f:
+    with open(f'pre_trained_models/best_model_{name}_{dataset}.pt', 'rb') as f:
         buffer = io.BytesIO(f.read())
     model = torch.load(buffer)
     return model

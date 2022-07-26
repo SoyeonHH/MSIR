@@ -54,7 +54,7 @@ if __name__ == '__main__':
     # Fusion Network
     solver = Solver(args, train_loader=train_loader, dev_loader=valid_loader,
                     test_loader=test_loader, is_train=True)
-    # solver.train_and_eval()
+    solver.train_and_eval()
     
     tester = TestMOSI(args, solver)
     tester.start()
