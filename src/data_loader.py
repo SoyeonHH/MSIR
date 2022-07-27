@@ -32,10 +32,7 @@ class MSADataset(Dataset):
 
     @property
     def tva_dim(self):
-        if self.hp.model_name == 'Glove':
-            t_dim = 300
-        else:
-            t_dim = 768
+        t_dim = 300
         return t_dim, self.data[0][0][1].shape[1], self.data[0][0][2].shape[1]
     
     def __getitem__(self, index):
@@ -113,8 +110,8 @@ def get_loader(hp, config, shuffle=True):
             return out_tensor
 
         sentences = pad_sequence([torch.LongTensor(sample[0][0]) for sample in batch],padding_value=PAD)
-        visual = pad_sequence([torch.FloatTensor(sample[0][1]) for sample in batch], target_len=vlens.max().item())
-        acoustic = pad_sequence([torch.FloatTensor(sample[0][2]) for sample in batch],target_len=alens.max().item())
+        visual = pad_sequence([torch.FloatTensor(sample[0][1]) for sample in batch], target_len=vlens.max().item(), batch_first=True)
+        acoustic = pad_sequence([torch.FloatTensor(sample[0][2]) for sample in batch],target_len=alens.max().item(), batch_first=True)
 
         ## Glove-based features input prep
         glove_sentences = []
@@ -122,7 +119,7 @@ def get_loader(hp, config, shuffle=True):
             sent = []
             for word in sample[0][3]:
                 sent.append(np.array(dataset.pretrained_emb[dataset.word2id[word]]))
-            glove_sentences.append(torch.as_tensor(sent))
+            glove_sentences.append(torch.as_tensor(np.array(sent)))
         glove_sentences = pad_sequence(glove_sentences, target_len=50, batch_first=True, padding_value=PAD)
 
         ## BERT-based features input prep

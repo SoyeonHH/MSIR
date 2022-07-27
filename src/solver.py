@@ -39,18 +39,19 @@ class Solver(object):
         self.H = []
 
         if torch.cuda.is_available():
-            self.device = torch.device("cuda")
+            self.device = torch.device("cuda:1")
         else:
             self.device = torch.device("cpu")
 
-        # Pre-encoding per unimodal for frozen model architecture
-        self.text_emb = LanguageEmbeddingLayer(hp)
-        self.text_enc = TextSubNet(hp.d_tin, hp.d_th, hp.d_tout, dropout=0.15)
-        self.audio_enc = SubNet(hp.d_ain, hp.d_ah, hp.dropout_a)
-        self.video_enc = SubNet(hp.d_vin, hp.d_vh, hp.dropout_v)
+        # # Pre-encoding per unimodal for frozen model architecture
+        # self.text_emb = LanguageEmbeddingLayer(hp)
+        # self.text_enc = TextSubNet(hp.d_tin, hp.d_th, hp.d_tout, dropout=0.15)
+        # self.audio_enc = SubNet(hp.d_ain, hp.d_ah, hp.dropout_a)
+        # self.video_enc = SubNet(hp.d_vin, hp.d_vh, hp.dropout_v)
 
-        self.text_emb, self.text_enc, self.audio_enc, self.video_enc = \
-            self.text_emb.to(self.device), self.text_enc.to(self.device), self.audio_enc.to(self.device), self.video_enc.to(self.device)
+
+        # self.text_emb, self.text_enc, self.audio_enc, self.video_enc = \
+        #     self.text_emb.to(self.device), self.text_enc.to(self.device), self.audio_enc.to(self.device), self.video_enc.to(self.device)
 
         self.update_batch = hp.update_batch
 
@@ -99,32 +100,22 @@ class Solver(object):
                 text, visual, vlens, audio, alens, y, l, glove_sent, bert_sent, bert_sent_type, \
                     bert_sent_mask, ids = batch_data
 
-                device = self.device
-                text, visual, audio, y, l, glove_sent, bert_sent, bert_sent_type, bert_sent_mask = \
-                    text.to(device), visual.to(device), audio.to(device), y.to(device), l.to(device), \
-                        glove_sent.to(device), bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
+                text, visual, audio, y, glove_sent = \
+                    text.to(self.device), visual.to(self.device), audio.to(self.device), y.to(self.device), glove_sent.to(self.device)
+
+                device = torch.device('cpu')
+                vlens, alens, l = vlens.to(device), alens.to(device), l.to(device)
 
                 batch_size = y.size(0)
-
-                '''
-                audio: tensor of shape (batch_size, audio_in)
-                visual: tensor of shape (batch_size, video_in)
-                text_emb: tensor of shape (batch_size, sequence_len, text_in)'''
-                audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
-                visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
-                audio = audio[0,:,:]
-                visual = visual[0,:,:]
-                if self.hp.model_name == 'Glove':
-                    text_emb = glove_sent
-                else:
-                    text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
-
-                '''_h = tensor of shape (batch_size, hidden_size)'''
-                text_h = self.text_enc(text_emb)
-                audio_h = self.audio_enc(audio)
-                video_h = self.video_enc(visual)
                 
-                preds, H = model(audio_h, video_h, text_h)
+                if self.hp.model_name == 'TFN':
+                    preds, H = model(audio, visual, glove_sent, alens, vlens, l)
+                elif self.hp.model_name == 'Glove':
+                    preds, H = model(glove_sent, l)
+                elif self.hp.model_name == 'Facet':
+                    preds, H = model(visual, vlens)
+                elif self.hp.model_name == 'COVAREP':
+                    preds, H = model(audio, alens)
                 
                 loss = criterion(preds, y)
                 loss.backward()
@@ -161,27 +152,22 @@ class Solver(object):
                 for batch in loader:
                     text, visual, vlens, audio, alens, y, lengths, glove_sent, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
-                    # with torch.cuda.device(0):
-                    device = torch.device('cuda')
-                    text, visual, audio, y, l, glove_sent, bert_sent, bert_sent_type, bert_sent_mask = \
-                        text.to(device), visual.to(device), audio.to(device), y.to(device), lengths.to(device), \
-                            glove_sent.to(device), bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
+                    text, visual, audio, y, glove_sent = \
+                        text.to(self.device), visual.to(self.device), audio.to(self.device), y.to(self.device), glove_sent.to(self.device)
+
+                    device = torch.device('cpu')
+                    vlens, alens, l = vlens.to(device), alens.to(device), lengths.to(device)
                     
                     batch_size = lengths.size(0) # bert_sent in size (bs, seq_len, emb_size)
-                    audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
-                    visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
-                    audio = audio[0,:,:]
-                    visual = visual[0,:,:]
-
-                    if self.hp.model_name == 'Glove':
-                        text_emb = glove_sent
-                    else:
-                        text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
-                    text_h = self.text_enc(text_emb)
-                    audio_h = self.audio_enc(audio)
-                    video_h = self.video_enc(visual)
                     
-                    preds, H = model(audio_h, video_h, text_h)
+                    if self.hp.model_name == 'TFN':
+                        preds, H = model(audio, visual, glove_sent, alens, vlens, l)
+                    elif self.hp.model_name == 'Glove':
+                        preds, H = model(glove_sent, l)
+                    elif self.hp.model_name == 'Facet':
+                        preds, H = model(visual, vlens)
+                    elif self.hp.model_name == 'COVAREP':
+                        preds, H = model(audio, alens)
                     # self.H.extend(H)
                     
                     if self.hp.dataset in ['mosi', 'mosei', 'mosei_senti'] and test:
