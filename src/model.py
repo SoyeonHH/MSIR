@@ -35,9 +35,30 @@ class TFN(nn.Module):
         self.post_fusion_prob = hp.dropout_prj
 
         # define the pre-fusion subnetworks
-        self.audio_subnet = SubNet(hp.d_ain, hp.d_ah, hp.dropout_a)
-        self.video_subnet = SubNet(hp.d_vin, hp.d_vh, hp.dropout_v)
-        self.text_subnet = TextSubNet(hp.d_tin, hp.d_th, hp.d_tout, dropout=hp.dropout_prj)
+        self.visual_enc = RNNEncoder(
+            in_size = hp.d_vin,
+            hidden_size = hp.d_vh,
+            out_size = hp.d_vout,
+            num_layers = hp.n_layer,
+            dropout = hp.dropout_v if hp.n_layer > 1 else 0.0,
+            bidirectional = hp.bidirectional
+        )
+        self.acoustic_enc = RNNEncoder(
+            in_size = hp.d_ain,
+            hidden_size = hp.d_ah,
+            out_size = hp.d_aout,
+            num_layers = hp.n_layer,
+            dropout = hp.dropout_a if hp.n_layer > 1 else 0.0,
+            bidirectional = hp.bidirectional
+        )
+        self.text_enc = RNNEncoder(
+            in_size = hp.d_tin,
+            hidden_size = hp.d_th,
+            out_size = hp.d_tout,
+            num_layers = hp.n_layer,
+            dropout = hp.dropout_prj if hp.n_layer > 1 else 0.0,
+            bidirectional = hp.bidirectional
+        )
 
         # define the post_fusion layers
         self.post_fusion_dropout = nn.Dropout(p=self.post_fusion_prob)
@@ -50,27 +71,28 @@ class TFN(nn.Module):
         self.output_range = Parameter(torch.FloatTensor([6]), requires_grad=False)
         self.output_shift = Parameter(torch.FloatTensor([-3]), requires_grad=False)
     
-    def forward(self, audio_x, video_x, text_x):
+    def forward(self, audio_x, video_x, text_x, a_len, v_len, t_len):
         '''
         Args:
             audio_x: tensor of shape (batch_size, audio_in)
             video_x: tensor of shape (batch_size, video_in)
             text_x: tensor of shape (batch_size, sequence_len, text_in)
         '''
-        audio_h = self.audio_subnet(audio_x)
-        video_h = self.video_subnet(video_x)
-        text_h = self.text_subnet(text_x)
+        audio_h = self.acoustic_enc(audio_x, a_len)
+        video_h = self.visual_enc(video_x, v_len)
+        text_h = self.text_enc(text_x, t_len)
         batch_size = audio_h.data.shape[0]
 
         # next we perform "tensor fusion", which is essentially appending 1s to the tensors and take Kronecker product
         if audio_h.is_cuda:
             DTYPE = torch.cuda.FloatTensor
+            device = torch.device('cuda:1')
         else:
             DTYPE = torch.FloatTensor
 
-        _audio_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), audio_h), dim=1)
-        _video_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), video_h), dim=1)
-        _text_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), text_h), dim=1)
+        _audio_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE).to(device), requires_grad=False), audio_h), dim=1)
+        _video_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE).to(device), requires_grad=False), video_h), dim=1)
+        _text_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE).to(device), requires_grad=False), text_h), dim=1)
 
         fusion_tensor = torch.bmm(_audio_h.unsqueeze(2), _video_h.unsqueeze(1))
         fusion_tensor = fusion_tensor.view(-1, (self.audio_hidden + 1) * (self.video_hidden + 1), 1)
@@ -91,7 +113,14 @@ class Text(nn.Module):
         super().__init__()
         self.hp = hp
         # define encoder
-        self.text_subnet = TextSubNet(hp.d_tin, hp.d_th, hp.d_tout, dropout=hp.dropout_prj)
+        self.text_enc = RNNEncoder(
+            in_size = hp.d_tin,
+            hidden_size = hp.d_th,
+            out_size = hp.d_tout,
+            num_layers = hp.n_layer,
+            dropout = hp.dropout_prj if hp.n_layer > 1 else 0.0,
+            bidirectional = hp.bidirectional
+        )
         
         # define MLP layers
         self.mlp_dropout = nn.Dropout(p=hp.dropout_prj)
@@ -104,17 +133,18 @@ class Text(nn.Module):
         self.output_range = Parameter(torch.FloatTensor([6]), requires_grad=False)
         self.output_shift = Parameter(torch.FloatTensor([-3]), requires_grad=False)
     
-    def forward(self,text):
+    def forward(self, text, t_len):
         ''' text: tensor of shape (batch_size, sequence_len, text_in) '''
-        text_h = self.text_subnet(text)
+        text_h = self.text_enc(text, t_len)
         batch_size = text_h.data.shape[0]
 
-        if text.is_cuda:
+        if text_h.is_cuda:
             DTYPE = torch.cuda.FloatTensor
         else:
             DTYPE = torch.FloatTensor
         
-        _text_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), text_h), dim=1)
+        device = torch.device('cuda:1')
+        _text_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE).to(device), requires_grad=False), text_h), dim=1)
         tensor = _text_h.unsqueeze(1).view(batch_size, -1)
 
         mlp_dropped = self.mlp_dropout(tensor)
@@ -133,22 +163,29 @@ class Visual(nn.Module):
         self.hp = hp
 
         # define encoder
-        self.video_subnet = SubNet(hp.d_vin, hp.d_vh, hp.dropout_v)
+        self.visual_enc = RNNEncoder(
+            in_size = hp.d_vin,
+            hidden_size = hp.d_vh,
+            out_size = hp.d_vout,
+            num_layers = hp.n_layer,
+            dropout = hp.dropout_v if hp.n_layer > 1 else 0.0,
+            bidirectional = hp.bidirectional
+        )
 
         # define MLP layers
         self.mlp_dropout = nn.Dropout(p=hp.dropout_v)
         self.mlp_layer_1 = nn.Linear(hp.d_vout + 1, 32)
-        self.mlp_layer_2 = nn.Linear(32, 16)
-        self.mlp_layer_3 = nn.Linear(16, 1)
+        self.mlp_layer_2 = nn.Linear(32, 32)
+        self.mlp_layer_3 = nn.Linear(32, 1)
 
         # in TFN we are doing a regression with constrained output range: (-3, 3), hence we'll apply sigmoid to output
         # shrink it to (0, 1), and scale\shift it back to range (-3, 3)
         self.output_range = Parameter(torch.FloatTensor([6]), requires_grad=False)
         self.output_shift = Parameter(torch.FloatTensor([-3]), requires_grad=False)
     
-    def forward(self, visual):
+    def forward(self, visual, v_len):
         ''' visual: tensor of shape (batch_size, visual_in) '''
-        video_h = self.video_subnet(visual)
+        video_h = self.visual_enc(visual, v_len)
         batch_size = video_h.data.shape[0]
 
         if video_h.is_cuda:
@@ -156,7 +193,8 @@ class Visual(nn.Module):
         else:
             DTYPE = torch.FloatTensor
         
-        _visual_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), video_h), dim=1)
+        device = torch.device('cuda:1')
+        _visual_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE).to(device), requires_grad=False), video_h), dim=1)
         tensor = _visual_h.unsqueeze(1).view(batch_size, -1)
 
         mlp_dropped = self.mlp_dropout(tensor)
@@ -175,7 +213,14 @@ class Acoustic(nn.Module):
         self.hp = hp
 
         # define encoder
-        self.audio_subnet = SubNet(hp.d_ain, hp.d_ah, hp.dropout_a)
+        self.acoustic_enc = RNNEncoder(
+            in_size = hp.d_ain,
+            hidden_size = hp.d_ah,
+            out_size = hp.d_aout,
+            num_layers = hp.n_layer,
+            dropout = hp.dropout_a if hp.n_layer > 1 else 0.0,
+            bidirectional = hp.bidirectional
+        )
 
         # define MLP layers
         self.mlp_dropout = nn.Dropout(p=hp.dropout_a)
@@ -188,9 +233,9 @@ class Acoustic(nn.Module):
         self.output_range = Parameter(torch.FloatTensor([6]), requires_grad=False)
         self.output_shift = Parameter(torch.FloatTensor([-3]), requires_grad=False)
     
-    def forward(self, audio):
+    def forward(self, audio, a_len):
         ''' visual: tensor of shape (batch_size, visual_in) '''
-        audio_h = self.audio_subnet(audio)
+        audio_h = self.acoustic_enc(audio, a_len)
         batch_size = audio_h.data.shape[0]
 
         if audio_h.is_cuda:
@@ -198,7 +243,8 @@ class Acoustic(nn.Module):
         else:
             DTYPE = torch.FloatTensor
         
-        _audio_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE), requires_grad=False), audio_h), dim=1)
+        device = torch.device('cuda:1')
+        _audio_h = torch.cat((Variable(torch.ones(batch_size, 1).type(DTYPE).to(device), requires_grad=False), audio_h), dim=1)
         tensor = _audio_h.unsqueeze(1).view(batch_size, -1)
 
         mlp_dropped = self.mlp_dropout(tensor)
