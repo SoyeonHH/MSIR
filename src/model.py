@@ -112,7 +112,6 @@ class Text(nn.Module):
     def __init__(self, hp):
         super().__init__()
         self.hp = hp
-
         # define encoder
         self.text_enc = RNNEncoder(
             in_size = hp.d_tin,

@@ -49,6 +49,7 @@ class Solver(object):
         # self.audio_enc = SubNet(hp.d_ain, hp.d_ah, hp.dropout_a)
         # self.video_enc = SubNet(hp.d_vin, hp.d_vh, hp.dropout_v)
 
+
         # self.text_emb, self.text_enc, self.audio_enc, self.video_enc = \
         #     self.text_emb.to(self.device), self.text_enc.to(self.device), self.audio_enc.to(self.device), self.video_enc.to(self.device)
 
