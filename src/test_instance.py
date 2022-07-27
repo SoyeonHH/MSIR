@@ -74,6 +74,7 @@ class TestMOSI(object):
 
         test_config = get_config(dataset, mode='test',  batch_size=hp.batch_size)
         self.test_loader = get_loader(hp, test_config, shuffle=False)
+        self.device = torch.device('cuda:1')
         self.model = solver.model
         self.H = []
 
@@ -99,23 +100,20 @@ class TestMOSI(object):
                 labels.extend(y)
                 
                 # Predictions
-                device = torch.device('cuda')
-                text, visual, audio, y, l, glove_sent = \
-                    text.to(device), visual.to(device), audio.to(device), y.to(device), lengths.to(device), glove_sent.to(device)
+                text, visual, audio, y, glove_sent = \
+                    text.to(self.device), visual.to(self.device), audio.to(self.device), y.to(self.device), glove_sent.to(self.device)
 
-                audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
-                visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
-                audio = audio[0,:,:]
-                visual = visual[0,:,:]
+                device = torch.device('cpu')
+                vlens, alens, l = vlens.to(device), alens.to(device), lengths.to(device)
 
                 if self.hp.model_name == 'TFN':
-                    logits, H = model(audio, visual, glove_sent)
+                    logits, H = model(audio, visual, glove_sent, alens, vlens, l)
                 elif self.hp.model_name == 'Glove':
-                    logits, H = model(glove_sent)
+                    logits, H = model(glove_sent, l)
                 elif self.hp.model_name == 'Facet':
-                    logits, H = model(visual)
+                    logits, H = model(visual, vlens)
                 elif self.hp.model_name == 'COVAREP':
-                    logits, H = model(audio)
+                    logits, H = model(audio, alens)
                 self.H.extend(H)
                 # logits_text, H_text = model(text_h, text_h, text_h)
                 # logits_video, H_video = model(video_h, video_h, video_h)

@@ -60,11 +60,11 @@ def get_args():
     )
 
     # Dropouts
-    parser.add_argument('--dropout_a', type=float, default=0.1,
+    parser.add_argument('--dropout_a', type=float, default=0.15,
                         help='dropout of acoustic LSTM out layer')
-    parser.add_argument('--dropout_v', type=float, default=0.1,
+    parser.add_argument('--dropout_v', type=float, default=0.15,
                         help='dropout of visual LSTM out layer')
-    parser.add_argument('--dropout_prj', type=float, default=0.1,
+    parser.add_argument('--dropout_prj', type=float, default=0.15,
                         help='dropout of projection layer')
 
     # Architecture
@@ -73,8 +73,6 @@ def get_args():
     parser.add_argument('--add_va', action='store_true', help='if add va MMILB module')
     parser.add_argument('--n_layer', type=int, default=1,
                         help='number of layers in LSTM encoders (default: 1)')
-    parser.add_argument('--cpc_layers', type=int, default=1,
-                        help='number of layers in CPC NCE estimator (default: 1)')
     parser.add_argument('--d_th', type=int, default=128,
                         help='hidden size in text rnn')
     parser.add_argument('--d_vh', type=int, default=32,
@@ -98,7 +96,7 @@ def get_args():
     # Training Setting
     parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                         help='batch size (default: 32)')
-    parser.add_argument('--clip', type=float, default=1.0,
+    parser.add_argument('--clip', type=float, default=0.8,
                         help='gradient clip value (default: 0.8)')
     parser.add_argument('--learning_rate', type=float, default=1e-3,
                         help='initial learning rate for main model parameters (default: 1e-3)')
@@ -108,11 +106,11 @@ def get_args():
         
     parser.add_argument('--optim', type=str, default='Adam',
                         help='optimizer to use (default: Adam)')
-    parser.add_argument('--num_epochs', type=int, default=50,
+    parser.add_argument('--num_epochs', type=int, default=40,
                         help='number of epochs (default: 40)')
     parser.add_argument('--when', type=int, default=20,
                         help='when to decay learning rate (default: 20)')
-    parser.add_argument('--patience', type=int, default=30,
+    parser.add_argument('--patience', type=int, default=20,
                         help='when to stop training if best never change')
     parser.add_argument('--update_batch', type=int, default=1,
                         help='update batch interval')
