@@ -15,6 +15,8 @@ from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import accuracy_score, f1_score
 
 import wandb
+import time
+import datetime
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset
@@ -31,7 +33,10 @@ from bert import MAG_BertForSequenceClassification
 from xlnet import MAG_XLNetForSequenceClassification
 
 from argparse_utils import str2bool, seed
-from global_configs import ACOUSTIC_DIM, VISUAL_DIM, DEVICE
+from global_configs import ACOUSTIC_DIM, VISUAL_DIM, DEVICE, DATA_DICT
+from utils.eval_metrics import *
+from utils.tools import *
+from test_instance import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", type=str,
@@ -56,24 +61,6 @@ parser.add_argument("--seed", type=seed, default="random")
 
 
 args = parser.parse_args()
-
-# import easydict
-
-# args = easydict.EasyDict({
-#     "dataset": "mosi",
-#     "max_seq_length": 50,
-#     "train_batch_size": 48,
-#     "dev_batch_size" : 128,
-#     "test_batch_size": 128,
-#     "n_epochs": 40,
-#     "beta_shift": 1.0,
-#     "dropout_prob": 0.5,
-#     "model": "bert-base-uncased",
-#     "learning_rate": 1e-5,
-#     "gradient_accumulation_step": 1,
-#     "warmup_proportion": 0.1,
-#     "seed": "random"
-# })
 
 def return_unk():
     return 0
@@ -265,7 +252,7 @@ def get_appropriate_dataset(data):
 
 
 def set_up_data_loader():
-    with open(f"../datasets/{args.dataset.upper()}/{args.dataset}.pkl", "rb") as handle:
+    with open(f"{DATA_DICT}/{args.dataset}.pkl", "rb") as handle:
         data = pickle.load(handle)
 
     train_data = data["train"]
@@ -449,7 +436,7 @@ def eval_epoch(model: nn.Module, dev_dataloader: DataLoader, optimizer):
             dev_loss += loss.item()
             nb_dev_steps += 1
 
-    return dev_loss / nb_dev_steps
+    return dev_loss / nb_dev_steps, logits, label_ids
 
 
 def test_epoch(model: nn.Module, test_dataloader: DataLoader, tokenizer):
@@ -523,132 +510,6 @@ def test_score_model(model: nn.Module, test_dataloader: DataLoader, tokenizer, u
     return acc, mae, corr, f_score
 
 
-def test_instance(model: nn.Module, test_tokenizer):
-    model.eval()
-    segment_list = []
-    words_list = []
-    preds = []
-    preds_2 = []
-    preds_7 = []
-    labels = []
-    labels_2 = []
-    labels_7 = []
-
-    with open(f"../data/MOSI/{args.dataset}.pkl", "rb") as handle:
-        data = pickle.load(handle)
-
-    # test_data[idx] = (words, visual, acoustic), label, segment
-    test_data = data["test"]
-    test_dataset, test_tokenizer = get_appropriate_dataset(test_data)
-    test_dataloader = DataLoader(
-        test_dataset, batch_size=args.test_batch_size, shuffle=False,
-    )
-
-    video = set()
-    count = 0
-    for idx in range(len(test_data)):
-        (words, visual, acoustic), label, segment = test_data[idx]
-        if args.dataset == 'mosi':
-            segment_list.append(segment)
-        else:
-            video_name = segment[0]
-            if video_name in video:
-                count += 1
-            else:
-                video.add(video_name)
-                count = 0
-            segment_list.append(video_name + '[' + str(count) + ']')
-        words_list.append(words)
-        labels.append(label[0][0])
-
-        # label_2 appending
-        if label > 0:
-            labels_2.append('positive')
-        else:
-            labels_2.append('negative')
-        
-        # label_7 appending
-        if label < -15/7:
-            labels_7.append('very negative')
-        elif label < -9/7:
-            labels_7.append('negative')
-        elif label < -3/7:
-            labels_7.append('weakly negative')
-        elif label < 3/7:
-            labels_7.append('Neutral')
-        elif label < 9/7:
-            labels_7.append('weakly positive')
-        elif label < 15/7:
-            labels_7.append('positive')
-        else:
-            labels_7.append('very positive')
-            
-    # prediction
-    with torch.no_grad():
-        for i, batch in enumerate(tqdm(test_dataloader)):
-            batch = tuple(t.to(DEVICE) for t in batch)
-
-            input_ids, visual, acoustic, input_mask, segment_ids, label_ids = batch
-            visual = torch.squeeze(visual, 1)
-            acoustic = torch.squeeze(acoustic, 1)
-            outputs = model(
-                input_ids,
-                visual,
-                acoustic,
-                token_type_ids=segment_ids,
-                attention_mask=input_mask,
-                labels=None
-            )
-            logits = outputs[0]
-
-            logits = logits.detach().cpu().numpy()
-            label_ids = label_ids.detach().cpu().numpy()
-
-            logits = np.squeeze(logits).tolist()
-            label_ids = np.squeeze(label_ids).tolist()
-
-            preds.extend(logits)
-
-            for logit in logits:
-                # preds_2 appending
-                if logit > 0:
-                    preds_2.append('positive')
-                else:
-                    preds_2.append('negative')
-
-                # label_7 appending
-                if logit < -15/7:
-                    preds_7.append('very negative')
-                elif logit < -9/7:
-                    preds_7.append('negative')
-                elif logit < -3/7:
-                    preds_7.append('weakly negative')
-                elif logit < 3/7:
-                    preds_7.append('Neutral')
-                elif logit < 9/7:
-                    preds_7.append('weakly positive')
-                elif logit < 15/7:
-                    preds_7.append('positive')
-                else:
-                    preds_7.append('very positive')
-
-            
-
-    count = 0
-    test_dict = \
-            {'segment': segment_list,
-            'labels': labels,
-            'labels_2': labels_2,
-            'labels_7': labels_7,
-            'preds': preds,
-            'preds_2': preds_2,
-            'preds_7': preds_7,
-            }
-
-    with open('/home/ubuntu/soyeon/MSIR/results/MAG.pkl', 'wb') as f:
-        pickle.dump(test_dict, f)
-
-
 def train(
     model,
     train_dataloader,
@@ -660,10 +521,13 @@ def train(
 ):
     valid_losses = []
     test_accuracies = []
+    best_valid = 1e8
+    best_mae = 1e8
+    total_start = time.time()
 
     for epoch_i in range(int(args.n_epochs)):
         train_loss = train_epoch(model, train_dataloader, optimizer, scheduler)
-        valid_loss = eval_epoch(model, validation_dataloader, optimizer)
+        valid_loss, results, truths = eval_epoch(model, validation_dataloader, optimizer)
         test_acc, test_mae, test_corr, test_f_score = test_score_model(
             model, test_data_loader, tokenizer
         )
@@ -676,6 +540,24 @@ def train(
 
         valid_losses.append(valid_loss)
         test_accuracies.append(test_acc)
+
+        if valid_loss < best_valid:
+            # update best validation
+            best_valid = valid_loss
+            
+            # save best model
+            if test_mae < best_mae:
+                best_epoch = epoch_i
+                best_mae = test_mae
+                if args.dataset == 'mosei':
+                    eval_mosei_senti(results, truths, True)
+                elif args.dataset == 'mosi':
+                    eval_mosi(results, truths, True)
+                
+                best_results = results
+                best_truth = truths
+                print("Saved model at pre_trained_models/ !")
+                save_model(model, args.dataset)
 
         # wandb.log(
         #     (
@@ -692,9 +574,20 @@ def train(
         #     )
         # )
 
+    print(f'Best epoch: {best_epoch}')
+    if args.dataset == 'mosei':
+        eval_mosei_senti(best_results, best_truth, True)
+    elif args.dataset == 'mosi':
+        eval_mosi(best_results, best_truth, True)
+    
+    total_end = time.time()
+    total_duration = total_end - total_start
+    print(f"Total training time: {total_duration}s, {datetime.timedelta(seconds=total_duration)}") 
+
+    return model
+
 
 def main():
-    sys.stdout = open('MAG_mosei.txt', 'w')
     # wandb.init(project="practice")
     # wandb.config.update(args)
     set_random_seed(args.seed) # random
@@ -712,7 +605,7 @@ def main():
     model, optimizer, scheduler = prep_for_training(
         num_train_optimization_steps)
 
-    train(
+    model = train(
         model,
         train_data_loader,
         dev_data_loader,
@@ -721,11 +614,9 @@ def main():
         scheduler,
         test_tokenizer
     )
-
-    # test_instance(model, test_tokenizer)
-    torch.save(model.state_dict(), f'pre_trained_models/MAG_{args.dataset}.pt')
-    
-
+    # torch.save(model.state_dict(), f'pre_trained_models/MAG_{args.dataset}.pt')\
+    tester = TestMOSI(args, model)
+    tester.start()
 
 if __name__ == "__main__":
     main()
