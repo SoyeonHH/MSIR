@@ -1,16 +1,13 @@
-from cgi import test
 import os
 from pyexpat import model
 import sys
 import math
-from math import isnan
 import re
 import pickle
-from data_loader import get_loader
 import gensim
-from create_dataset import PAD
-from config import *
 from utils.tools import *
+from multimodal_driver import get_appropriate_dataset, args
+from global_configs import *
 import numpy as np
 from tqdm import tqdm
 from tqdm import tqdm_notebook
@@ -66,15 +63,17 @@ def sent2class(test_preds_sent):
     return preds_2, preds_7
 
 class TestMOSI(object):
-    def __init__(self, hp, solver):
-        self.hp = hp
+    def __init__(self, args, model):
         self.H = []
 
-        dataset = str.lower(hp.dataset.strip())
+        with open(f"{DATA_DICT}/{args.dataset}.pkl", "rb") as handle:
+            data = pickle.load(handle)
+        
+        test_data = data["test"]
+        test_dataset, test_tokenizer = get_appropriate_dataset(test_data)
+        self.test_loader = DataLoader(test_dataset, batch_size=args.test_batch_size, shuffle=True)
 
-        test_config = get_config(dataset, mode='test',  batch_size=hp.batch_size)
-        self.test_loader = get_loader(hp, test_config, shuffle=False)
-        self.model = solver.model
+        self.model = model
 
     def start(self):
         segment_list, labels, labels_2, labels_7, preds, preds_2, preds_7 = \
@@ -82,29 +81,33 @@ class TestMOSI(object):
 
         model = self.model
         
-        model.load_state_dict(torch.load(f"pre_trained_models/best_model_MIM_{self.hp.dataset}.pt"))
+        model.load_state_dict(torch.load(f"pre_trained_models/best_model_MAG_{args.dataset}.pt"))
         model.eval()
         with torch.no_grad():
             for i, batch in enumerate(tqdm(self.test_loader)):
 
-                text, visual, vlens, audio, alens, y, lengths, \
-                    bert_sent, bert_sent_type, bert_sent_mask, ids = batch
-                
-                segment_list.extend(ids)
-                
-                # Gold-truth
-                labels.extend(y)
-                
-                # Predictions
-                device = torch.device('cuda')
-                text, audio, visual, y = text.to(device), audio.to(device), visual.to(device), y.to(device)
-                lengths = lengths.to(device)
-                bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
-                
-                _, _, logits, _, _, H = model(text, visual, audio, vlens, alens, bert_sent, bert_sent_type, bert_sent_mask)
+                batch = tuple(t.to(DEVICE) for t in batch)
 
-                preds.extend(logits.cpu().detach().numpy())
-                self.H.extend(H)
+                input_ids, visual, acoustic, input_mask, segment_ids, label_ids = batch
+
+                # Gold-truth
+                segment_list.extend(segment_ids)
+                labels.extend(label_ids)
+
+                # Predictions
+                visual = torch.squeeze(visual, 1)
+                acoustic = torch.squeeze(acoustic, 1)
+                outputs = model(
+                    input_ids,
+                    visual,
+                    acoustic,
+                    token_type_ids=segment_ids,
+                    attention_mask=input_mask,
+                    labels=None
+                )
+                logits = outputs[0]
+                preds.extend(logits)
+                self.H.extend(outputs)
 
             labels_2, labels_7 = sent2class(labels)
             preds_2, preds_7 = sent2class(preds)
@@ -119,6 +122,6 @@ class TestMOSI(object):
             'preds_7': preds_7,
             }
         
-        path = os.getcwd() + '/results/' + 'MIM_' + self.hp.dataset + '.pkl'
+        path = os.getcwd() + '/results/' + 'MAG_' + args.dataset + '.pkl'
         to_pickle(test_dict, path)
-        save_hidden(self.H, self.hp.dataset)
+        save_hidden(self.H, args.dataset)
