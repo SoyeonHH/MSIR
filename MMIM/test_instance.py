@@ -68,6 +68,7 @@ def sent2class(test_preds_sent):
 class TestMOSI(object):
     def __init__(self, hp, solver):
         self.hp = hp
+        self.H = []
 
         dataset = str.lower(hp.dataset.strip())
 
@@ -81,7 +82,7 @@ class TestMOSI(object):
 
         model = self.model
         
-        model.load_state_dict(torch.load(f"pre_trained_models/best_model_{self.hp.dataset}.pt"))
+        model.load_state_dict(torch.load(f"pre_trained_models/best_model_MIM_{self.hp.dataset}.pt"))
         model.eval()
         with torch.no_grad():
             for i, batch in enumerate(tqdm(self.test_loader)):
@@ -100,9 +101,10 @@ class TestMOSI(object):
                 lengths = lengths.to(device)
                 bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
                 
-                _, _, logits, _, _ = model(text, visual, audio, vlens, alens, bert_sent, bert_sent_type, bert_sent_mask)
+                _, _, logits, _, _, H = model(text, visual, audio, vlens, alens, bert_sent, bert_sent_type, bert_sent_mask)
 
                 preds.extend(logits.cpu().detach().numpy())
+                self.H.extend(H)
 
             labels_2, labels_7 = sent2class(labels)
             preds_2, preds_7 = sent2class(preds)
@@ -117,5 +119,6 @@ class TestMOSI(object):
             'preds_7': preds_7,
             }
         
-        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/MMIM_' + self.hp.dataset + '.pkl'
+        path = os.getcwd() + '/results/' + 'MIM_' + self.hp.dataset + '.pkl'
         to_pickle(test_dict, path)
+        save_hidden(self.H, self.hp.dataset)
