@@ -8,7 +8,7 @@
 # python MMIM/main.py --dataset mosei --contrast
 
 ## MISA
-# python MISA/src/train.py
+python MISA/src/train.py --data mosi
 
 ## MAG
-python MAG/multimodal_driver.py --dataset mosei
+# python MAG/multimodal_driver.py --dataset mosei
