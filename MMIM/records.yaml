@@ -1,0 +1,12 @@
+train:
+  model: MMIM
+  description: 기본
+  epoch: 28
+  result:
+    Best epoch: 8
+    MAE:  0.76405543
+    Correlation Coefficient:  0.7592107123995004
+    mult_acc_7:  0.4446064139941691
+    mult_acc_5:  0.5
+    F1 score all/non0: 0.796/0.8163 over 686/656
+    Accuracy all/non0: 0.7959/0.8155

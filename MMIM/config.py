@@ -14,15 +14,8 @@ word_emb_path = '/mnt/soyeon/workspace/glove.840B.300d.txt'
 assert(word_emb_path is not None)
 
 
-# username = Path.home().name
-# project_dir = Path(__file__).resolve().parent.parent
-# sdk_dir = project_dir.joinpath('CMU-MultimodalSDK')
-# data_dir = project_dir.joinpath('datasets')
-
-# sdk_dir = Path('/home/ubuntu/soyeon/CMU-MultimodalSDK')
-# data_dir = Path('/home/ubuntu/soyeon/MSIR/data')
-sdk_dir = Path('/mnt/soyeon/workspace/multimodal/CMU-MultimodalSDK')
-data_dir = Path('/mnt/soyeon/workspace/multimodal/MSIR/datasets')
+sdk_dir = Path('/home/iknow/workspace/multimodal/CMU-MultimodalSDK')
+data_dir = Path('/home/iknow/workspace/multimodal')
 
 data_dict = {'mosi': data_dir.joinpath('MOSI'), 'mosei': data_dir.joinpath(
     'MOSEI'), 'ur_funny': data_dir.joinpath('UR_FUNNY')}

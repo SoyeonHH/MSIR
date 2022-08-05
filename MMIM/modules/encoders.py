@@ -150,8 +150,10 @@ class MMILB(nn.Module):
         batch_size = mu.size(0)
 
         positive = -(mu - y)**2/2./torch.exp(logvar)
-        lld = torch.mean(torch.sum(positive,-1))
-
+        lld = torch.mean(torch.sum(positive,-1)) 
+        # lld -=  logvar.size(-1)/2.*1.8378
+        # lld -=  torch.mean(torch.sum(logvar,-1))
+        
         # For Gaussian Distribution Estimation
         pos_y = neg_y = None
         H = 0.0

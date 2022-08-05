@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     solver = Solver(args, train_loader=train_loader, dev_loader=valid_loader,
                     test_loader=test_loader, is_train=True)
-    # model = solver.train_and_eval()
+    model = solver.train_and_eval()
 
     tester = TestMOSI(args, solver)
     tester.start()

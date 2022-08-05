@@ -152,6 +152,5 @@ class TestMOSI(object):
             # 'audio_7': audio_7
             }
         
-        # path = '/home/ubuntu/soyeon/MSIR/results/' + self.hp.model_name + '_' + self.hp.modality + '.pkl'
-        path = os.getcwd() + 'src/dist/' + self.hp.model_name + '_origin_mosei.pkl'
+        path = os.getcwd() + '/src/dist/' + self.hp.model_name + '_origin_mosei.pkl'
         to_pickle(test_dict, path)

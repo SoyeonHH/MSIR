@@ -117,5 +117,5 @@ class TestMOSI(object):
             'preds_7': preds_7,
             }
         
-        path = '/mnt/soyeon/workspace/multimodal/MSIR/results/MMIM_' + self.hp.dataset + '.pkl'
+        path = os.getcwd() + '/MMIM/dist/'+ 'MMIM_' + self.hp.dataset + '.pkl'
         to_pickle(test_dict, path)
