@@ -9,25 +9,28 @@ from torch import optim
 import torch.nn as nn
 
 # path to a pretrained word embedding file
-# word_emb_path = '/mnt/soyeon/workspace/glove.840B.300d.txt'
-word_emb_path = '/home/ubuntu/soyeon/glove.840B.300d.txt'
+word_emb_path = '/home/iknow/workspace/multimodal/glove.840B.300d.txt'
 assert(word_emb_path is not None)
 
 
-# username = Path.home().name
-# project_dir = Path(__file__).resolve().parent.parent
-# sdk_dir = project_dir.joinpath('CMU-MultimodalSDK')
-# data_dir = project_dir.joinpath('datasets')
-
-sdk_dir = Path('/home/ubuntu/soyeon/CMU-MultimodalSDK')
-data_dir = Path('/home/ubuntu/soyeon/MSIR/datasets')
-data_dict = {'mosi': data_dir.joinpath('MOSI'), 'mosei': data_dir.joinpath(
-    'MOSEI'), 'ur_funny': data_dir.joinpath('UR_FUNNY')}
+sdk_dir = Path('/home/iknow/workspace/multimodal/CMU-MultimodalSDK')
+data_dir = Path('/home/iknow/workspace/multimodal')
+data_dict = {'mosi': data_dir.joinpath('MOSI'), 'mosei': data_dir.joinpath('MOSEI')}
 optimizer_dict = {'RMSprop': optim.RMSprop, 'Adam': optim.Adam}
 activation_dict = {'elu': nn.ELU, "hardshrink": nn.Hardshrink, "hardtanh": nn.Hardtanh,
                    "leakyrelu": nn.LeakyReLU, "prelu": nn.PReLU, "relu": nn.ReLU, "rrelu": nn.RReLU,
                    "tanh": nn.Tanh}
 
+output_dim_dict = {
+    'mosi': 1,
+    'mosei_senti': 1,
+}
+
+criterion_dict = {
+    'mosi': 'L1Loss',
+    'iemocap': 'CrossEntropyLoss',
+    'ur_funny': 'CrossEntropyLoss'
+}
 
 def str2bool(v):
     """string to boolean"""
