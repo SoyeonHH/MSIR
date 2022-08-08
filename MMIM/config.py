@@ -35,6 +35,29 @@ criterion_dict = {
     'ur_funny': 'CrossEntropyLoss'
 }
 
+
+mosi_hp = {
+    'batch_size':32,
+    'lr_mmilb':5e-3,
+    'lr_main':1e-3,
+    'alpha': 0.3,
+    'beta': 0.1,
+    'd_vh': 32,
+    'd_ah': 32,
+    'clip': 5.,
+}
+
+mosei_hp = {
+    'batch_size':64,
+    'lr_mmilb':1e-3,
+    'lr_main':5e-4,
+    'alpha': 0.1,
+    'beta': 0.05,
+    'd_vh': 64,
+    'd_ah': 16,
+    'clip': 5.,
+}
+
 def get_args():
     parser = argparse.ArgumentParser(description='MOSI-and-MOSEI Sentiment Analysis')
     parser.add_argument('-f', default='', type=str)
@@ -44,6 +67,9 @@ def get_args():
                         help='dataset to use (default: mosei)')
     parser.add_argument('--data_path', type=str, default='datasets',
                         help='path for storing the dataset')
+
+    _args = parser.parse_args()
+    dataset_default_hp = mosi_hp if _args.dataset.strip() == 'mosi' else mosei_hp
 
     # Dropouts
     parser.add_argument('--dropout_a', type=float, default=0.1,
@@ -61,9 +87,9 @@ def get_args():
                         help='number of layers in LSTM encoders (default: 1)')
     parser.add_argument('--cpc_layers', type=int, default=1,
                         help='number of layers in CPC NCE estimator (default: 1)')
-    parser.add_argument('--d_vh', type=int, default=16,
+    parser.add_argument('--d_vh', type=int, default=dataset_default_hp['d_vh'],
                         help='hidden size in visual rnn')
-    parser.add_argument('--d_ah', type=int, default=16,
+    parser.add_argument('--d_ah', type=int, default=dataset_default_hp['d_ah'],
                         help='hidden size in acoustic rnn')
     parser.add_argument('--d_vout', type=int, default=16,
                         help='output size in visual rnn')
@@ -85,18 +111,20 @@ def get_args():
                         help='Activation layer type in all CPC modules')
 
     # Training Setting
-    parser.add_argument('--batch_size', type=int, default=32, metavar='N',
+    parser.add_argument('--batch_size', type=int, metavar='N', default=dataset_default_hp['batch_size'],
                         help='batch size (default: 32)')
-    parser.add_argument('--clip', type=float, default=1.0,
+    parser.add_argument('--clip', type=float, default=dataset_default_hp['clip'],
                         help='gradient clip value (default: 0.8)')
-    parser.add_argument('--lr_main', type=float, default=1e-3,
+    parser.add_argument('--lr_main', type=float, default=dataset_default_hp['lr_main'],
                         help='initial learning rate for main model parameters (default: 1e-3)')
     parser.add_argument('--lr_bert', type=float, default=5e-5,
                         help='initial learning rate for bert parameters (default: 5e-5)')
-    parser.add_argument('--lr_mmilb', type=float, default=1e-3,
+    parser.add_argument('--lr_mmilb', type=float, default=dataset_default_hp['lr_mmilb'],
                         help='initial learning rate for mmilb parameters (default: 1e-3)')
-    parser.add_argument('--alpha', type=float, default=0.1, help='weight for CPC NCE estimation item (default: 0.1)')
-    parser.add_argument('--beta', type=float, default=0.1, help='weight for lld item (default: 0.1)')
+    parser.add_argument('--alpha', type=float, default=dataset_default_hp['alpha'],
+                        help='weight for CPC NCE estimation item (default: 0.1)')
+    parser.add_argument('--beta', type=float, default=dataset_default_hp['beta'],
+                        help='weight for lld item (default: 0.1)')
 
     parser.add_argument('--weight_decay_main', type=float, default=1e-4,
                         help='L2 penalty factor of the main Adam optimizer')

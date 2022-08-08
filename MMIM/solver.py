@@ -1,5 +1,5 @@
 import torch
-from torch import nn
+from torch import nn, Tensor
 import sys
 import torch.optim as optim
 import numpy as np
@@ -16,6 +16,19 @@ from utils.eval_metrics import *
 from utils.tools import *
 from model import MMIM
 import pickle
+
+def intensityLoss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean(torch.abs(input*torch.abs(input) - target*torch.abs(target)))
+
+def sqrtIntensityLoss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean(torch.sqrt(torch.abs(input*torch.abs(input) - target*torch.abs(target))))
+
+
+def absIntensityLoss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean(torch.abs(input**2 - target**2))
+
+def l2Loss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean((input - target)**2)
 
 class Solver(object):
     def __init__(self, hyp_params, train_loader, dev_loader, test_loader, is_train=True, model=None, pretrained_emb=None):
@@ -49,7 +62,11 @@ class Solver(object):
             self.criterion = criterion = nn.CrossEntropyLoss(reduction="mean")
         else: # mosi and mosei are regression datasets
             self.criterion = criterion = nn.L1Loss(reduction="mean")
-        
+            # self.criterion = lambda i,t: nn.L1Loss(reduction="mean")(i,t) + intensityLoss(i,t)
+            # self.criterion =lambda i,t: nn.L1Loss(reduction="mean")(i,t) + absIntensityLoss(i,t)
+            # self.criterion = intensityLoss 
+
+
         # optimizer
         self.optimizer={}
 
