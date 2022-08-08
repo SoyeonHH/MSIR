@@ -60,6 +60,7 @@ def eval_mosei_senti(results, truths, exclude_zero=False):
     binary_preds_has0 = test_preds >= 0
     acc_2 = accuracy_score(binary_truth_has0, binary_preds_has0)
     f_score = f1_score(binary_truth_has0, binary_preds_has0, average='weighted')
+    mae_intensity = extreme_mae(test_preds, test_truth)
     
 
     print("MAE: ", mae)
@@ -71,7 +72,8 @@ def eval_mosei_senti(results, truths, exclude_zero=False):
     print("Extreme Intensity MAE: ", extreme_mae(test_preds, test_truth))
 
     print("-" * 50)
-    return {'mae':mae, 'corr':corr, 'mult':mult_a7, 'f1':f_score, 'acc2':acc_2}
+    return {'mae':mae, 'corr':corr, 'mult':mult_a7, 'f1':f_score, 'acc2':acc_2, \
+        'acc7':mult_a7, 'acc5':mult_a5, 'mae_intensity':mae_intensity}
 
 def eval_mosi(results, truths, exclude_zero=False):
     return eval_mosei_senti(results, truths, exclude_zero)
