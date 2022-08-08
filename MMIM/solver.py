@@ -17,6 +17,7 @@ from utils.tools import *
 from model import MMIM
 import pickle
 import datetime
+import wandb
 
 def intensityLoss(input: Tensor, target: Tensor) -> Tensor:
     return torch.mean(torch.abs(input*torch.abs(input) - target*torch.abs(target)))
@@ -329,7 +330,8 @@ class Solver(object):
                         eval_mosei_senti(results, truths, True)
 
                     elif self.hp.dataset == 'mosi':
-                        eval_mosi(results, truths, True)
+                        # eval_mosi(results, truths, True)
+                        eval_values = eval_mosei_senti(results, truths, True)
                     elif self.hp.dataset == 'iemocap':
                         eval_iemocap(results, truths)
                     
@@ -341,6 +343,24 @@ class Solver(object):
                 patience -= 1
                 if patience == 0:
                     break
+            
+            wandb.log(
+                (
+                    {
+                        "train_loss": train_loss,
+                        "valid_loss": val_loss,
+                        "test_mae": eval_values['mae'],
+                        "test_mae_extreme": eval_values['mae_intensity'],
+                        "test_corr": eval_values['corr'],
+                        "test_f_score": eval_values['f1'],
+                        "test_acc2": eval_values['acc2'],
+                        "test_acc5": eval_values['acc5'],
+                        "test_acc7":eval_values['acc7'],
+                        "best_valid_loss": best_valid,
+                        "best_test_loss": best_mae
+                    }
+                )
+            )
 
         print(f'Best epoch: {best_epoch}')
         if self.hp.dataset in ["mosei_senti", "mosei"]:
