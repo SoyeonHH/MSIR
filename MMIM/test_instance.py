@@ -119,6 +119,10 @@ class TestMOSI(object):
             'preds_7': preds_7,
             }
         
+
+        path = os.getcwd() + '/MMIM/dist/'+ 'MMIM_' + self.hp.dataset + '.pkl'
+        to_pickle(test_dict, path)
+
         path = os.getcwd() + '/results/' + 'MIM_' + self.hp.dataset + '.pkl'
         to_pickle(test_dict, path)
         save_hidden(self.H, self.hp.dataset)
