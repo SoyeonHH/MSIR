@@ -19,3 +19,5 @@ VISUAL_DIM = 35
 TEXT_DIM = 768
 
 XLNET_INJECTION_INDEX = 1
+
+DATA_DICT = '/home/iknow/workspace/multimodal'

@@ -127,4 +127,4 @@ class MMIM(nn.Module):
         lld = lld_tv + lld_ta + (lld_va if self.add_va else 0.0)
         H = H_tv + H_ta + (H_va if self.add_va else 0.0)
 
-        return lld, nce, preds, pn_dic, H
+        return lld, nce, preds, pn_dic, H, fusion

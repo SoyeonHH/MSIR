@@ -74,11 +74,9 @@ class TestMOSI(object):
 
         test_config = get_config(dataset, mode='test',  batch_size=hp.batch_size)
         self.test_loader = get_loader(hp, test_config, shuffle=False)
+        self.device = torch.device('cuda:1')
         self.model = solver.model
-        self.text_emb = solver.text_emb
-        self.text_enc = solver.text_enc
-        self.audio_enc = solver.audio_enc
-        self.video_enc = solver.video_enc
+        self.H = []
 
     def start(self):
         segment_list, labels, labels_2, labels_7, preds, preds_2, preds_7 = \
@@ -88,12 +86,12 @@ class TestMOSI(object):
 
         model = self.model
         
-        model.load_state_dict(torch.load(f"pre_trained_models/best_model_{self.hp.model_name}_origin_mosei.pt"))
+        model.load_state_dict(load_model(self.model_name, self.hp.dataset))
         model.eval()
         with torch.no_grad():
             for i, batch in enumerate(tqdm(self.test_loader)):
 
-                text, visual, vlens, audio, alens, y, lengths, \
+                text, visual, vlens, audio, alens, y, lengths, glove_sent, \
                     bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
                 segment_list.extend(ids)
@@ -102,22 +100,21 @@ class TestMOSI(object):
                 labels.extend(y)
                 
                 # Predictions
-                device = torch.device('cuda')
-                text, audio, visual, y = text.to(device), audio.to(device), visual.to(device), y.to(device)
-                lengths = lengths.to(device)
-                bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
+                text, visual, audio, y, glove_sent = \
+                    text.to(self.device), visual.to(self.device), audio.to(self.device), y.to(self.device), glove_sent.to(self.device)
 
-                audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
-                visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
-                audio = audio[0,:,:]
-                visual = visual[0,:,:]
-                
-                text_emb = self.text_emb(text, bert_sent, bert_sent_type, bert_sent_mask)
-                text_h = self.text_enc(text_emb)
-                audio_h = self.audio_enc(audio)
-                video_h = self.video_enc(visual)
+                device = torch.device('cpu')
+                vlens, alens, l = vlens.to(device), alens.to(device), lengths.to(device)
 
-                logits, H = model(audio_h, video_h, text_h)
+                if self.hp.model_name == 'TFN':
+                    logits, H = model(audio, visual, glove_sent, alens, vlens, l)
+                elif self.hp.model_name == 'Glove':
+                    logits, H = model(glove_sent, l)
+                elif self.hp.model_name == 'Facet':
+                    logits, H = model(visual, vlens)
+                elif self.hp.model_name == 'COVAREP':
+                    logits, H = model(audio, alens)
+                self.H.extend(H)
                 # logits_text, H_text = model(text_h, text_h, text_h)
                 # logits_video, H_video = model(video_h, video_h, video_h)
                 # logits_audio, H_audio = model(audio_h, audio_h, audio_h)
@@ -152,5 +149,14 @@ class TestMOSI(object):
             # 'audio_7': audio_7
             }
         
-        path = os.getcwd() + '/src/dist/' + self.hp.model_name + '_origin_mosei.pkl'
+        
+        path = os.getcwd() + '/src/dist/' + self.hp.model_name + '_' + self.hp.dataset + '.pkl'
         to_pickle(test_dict, path)
+
+        ## Make results directory on yourself
+        path = os.getcwd() + '/results/' + self.hp.model_name + '_' + self.hp.dataset + '.pkl'
+        to_pickle(test_dict, path)
+
+        ## Save hidden spaces
+        save_hidden(self.H, self.model_name, self.hp.dataset)
+

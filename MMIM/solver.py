@@ -16,6 +16,7 @@ from utils.eval_metrics import *
 from utils.tools import *
 from model import MMIM
 import pickle
+import datetime
 
 def intensityLoss(input: Tensor, target: Tensor) -> Tensor:
     return torch.mean(torch.abs(input*torch.abs(input) - target*torch.abs(target)))
@@ -173,7 +174,7 @@ class Solver(object):
                 else:
                     mem = {'tv': None, 'ta': None, 'va': None}
 
-                lld, nce, preds, pn_dic, H = model(text, visual, audio, vlens, alens, 
+                lld, nce, preds, pn_dic, H, _ = model(text, visual, audio, vlens, alens, 
                                                 bert_sent, bert_sent_type, bert_sent_mask, y, mem)
 
                 if stage == 1:
@@ -268,7 +269,7 @@ class Solver(object):
                     batch_size = lengths.size(0) # bert_sent in size (bs, seq_len, emb_size)
 
                     # we don't need lld and bound anymore
-                    _, _, preds, _, _ = model(text, vision, audio, vlens, alens, bert_sent, bert_sent_type, bert_sent_mask)
+                    _, _, preds, _, _, _ = model(text, vision, audio, vlens, alens, bert_sent, bert_sent_type, bert_sent_mask)
 
                     if self.hp.dataset in ['mosi', 'mosei', 'mosei_senti'] and test:
                         criterion = nn.L1Loss()
@@ -288,6 +289,7 @@ class Solver(object):
         best_valid = 1e8
         best_mae = 1e8
         patience = self.hp.patience
+        total_start = time.time()
 
         for epoch in range(1, self.hp.num_epochs+1):
             start = time.time()
@@ -334,7 +336,7 @@ class Solver(object):
                     best_results = results
                     best_truths = truths
                     print(f"Saved model at pre_trained_models/MM.pt!")
-                    save_model(self.hp, model)
+                    save_model(model, self.hp.dataset)
             else:
                 patience -= 1
                 if patience == 0:
@@ -346,8 +348,11 @@ class Solver(object):
         elif self.hp.dataset == 'mosi':
             self.best_dict = eval_mosi(best_results, best_truths, True)
         elif self.hp.dataset == 'iemocap':
-            eval_iemocap(results, truths)       
+            eval_iemocap(results, truths)
+
+        total_end = time.time()
+        total_duration = total_end - total_start
+        print(f"Total training time: {total_duration}s, {datetime.timedelta(seconds=total_duration)}") 
         sys.stdout.flush()
 
-        save_model(self.hp, model)
         return model

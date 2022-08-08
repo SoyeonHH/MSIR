@@ -68,7 +68,7 @@ def sent2class(test_preds_sent):
 class TestMOSI(object):
     def __init__(self, hp, solver):
         self.hp = hp
-        self.H = []
+        self.model_name = hp.model_name
 
         dataset = str.lower(hp.dataset.strip())
 
@@ -79,17 +79,18 @@ class TestMOSI(object):
     def start(self):
         segment_list, labels, labels_2, labels_7, preds, preds_2, preds_7 = \
             [], [], [], [], [], [], []
+        preds_text, preds_audio, preds_video = [], [], []
+        text_2, text_7, audio_2, audio_7, video_2, video_7 = [], [], [], [], [], []
 
         model = self.model
         
-        model.load_state_dict(torch.load(f"pre_trained_models/best_model_MIM_{self.hp.dataset}.pt"))
+        model.load_state_dict(load_model(self.model_name, self.hp.dataset))
         model.eval()
         with torch.no_grad():
             for i, batch in enumerate(tqdm(self.test_loader)):
 
-                text, visual, vlens, audio, alens, y, lengths, \
-                    bert_sent, bert_sent_type, bert_sent_mask, ids = batch
-                
+                text, visual, audio, y, ids = batch
+
                 segment_list.extend(ids)
                 
                 # Gold-truth
@@ -97,17 +98,29 @@ class TestMOSI(object):
                 
                 # Predictions
                 device = torch.device('cuda')
-                text, audio, visual, y = text.to(device), audio.to(device), visual.to(device), y.to(device)
-                lengths = lengths.to(device)
-                bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
-                
-                _, _, logits, _, _, H = model(text, visual, audio, vlens, alens, bert_sent, bert_sent_type, bert_sent_mask)
+                text, visual, audio, y = \
+                        text.to(device), visual.to(device), audio.to(device), y.to(device)
 
+                audio = torch.Tensor.mean(audio, dim=0, keepdim=True)
+                visual = torch.Tensor.mean(visual, dim=0, keepdim=True)
+                audio = audio[0,:,:]
+                visual = visual[0,:,:]
+
+                logits, H = model(audio, visual, text)
+                # logits_text, H_text = model(text_h, text_h, text_h)
+                # logits_video, H_video = model(video_h, video_h, video_h)
+                # logits_audio, H_audio = model(audio_h, audio_h, audio_h)
+                
                 preds.extend(logits.cpu().detach().numpy())
-                self.H.extend(H)
+                # preds_text.extend(logits_text.cpu().detach().numpy())
+                # preds_video.extend(logits_video.cpu().detach().numpy())
+                # preds_audio.extend(logits_audio.cpu().detach().numpy())
 
             labels_2, labels_7 = sent2class(labels)
             preds_2, preds_7 = sent2class(preds)
+            # text_2, text_7 = sent2class(preds_text)
+            # video_2, video_7 = sent2class(preds_video)
+            # audio_2, audio_7 = sent2class(preds_audio)
             
         test_dict = \
             {'segment': segment_list,
@@ -117,12 +130,17 @@ class TestMOSI(object):
             'preds': preds,
             'preds_2': preds_2,
             'preds_7': preds_7,
+            # 'preds_text': preds_text,
+            # 'text_2': text_2,
+            # 'text_7': text_7,
+            # 'preds_video': preds_video,
+            # 'video_2': video_2,
+            # 'video_7': video_7,
+            # 'preds_audio': preds_audio,
+            # 'audio_2': audio_2,
+            # 'audio_7': audio_7
             }
         
-
-        path = os.getcwd() + '/MMIM/dist/'+ 'MMIM_' + self.hp.dataset + '.pkl'
+        # Make results directory on yourself
+        path = os.getcwd() + '/results/' + self.hp.model_name + '_' + self.hp.dataset + '.pkl'
         to_pickle(test_dict, path)
-
-        path = os.getcwd() + '/results/' + 'MIM_' + self.hp.dataset + '.pkl'
-        to_pickle(test_dict, path)
-        save_hidden(self.H, self.hp.dataset)
