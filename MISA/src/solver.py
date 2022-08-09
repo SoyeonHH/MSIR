@@ -25,6 +25,7 @@ from utils.tools import *
 from utils.eval_metrics import *
 import time
 import datetime
+import wandb
 
 torch.manual_seed(123)
 torch.cuda.manual_seed_all(123)
@@ -45,8 +46,13 @@ class Solver(object):
         self.test_data_loader = test_data_loader
         self.is_train = is_train
         self.model = model
+        
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        else:
+            self.device = torch.device("cpu")
     
-    @time_desc_decorator('Build Graph')
+    # @time_desc_decorator('Build Graph')
     def build(self, cuda=True):
 
         if self.model is None:
@@ -75,8 +81,8 @@ class Solver(object):
                 self.model.embed.weight.data = self.train_config.pretrained_emb
             self.model.embed.requires_grad = False
         
-        if torch.cuda.is_available() and cuda:
-            self.model.cuda()
+        # if torch.cuda.is_available() and cuda:
+        self.model.to(self.device)
 
         if self.is_train:
             self.optimizer = self.train_config.optimizer(
@@ -84,7 +90,7 @@ class Solver(object):
                 lr=self.train_config.learning_rate)
 
 
-    @time_desc_decorator('Training Start!')
+    # @time_desc_decorator('Training Start!')
     def train(self):
         curr_patience = patience = self.train_config.patience
         num_trials = 1
@@ -116,9 +122,9 @@ class Solver(object):
             train_loss_recon = []
             train_loss_sp = []
             train_loss = []
-            for batch in self.train_data_loader:
+            for idx, batch in enumerate(tqdm(self.train_data_loader)):
                 self.model.zero_grad()
-                t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask = batch
+                t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
                 # batch_size = t.size(0)
                 t = to_gpu(t)
@@ -132,6 +138,7 @@ class Solver(object):
                 bert_sent_mask = to_gpu(bert_sent_mask)
 
                 y_tilde = self.model(t, v, a, l, bert_sent, bert_sent_type, bert_sent_mask)
+                y_tilde = y_tilde.squeeze()
                 
                 if self.train_config.data == "ur_funny":
                     y = y.squeeze()
@@ -183,7 +190,7 @@ class Solver(object):
                 # 임의로 모델 경로 지정 및 저장
                 save_model(self.model, self.train_config.data)
                 # Print best model results
-                eval_mosi(best_results, best_truths, True)
+                eval_values = eval_mosei_senti(best_results, best_truths, True)
             else:
                 curr_patience -= 1
                 if curr_patience <= -1:
@@ -195,18 +202,35 @@ class Solver(object):
                     lr_scheduler.step()
                     print(f"Current learning rate: {self.optimizer.state_dict()['param_groups'][0]['lr']}")
             
+            wandb.log(
+                (
+                    {
+                        "train_loss": train_loss,
+                        "valid_loss": valid_loss,
+                        "test_mae": eval_values['mae'],
+                        "test_mae_extreme": eval_values['mae_intensity'],
+                        "test_corr": eval_values['corr'],
+                        "test_f_score": eval_values['f1'],
+                        "test_acc2": eval_values['acc2'],
+                        "test_acc2_non0": eval_values['acc2_non0'],
+                        "test_acc5": eval_values['acc5'],
+                        "test_acc7":eval_values['acc7'],
+                        "best_valid_loss": best_valid_loss,
+                    }
+                )
+            )
+            
             # if num_trials <= 0:
             #     print("Running out of patience, early stopping.")
             #     break
 
         train_loss, acc, test_preds, test_truths = self.eval(mode="test", to_print=True)
         print(f'Best epoch: {best_epoch}')
-        eval_mosi(best_results, best_truths, True)
+        eval_values_best = eval_mosei_senti(best_results, best_truths, True)
         # total_end = time.time()
         # total_duration = total_end - total_start
         # print(f"Total training time: {total_duration}s, {datetime.timedelta(seconds=total_duration)}")
 
-        return self.model
 
     
     def eval(self,mode=None, to_print=False):
@@ -230,7 +254,7 @@ class Solver(object):
 
             for batch in dataloader:
                 self.model.zero_grad()
-                t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask = batch
+                t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
                 t = to_gpu(t)
                 v = to_gpu(v)
@@ -243,7 +267,8 @@ class Solver(object):
                 bert_sent_mask = to_gpu(bert_sent_mask)
 
                 y_tilde = self.model(t, v, a, l, bert_sent, bert_sent_type, bert_sent_mask)
-
+                y_tilde = y_tilde.squeeze()
+                
                 if self.train_config.data == "ur_funny":
                     y = y.squeeze()
                 
