@@ -4,11 +4,13 @@ import sys
 from pyexpat import model
 import numpy as np
 from random import random
+import wandb
 
 from config import get_config, activation_dict
 from data_loader import get_loader
 from solver import Solver
 from test_instance import TestMOSI
+from utils.tools import *
 
 import torch
 import torch.nn as nn
@@ -16,6 +18,11 @@ from torch.nn import functional as F
 
 
 if __name__ == '__main__':
+
+    # Setting training log
+    args = get_config()
+    wandb.init(project="MISA")
+    wandb.config.update(args)
     
     # Setting random seed
     random_name = str(random())
@@ -31,7 +38,6 @@ if __name__ == '__main__':
     dev_config = get_config(mode='dev')
     test_config = get_config(mode='test')
 
-
     print(train_config)
 
     # Creating pytorch dataloaders
@@ -41,17 +47,17 @@ if __name__ == '__main__':
 
 
     # Solver is a wrapper for model traiing and testing
-    solver = Solver
-    solver = solver(train_config, dev_config, test_config, train_data_loader, dev_data_loader, test_data_loader, is_train=True)
+    solver = Solver(train_config, dev_config, test_config, train_data_loader, dev_data_loader, test_data_loader, is_train=True)
+    # solver = solver(train_config, dev_config, test_config, train_data_loader, dev_data_loader, test_data_loader, is_train=True)
 
     # Build the model
     solver.build()
 
     # Train the model (test scores will be returned based on dev performance)
-    model = solver.train()
+    solver.train()
 
     # Make test result file by instance
-    tester = TestMOSI(model, test_config, test_data_loader)
+    tester = TestMOSI(solver, test_config, test_data_loader)
     tester.start()
 
     sys.stdout.close()

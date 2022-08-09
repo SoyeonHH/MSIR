@@ -78,7 +78,9 @@ def get_loader(config, shuffle=True):
 
         bert_details = []
         labels = []
+        ids = []
         for sample in batch:
+            ids.append(sample[2])
             text = " ".join(sample[0][3])
             encoded_bert_sent = bert_tokenizer.encode_plus(
                 text, max_length=SENT_LEN+2, add_special_tokens=True, pad_to_max_length=True)
@@ -103,7 +105,7 @@ def get_loader(config, shuffle=True):
         # lengths are useful later in using RNNs
         lengths = torch.LongTensor([sample[0][0].shape[0] for sample in batch])
 
-        return sentences, visual, acoustic, labels, lengths, bert_sentences, bert_sentence_types, bert_sentence_att_mask
+        return sentences, visual, acoustic, labels, lengths, bert_sentences, bert_sentence_types, bert_sentence_att_mask, ids
 
 
     data_loader = DataLoader(
