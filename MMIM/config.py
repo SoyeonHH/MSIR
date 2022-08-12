@@ -60,6 +60,11 @@ def get_args():
     parser = argparse.ArgumentParser(description='MOSI-and-MOSEI Sentiment Analysis')
     parser.add_argument('-f', default='', type=str)
 
+    # name
+    parser.add_argument('--name', type=str, default='',
+                        help='save result with name')
+
+
     # Tasks
     parser.add_argument('--dataset', type=str, default='mosi', choices=['mosi','mosei'],
                         help='dataset to use (default: mosei)')

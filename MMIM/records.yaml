@@ -15,7 +15,7 @@ train:
 train:
   model: MMIM
   dataset: MOSI
-  description: intensity loss만
+  description: square loss만
   epoch: 34
   result:
     Best epoch: 5
@@ -29,7 +29,7 @@ train:
 train:
   model: MMIM
   dataset: MOSI
-  description: intensity loss만
+  description: square loss만
   epoch: 32
   result:
     Best epoch: 9
@@ -43,7 +43,7 @@ train:
 train:
   model: MMIM
   dataset: MOSI
-  description: l1 loss + abs intensity loss
+  description: l1 loss + abs square loss
   epoch: 23
   result:
     Best epoch: 11
@@ -85,11 +85,11 @@ train:
     mult_acc_5:  0.532069970845481
     F1 score all/non0: 0.802/0.8227 over 686/656
     Accuracy all/non0: 0.8032/0.8232
-  
+    Extreme Intensity MAE:  0.84926057
 train:
   model: MMIM
   dataset: MOSI
-  description: intensity loss만
+  description: square loss만
   epoch: 21
     Best epoch: 11
     MAE:  0.7400233
@@ -98,3 +98,90 @@ train:
     mult_acc_5:  0.5072886297376094
     F1 score all/non0: 0.8192/0.8441 over 686/656
     Accuracy all/non0: 0.8222/0.846
+    Extreme Intensity MAE:  0.9561848
+
+train:
+  model: MMIM
+  dataset: MOSI
+  description: square loss / 2
+  epoch: 19
+    Best epoch: 9
+    MAE:  0.7379658
+    Correlation Coefficient:  0.7598244464822088
+    mult_acc_7:  0.45918367346938777
+    mult_acc_5:  0.521865889212828
+    F1 score all/non0: 0.8148/0.8282 over 686/656
+    Accuracy all/non0: 0.8149/0.8277
+    Extreme Intensity MAE:  0.88351005
+
+train:
+  model: MMIM
+  dataset: MOSI
+  description: square loss / 10
+  epoch: 38
+    Best epoch: 17
+    MAE:  0.76875997
+    Correlation Coefficient:  0.753454403248094
+    mult_acc_7:  0.41836734693877553
+    mult_acc_5:  0.4868804664723032
+    F1 score all/non0: 0.8113/0.8308 over 686/656
+    Accuracy all/non0: 0.812/0.8308
+    Extreme Intensity MAE:  0.98803586
+
+
+train:
+  model: MMIM
+  dataset: MOSI
+  description: intensity loss 만
+  epoch: 27
+    Best epoch: 2 # 학습이 안됨
+    MAE:  0.8916731
+    Correlation Coefficient:  0.7590862291600707
+    mult_acc_7:  0.33527696793002915
+    mult_acc_5:  0.36151603498542273
+    F1 score all/non0: 0.7931/0.8222 over 686/656
+    Accuracy all/non0: 0.7988/0.8262 
+
+
+train:
+  model: MMIM
+  dataset: MOSI
+  description: l1 loss + intensity loss
+  epoch: 21
+    Best epoch: 7
+    MAE:  0.7765629
+    Correlation Coefficient:  0.7555037571982639
+    mult_acc_7:  0.4314868804664723
+    mult_acc_5:  0.478134110787172
+    F1 score all/non0: 0.811/0.8352 over 686/656
+    Accuracy all/non0: 0.812/0.8354
+    Extreme Intensity MAE:  1.0781173
+
+train:
+  model: MMIM
+  dataset: MOSI
+  description: 3/5 l1 loss + 2/5 absSquareLoss
+  epoch: 28
+    Best epoch: 3 # 학습이 안됨
+    MAE:  0.7785159
+    Correlation Coefficient:  0.7500894051826261
+    mult_acc_7:  0.4314868804664723
+    mult_acc_5:  0.5087463556851312
+    F1 score all/non0: 0.814/0.8305 over 686/656
+    Accuracy all/non0: 0.8149/0.8308
+    Extreme Intensity MAE:  0.90814376
+
+train:
+  model: MMIM
+  dataset: MOSI
+  description: 1/2 l1 loss + 1/2 absAbsLoss
+  epoch: 25
+    Best epoch: 11
+    MAE:  0.7628694
+    Correlation Coefficient:  0.7842101729963642
+    mult_acc_7:  0.43440233236151604
+    mult_acc_5:  0.4912536443148688
+    F1 score all/non0: 0.8236/0.8405 over 686/656
+    Accuracy all/non0: 0.8236/0.8399
+    Extreme Intensity MAE:  0.96623206
+
