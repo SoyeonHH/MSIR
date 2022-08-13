@@ -1,13 +1,32 @@
+from pathlib import Path
+
 import argparse
+
+sdk_dir = Path('/home/iknow/workspace/multimodal/CMU-MultimodalSDK')
+data_dir = Path('/home/iknow/workspace/multimodal')
+data_dict = {
+    'mosi': data_dir.joinpath('MOSI'),
+    'mosei': data_dir.joinpath('MOSEI'),
+    # 'processed-mosei' : data_dir.joinpath('PROCESSED-MOSEI'),
+    # 'processed-iemocap' : data_dir.joinpath('PROCESSED-IEMOCAP'),
+    'processed-mosei' : data_dir.joinpath('data'),
+    'processed-iemocap' : data_dir.joinpath('data'),
+}
+
 
 def get_args():
     parser = argparse.ArgumentParser(description='Multimodal End-to-End Sparse Model for Emotion Recognition')
 
+    # Dataset
+    parser.add_argument('--dataset', help='Use which dataset', type=str, required=False, choices=['mosei','iemocap'], default='mosei')
+    parser.add_argument('--datapath', help='Path of data', type=str, required=False)
+
     # Training hyper-parameters
     parser.add_argument('-bs', '--batch-size', help='Batch size', type=int, required=True)
     parser.add_argument('-lr', '--learning-rate', help='Learning rate', type=float, required=True)
-    parser.add_argument('-wd', '--weight-decay', help='Weight decay', type=float, required=False, default=0.0)
     parser.add_argument('-ep', '--epochs', help='Number of epochs', type=int, required=True)
+    
+    parser.add_argument('-wd', '--weight-decay', help='Weight decay', type=float, required=False, default=0.0)
     parser.add_argument('-es', '--early-stop', help='Early stop', type=int, required=False, default=5)
     parser.add_argument('-cu', '--cuda', help='Cude device number', type=str, required=False, default='0')
     parser.add_argument('-cl', '--clip', help='Use clip to gradients', type=float, required=False, default=-1.0)
@@ -18,7 +37,8 @@ def get_args():
     parser.add_argument('--text-lr-factor', help='Factor the learning rate of text model', type=int, required=False, default=10)
 
     # Model
-    parser.add_argument('-mo', '--model', help='Which model', type=str, required=False, default='mme2e')
+    parser.add_argument('-mo', '--model', help='Which model', type=str, required=False, 
+        default='mme2e', choices=['mme2e','mme2e_sparse','lf_rnn','lf_transformer'])
     parser.add_argument('--text-model-size', help='Size of the pre-trained text model', type=str, required=False, default='base')
     parser.add_argument('--fusion', help='How to fuse modalities', type=str, required=False, default='early')
     parser.add_argument('--feature-dim', help='Dimension of features outputed by each modality model', type=int, required=False, default=256)
@@ -34,10 +54,6 @@ def get_args():
     parser.add_argument('--img-interval', help='Interval to sample image frames', type=int, required=False, default=500)
     parser.add_argument('--hand-crafted', help='Use hand crafted features', action='store_true')
     parser.add_argument('--text-max-len', help='Max length of text after tokenization', type=int, required=False, default=300)
-
-    # Path
-    parser.add_argument('--datapath', help='Path of data', type=str, required=False, default='./data')
-    parser.add_argument('--dataset', help='Use which dataset', type=str, required=False, default='iemocap')
 
     # Evaluation
     parser.add_argument('-mod', '--modalities', help='what modalities to use', type=str, required=False, default='tav')
@@ -55,5 +71,7 @@ def get_args():
     parser.add_argument('-bi', '--bidirectional', help='Use Bi-LSTM', action='store_true')
     parser.add_argument('--gru', help='Use GRU rather than LSTM', action='store_true')
 
-    args = vars(parser.parse_args())
-    return args
+    args = parser.parse_args()
+    if not args.datapath:
+        args.datapath=data_dict[f"processed-{args.dataset.strip()}"]
+    return vars(args)
