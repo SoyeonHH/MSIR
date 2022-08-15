@@ -71,7 +71,7 @@ class SparseCrossModalAttentionLayer(nn.Module):
         for l in x_lens:
             batch_points_lens.append(sum(sample_points_lens[pointer:(pointer + l)]))
             pointer += l
-
+        batch_points_lens.append(len(x_k)-sum(batch_points_lens))
         x_ks = x_k.split(batch_points_lens, dim=0)
 
         attn_weights = []
@@ -87,6 +87,7 @@ class SparseCrossModalAttentionLayer(nn.Module):
         attn_weights_sparse = to_sparse_by_cdf(attn_weights, sample_points_lens, self.sparse_threshold)
 
         select_indices = attn_weights_sparse == 1
+        select_indices = torch.cat((select_indices, torch.zeros_like(select_indices,dtype=torch.bool)[:len(x_k)-len(select_indices)]),0)
         new_x = x[select_indices, :]
         new_locations = locations[select_indices, :]
 
@@ -97,6 +98,8 @@ def to_sparse_by_cdf(t: torch.tensor, lens, cdf: float):
     _t = list(_t.split(lens, dim=0))
 
     for i, this_t in enumerate(_t):
+        if len(this_t) == 0:
+            continue
         this_t_sorted, indices = torch.sort(this_t, descending=True)
         mask = torch.cumsum(this_t_sorted, dim=-1) < cdf
         mask[torch.sum(mask)] = True

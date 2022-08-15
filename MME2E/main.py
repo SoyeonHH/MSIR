@@ -12,7 +12,12 @@ from src.models.baselines.lf_rnn import LF_RNN
 from src.models.baselines.lf_transformer import LF_Transformer
 from src.trainers.emotiontrainer import IemocapTrainer
 
+
+import warnings
+
 if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
+
     start = time.time()
 
     args = get_args()
@@ -85,15 +90,15 @@ if __name__ == "__main__":
             optimizer = torch.optim.Adam([
                 {'params': model.T.parameters(), 'lr': lr / args['text_lr_factor']},
                 {'params': model.t_out.parameters(), 'lr': lr / args['text_lr_factor']},
-                # {'params': model.V.parameters()},
-                # {'params': model.v_flatten.parameters()},
-                # {'params': model.v_transformer.parameters()},
-                # {'params': model.v_out.parameters()},
-                # {'params': model.A.parameters()},
-                # {'params': model.a_flatten.parameters()},
-                # {'params': model.a_transformer.parameters()},
-                # {'params': model.a_out.parameters()},
-                # {'params': model.weighted_fusion.parameters()},
+                {'params': model.V.parameters()},
+                {'params': model.v_flatten.parameters()},
+                {'params': model.v_transformer.parameters()},
+                {'params': model.v_out.parameters()},
+                {'params': model.A.parameters()},
+                {'params': model.a_flatten.parameters()},
+                {'params': model.a_transformer.parameters()},
+                {'params': model.a_out.parameters()},
+                {'params': model.weighted_fusion.parameters()},
             ], lr=lr, weight_decay=args['weight_decay'])
     elif args['model'] == 'mme2e_sparse':
         model = MME2E_Sparse(args=args, device=device)
@@ -106,15 +111,15 @@ if __name__ == "__main__":
             optimizer = torch.optim.Adam([
                 {'params': model.T.parameters(), 'lr': lr / args['text_lr_factor']},
                 {'params': model.t_out.parameters(), 'lr': lr / args['text_lr_factor']},
-                # {'params': model.V.parameters()},
-                # {'params': model.v_flatten.parameters()},
-                # {'params': model.v_transformer.parameters()},
-                # {'params': model.v_out.parameters()},
-                # {'params': model.A.parameters()},
-                # {'params': model.a_flatten.parameters()},
-                # {'params': model.a_transformer.parameters()},
-                # {'params': model.a_out.parameters()},
-                # {'params': model.weighted_fusion.parameters()},
+                {'params': model.V.parameters()},
+                {'params': model.v_flatten.parameters()},
+                {'params': model.v_transformer.parameters()},
+                {'params': model.v_out.parameters()},
+                {'params': model.A.parameters()},
+                {'params': model.a_flatten.parameters()},
+                {'params': model.a_transformer.parameters()},
+                {'params': model.a_out.parameters()},
+                {'params': model.weighted_fusion.parameters()},
             ], lr=lr, weight_decay=args['weight_decay'])
     elif args['model'] == 'lf_rnn':
         model = LF_RNN(args)

@@ -12,3 +12,7 @@ python MISA/src/train.py --data mosi
 
 ## MAG
 # python MAG/multimodal_driver.py --dataset mosei
+
+# MME2E
+# python MME2E/main.py
+# python MME2E/main.py --model=mme2e
