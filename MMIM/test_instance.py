@@ -120,8 +120,8 @@ class TestMOSI(object):
             }
         
 
-        path = os.getcwd() + '/MMIM/dist/'+ 'MMIM_' + self.hp.dataset + '.pkl'
-        to_pickle(test_dict, path)
+        # path = os.getcwd() + '/MMIM/dist/'+ 'MMIM_' + self.hp.dataset + '.pkl'
+        # to_pickle(test_dict, path)
 
         path = os.getcwd() + '/results/' + 'MIM_' + self.hp.dataset + '.pkl'
         to_pickle(test_dict, path)

@@ -25,7 +25,7 @@ if __name__ == '__main__':
     args = get_args()
     dataset = str.lower(args.dataset.strip())
 
-    wandb.init(project="MIM")
+    wandb.init(project="MIM-mosei")
     wandb.config.update(args)
     
     set_seed(args.seed)
