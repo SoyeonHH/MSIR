@@ -5,7 +5,7 @@
 # python TFN/main.py --dataset mosi --model_name TFN
 
 ## MMIM
-# python MMIM/main.py --dataset mosei --contrast
+# python MMIM/main.py --dataset mosei
 
 ## MISA
 python MISA/src/train.py --data mosi

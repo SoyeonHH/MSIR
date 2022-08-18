@@ -39,7 +39,17 @@ def l2Loss(input: Tensor, target: Tensor) -> Tensor:
     return torch.mean((input - target)**2)
 
 def extremeLoss(input: Tensor, target: Tensor) -> Tensor:
-    return torch.mean(3.-torch.abs(input))
+    loss = []
+    for idx, target_instance in enumerate(target):
+        if target_instance == 0:
+            loss.append(torch.abs(input[idx]))
+        elif target_instance > 0:
+            loss.append(torch.abs(3. - input[idx]))
+        else:
+            loss.append(torch.abs(-3. - input[idx]))
+    return torch.mean(torch.cat(loss))
+    # return torch.mean(3. - torch.abs(input))
+    # return torch.mean(3.-torch.abs(input))
 
 
 class Solver(object):
@@ -74,11 +84,11 @@ class Solver(object):
             self.criterion = criterion = nn.CrossEntropyLoss(reduction="mean")
         else: # mosi and mosei are regression datasets
             self.criterion = criterion = nn.L1Loss(reduction="mean")
+            # self.criterion = lambda i,t: nn.L1Loss(reduction="mean")(i,t) + intensityLoss(i,t)
+            # self.criterion =lambda i,t: (3 / 5) * nn.L1Loss(reduction="mean")(i,t) + (2 / 5) * absIntensityLoss(i,t)
             # self.criterion = intensityLoss
-            # self.criterion = lambda i,t:  intensityLoss(i,t)+nn.L1Loss(reduction="mean")(i,t)
-            # self.criterion = lambda i,t:  nn.L1Loss(reduction="mean")(i,t)/2 + absAbsLoss(i,t)/2
             # self.criterion = extremeLoss
-        
+
 
         # optimizer
         self.optimizer={}
@@ -342,7 +352,7 @@ class Solver(object):
                     best_epoch = epoch
                     best_mae = test_loss
                     if self.hp.dataset in ["mosei_senti", "mosei"]:
-                        eval_mosei_senti(results, truths, True)
+                        eval_values = eval_mosei_senti(results, truths, True)
 
                     elif self.hp.dataset == 'mosi':
                         # eval_mosi(results, truths, True)
@@ -369,6 +379,7 @@ class Solver(object):
                         "test_corr": eval_values['corr'],
                         "test_f_score": eval_values['f1'],
                         "test_acc2": eval_values['acc2'],
+                        "test_acc2_non0": eval_values['acc2_non0'],
                         "test_acc5": eval_values['acc5'],
                         "test_acc7":eval_values['acc7'],
                         "best_valid_loss": best_valid,
