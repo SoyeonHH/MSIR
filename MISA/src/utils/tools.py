@@ -15,12 +15,12 @@ def save_load_name(args, name=''):
 def save_model(model, dataset=''):
     if not os.path.exists('pre_trained_models'):
         os.mkdir('pre_trained_models')
-    torch.save(model.state_dict(), f'pre_trained_models/best_model_MIM_{dataset}.pt')
+    torch.save(model.state_dict(), f'pre_trained_models/best_model_MISA_{dataset}.pt')
 
 
 def load_model(dataset=''):
     # name = save_load_name(args, name)
-    with open(f'pre_trained_models/best_model_MIM_{dataset}.pt', 'rb') as f:
+    with open(f'pre_trained_models/best_model_MISA_{dataset}.pt', 'rb') as f:
         buffer = io.BytesIO(f.read())
     model = torch.load(buffer)
     return model
@@ -44,11 +44,11 @@ def random_shuffle(tensor, dim=0):
 def save_hidden(tensor, dataset=''):
     if not os.path.exists('hidden_vectors'):
         os.mkdir('hidden_vectors')
-    torch.save(tensor, f'hidden_vectors/MIM_{dataset}.pt')
+    torch.save(tensor, f'hidden_vectors/MISA_{dataset}.pt')
 
 
 def load_hidden(dataset=''):
-    with open(f'hidden_vectors/MIM_{dataset}.pt', 'rb') as f:
+    with open(f'hidden_vectors/MISA_{dataset}.pt', 'rb') as f:
         buffer = io.BytesIO(f.read())
     H = torch.load(buffer)
     return H

@@ -1,6 +1,7 @@
 import torch
 import argparse
 import numpy as np
+import wandb
 
 from utils import *
 from torch.utils.data import DataLoader
@@ -23,6 +24,9 @@ def set_seed(seed):
 if __name__ == '__main__':
     args = get_args()
     dataset = str.lower(args.dataset.strip())
+
+    wandb.init(project="MIM")
+    wandb.config.update(args)
     
     set_seed(args.seed)
     print("Start loading the data....")

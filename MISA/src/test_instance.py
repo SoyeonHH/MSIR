@@ -69,8 +69,8 @@ def sent2class(test_preds_sent):
 
 
 class TestMOSI(object):
-    def __init__(self, model, test_config, test_data_loader):
-        self.model = model
+    def __init__(self, solver, test_config, test_data_loader):
+        self.model = solver.model
         self.config = test_config
         self.test_loader = test_data_loader
         self.H = []
@@ -86,24 +86,29 @@ class TestMOSI(object):
         with torch.no_grad():
             for i, batch in enumerate(tqdm(self.test_loader)):
 
-                text, visual, vlens, audio, alens, y, lengths, \
-                    bert_sent, bert_sent_type, bert_sent_mask, ids = batch
+                t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
                 
                 segment_list.extend(ids)
                 
                 # Gold-truth
                 labels.extend(y)
                 
-                # Predictions
-                device = torch.device('cuda')
-                text, audio, visual, y = text.to(device), audio.to(device), visual.to(device), y.to(device)
-                lengths = lengths.to(device)
-                bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
-                
-                _, _, logits, _, _, H = model(text, visual, audio, vlens, alens, bert_sent, bert_sent_type, bert_sent_mask)
+                t = to_gpu(t)
+                v = to_gpu(v)
+                a = to_gpu(a)
+                y = to_gpu(y)
+                # l = to_gpu(l)
+                l = to_cpu(l)
+                bert_sent = to_gpu(bert_sent)
+                bert_sent_type = to_gpu(bert_sent_type)
+                bert_sent_mask = to_gpu(bert_sent_mask)
 
-                preds.extend(logits.cpu().detach().numpy())
-                self.H.extend(H)
+                # Predictions
+                y_tilde = self.model(t, v, a, l, bert_sent, bert_sent_type, bert_sent_mask)
+                y_tilde = y_tilde.squeeze()
+
+                preds.extend(y_tilde.cpu().detach().numpy())
+                # self.H.extend(H)
 
             labels_2, labels_7 = sent2class(labels)
             preds_2, preds_7 = sent2class(preds)
