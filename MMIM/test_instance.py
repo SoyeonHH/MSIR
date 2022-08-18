@@ -120,9 +120,9 @@ class TestMOSI(object):
             }
         
 
-        # path = os.getcwd() + '/MMIM/dist/'+ 'MMIM_' + self.hp.dataset + '.pkl'
-        # to_pickle(test_dict, path)
+        path = os.getcwd() + f'/MMIM/dist/MMIM_{self.hp.dataset}{"_" if self.hp.name else ""}{self.hp.name}.pkl'
+        to_pickle(test_dict, path)
 
-        path = os.getcwd() + '/results/' + 'MIM_' + self.hp.dataset + '.pkl'
+        path = os.getcwd() + f'/results/MMIM_{self.hp.dataset}{"_" if self.hp.name else ""}{self.hp.name}.pkl'
         to_pickle(test_dict, path)
         save_hidden(self.H, self.hp.dataset)

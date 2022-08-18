@@ -20,13 +20,20 @@ import datetime
 import wandb
 
 def intensityLoss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean(torch.abs(target*torch.abs(target) - input))
+
+def squareLoss(input: Tensor, target: Tensor) -> Tensor:
     return torch.mean(torch.abs(input*torch.abs(input) - target*torch.abs(target)))
 
-def sqrtIntensityLoss(input: Tensor, target: Tensor) -> Tensor:
+def sqrtSquareLoss(input: Tensor, target: Tensor) -> Tensor:
     return torch.mean(torch.sqrt(torch.abs(input*torch.abs(input) - target*torch.abs(target))))
 
-def absIntensityLoss(input: Tensor, target: Tensor) -> Tensor:
+
+def absSquareLoss(input: Tensor, target: Tensor) -> Tensor:
     return torch.mean(torch.abs(input**2 - target**2))
+
+def absAbsLoss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean(torch.abs(torch.abs(input) - torch.abs(target)))
 
 def l2Loss(input: Tensor, target: Tensor) -> Tensor:
     return torch.mean((input - target)**2)
@@ -42,6 +49,8 @@ def extremeLoss(input: Tensor, target: Tensor) -> Tensor:
             loss.append(torch.abs(-3. - input[idx]))
     return torch.mean(torch.cat(loss))
     # return torch.mean(3. - torch.abs(input))
+    # return torch.mean(3.-torch.abs(input))
+
 
 class Solver(object):
     def __init__(self, hyp_params, train_loader, dev_loader, test_loader, is_train=True, model=None, pretrained_emb=None):
@@ -328,7 +337,11 @@ class Solver(object):
             print('Epoch {:2d} | Time {:5.4f} sec | Valid Loss {:5.4f} | Test Loss {:5.4f}'.format(epoch, duration, val_loss, test_loss))
             print("-"*50)
             
+            eval_mosi(results, truths, True)
+
             if val_loss < best_valid:
+                save_model(model, self.hp.dataset)
+
                 # update best validation
                 patience = self.hp.patience
                 best_valid = val_loss
