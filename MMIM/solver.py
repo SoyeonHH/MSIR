@@ -74,7 +74,7 @@ class Solver(object):
             self.criterion = criterion = nn.CrossEntropyLoss(reduction="mean")
         else: # mosi and mosei are regression datasets
             self.criterion = criterion = nn.L1Loss(reduction="mean")
-            self.criterion = intensityLoss
+            # self.criterion = intensityLoss
             # self.criterion = lambda i,t:  intensityLoss(i,t)+nn.L1Loss(reduction="mean")(i,t)
             # self.criterion = lambda i,t:  nn.L1Loss(reduction="mean")(i,t)/2 + absAbsLoss(i,t)/2
             # self.criterion = extremeLoss

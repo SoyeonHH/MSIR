@@ -71,8 +71,6 @@ def get_args():
     parser.add_argument('--data_path', type=str, default='datasets',
                         help='path for storing the dataset')
 
-    _args = parser.parse_args()
-    dataset_default_hp = mosi_hp if _args.dataset.strip() == 'mosi' else mosei_hp
 
     # Dropouts
     parser.add_argument('--dropout_a', type=float, default=0.1,
@@ -90,10 +88,8 @@ def get_args():
                         help='number of layers in LSTM encoders (default: 1)')
     parser.add_argument('--cpc_layers', type=int, default=1,
                         help='number of layers in CPC NCE estimator (default: 1)')
-    parser.add_argument('--d_vh', type=int, default=dataset_default_hp['d_vh'],
-                        help='hidden size in visual rnn')
-    parser.add_argument('--d_ah', type=int, default=dataset_default_hp['d_ah'],
-                        help='hidden size in acoustic rnn')
+    parser.add_argument('--d_vh', type=int, help='hidden size in visual rnn')
+    parser.add_argument('--d_ah', type=int, help='hidden size in acoustic rnn')
     parser.add_argument('--d_vout', type=int, default=16,
                         help='output size in visual rnn')
     parser.add_argument('--d_aout', type=int, default=16,
@@ -114,20 +110,14 @@ def get_args():
                         help='Activation layer type in all CPC modules')
 
     # Training Setting
-    parser.add_argument('--batch_size', type=int, metavar='N', default=dataset_default_hp['batch_size'],
-                        help='batch size (default: 32)')
-    parser.add_argument('--clip', type=float, default=dataset_default_hp['clip'],
-                        help='gradient clip value (default: 0.8)')
-    parser.add_argument('--lr_main', type=float, default=dataset_default_hp['lr_main'],
-                        help='initial learning rate for main model parameters (default: 1e-3)')
+    parser.add_argument('--batch_size', type=int, metavar='N', help='batch size (default: 32)')
+    parser.add_argument('--clip', type=float, help='gradient clip value (default: 0.8)')
+    parser.add_argument('--lr_main', type=float, help='initial learning rate for main model parameters (default: 1e-3)')
     parser.add_argument('--lr_bert', type=float, default=5e-5,
                         help='initial learning rate for bert parameters (default: 5e-5)')
-    parser.add_argument('--lr_mmilb', type=float, default=dataset_default_hp['lr_mmilb'],
-                        help='initial learning rate for mmilb parameters (default: 1e-3)')
-    parser.add_argument('--alpha', type=float, default=dataset_default_hp['alpha'],
-                        help='weight for CPC NCE estimation item (default: 0.1)')
-    parser.add_argument('--beta', type=float, default=dataset_default_hp['beta'],
-                        help='weight for lld item (default: 0.1)')
+    parser.add_argument('--lr_mmilb', type=float, help='initial learning rate for mmilb parameters (default: 1e-3)')
+    parser.add_argument('--alpha', type=float, help='weight for CPC NCE estimation item (default: 0.1)')
+    parser.add_argument('--beta', type=float, help='weight for lld item (default: 0.1)')
 
     parser.add_argument('--weight_decay_main', type=float, default=1e-4,
                         help='L2 penalty factor of the main Adam optimizer')
@@ -153,6 +143,26 @@ def get_args():
     parser.add_argument('--seed', type=int, default=1111,
                         help='random seed')
     args = parser.parse_args()
+
+    dataset_default_hp = mosi_hp if args.dataset.strip() == 'mosi' else mosei_hp
+
+    if not args.d_vh:
+        args.d_vh = dataset_default_hp['d_vh']
+    if not args.d_ah:
+        args.d_ah = dataset_default_hp['d_ah']
+    if not args.clip:
+        args.clip = dataset_default_hp['clip']
+    if not args.lr_main:
+        args.lr_main = dataset_default_hp['lr_main']
+    if not args.lr_mmilb:
+        args.lr_mmilb = dataset_default_hp['lr_mmilb']
+    if not args.batch_size:
+        args.batch_size = dataset_default_hp['batch_size']
+    if not args.alpha:
+        args.alpha = dataset_default_hp['alpha']
+    if not args.beta:
+        args.beta = dataset_default_hp['beta']
+        
     return args
 
 
