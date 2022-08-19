@@ -75,6 +75,10 @@ class IemocapTrainer(TrainerBase):
                     self.best_valid_stats = valid_stats
                     self.best_epoch = epoch
                     self.earlyStop = self.args['early_stop']
+
+                    self.save_stats()
+                    self.save_model()
+                    print('Results and model are saved!')
                 else:
                     self.earlyStop -= 1
             else:
@@ -116,9 +120,6 @@ class IemocapTrainer(TrainerBase):
             for i in range(len(self.headers)):
                 print(tabulate([[f'Test ({self.best_epoch})', *self.all_test_stats[self.best_epoch - 1][i]]], headers=self.headers[i]))
 
-        self.save_stats()
-        self.save_model()
-        print('Results and model are saved!')
 
     def valid(self):
         valid_stats = self.eval_one_epoch()

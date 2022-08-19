@@ -15,28 +15,7 @@ from src.trainers.emotiontrainer import IemocapTrainer
 
 import warnings
 
-if __name__ == "__main__":
-    warnings.filterwarnings("ignore")
-
-    start = time.time()
-
-    args = get_args()
-
-    # Fix seed for reproducibility
-    seed = args['seed']
-    torch.manual_seed(seed)
-    np.random.seed(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-
-    # Set device
-    os.environ["CUDA_VISIBLE_DEVICES"] = args['cuda']
-    # device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    device = torch.device(f"cuda:{args['cuda']}" if torch.cuda.is_available() else 'cpu')
-    # torch.cuda.set_device(int(args['cuda']))
-
-    print("Start loading the data....")
-
+def get_data_loader(args):
     if args['dataset'] == 'iemocap':
         train_dataset = get_dataset_iemocap(data_folder=args['datapath'], phase='train',
                                             img_interval=args['img_interval'], hand_crafted_features=args['hand_crafted'])
@@ -67,17 +46,10 @@ if __name__ == "__main__":
         train_loader = DataLoader(train_dataset, batch_size=args['batch_size'], shuffle=True, num_workers=2, collate_fn=collate_fn_hcf_mosei if args['hand_crafted'] else collate_fn)
         valid_loader = DataLoader(valid_dataset, batch_size=args['batch_size'], shuffle=False, num_workers=2, collate_fn=collate_fn_hcf_mosei if args['hand_crafted'] else collate_fn)
         test_loader = DataLoader(test_dataset, batch_size=args['batch_size'], shuffle=False, num_workers=2, collate_fn=collate_fn_hcf_mosei if args['hand_crafted'] else collate_fn)
+    return train_loader,valid_loader,test_loader
 
-    print(f'# Train samples = {len(train_loader.dataset)}')
-    print(f'# Valid samples = {len(valid_loader.dataset)}')
-    print(f'# Test samples = {len(test_loader.dataset)}')
 
-    dataloaders = {
-        'train': train_loader,
-        'valid': valid_loader,
-        'test': test_loader
-    }
-
+def get_model_optimizer(args, device):
     lr = args['learning_rate']
     if args['model'] == 'mme2e':
         model = MME2E(args=args, device=device)
@@ -85,7 +57,7 @@ if __name__ == "__main__":
 
         # When using a pre-trained text modal, you can use text_lr_factor to give a smaller leraning rate to the textual model parts
         if args['text_lr_factor'] == 1:
-            optimizer = torch.optim.Adam(model.parameters(), lr=args['learning_rate'], weight_decay=args['weight_decay'])
+            optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=args['weight_decay'])
         else:
             optimizer = torch.optim.Adam([
                 {'params': model.T.parameters(), 'lr': lr / args['text_lr_factor']},
@@ -106,7 +78,7 @@ if __name__ == "__main__":
 
         # When using a pre-trained text modal, you can use text_lr_factor to give a smaller leraning rate to the textual model parts
         if args['text_lr_factor'] == 1:
-            optimizer = torch.optim.Adam(model.parameters(), lr=args['learning_rate'], weight_decay=args['weight_decay'])
+            optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=args['weight_decay'])
         else:
             optimizer = torch.optim.Adam([
                 {'params': model.T.parameters(), 'lr': lr / args['text_lr_factor']},
@@ -131,6 +103,35 @@ if __name__ == "__main__":
         optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=args['weight_decay'])
     else:
         raise ValueError('Incorrect model name!')
+    return model,optimizer
+
+if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
+
+    start = time.time()
+
+    args = get_args()
+
+    # Fix seed for reproducibility
+    torch.manual_seed(args['seed'])
+    np.random.seed(args['seed'])
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+    # Set device
+    os.environ["CUDA_VISIBLE_DEVICES"] = args['cuda']
+    # device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = torch.device(f"cuda:{args['cuda']}" if torch.cuda.is_available() else 'cpu')
+    # torch.cuda.set_device(int(args['cuda']))
+
+    print("Start loading the data....")
+    train_loader, valid_loader, test_loader = get_data_loader(args)
+
+    print(f'# Train samples = {len(train_loader.dataset)}')
+    print(f'# Valid samples = {len(valid_loader.dataset)}')
+    print(f'# Test samples = {len(test_loader.dataset)}')
+
+    model, optimizer = get_model_optimizer(args, device)
 
     if args['scheduler']:
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args['epochs'] * len(train_loader.dataset) // args['batch_size'])
@@ -144,13 +145,17 @@ if __name__ == "__main__":
     elif args['loss'] == 'ce':
         criterion = torch.nn.CrossEntropyLoss()
     elif args['loss'] == 'bce':
-        pos_weight = train_dataset.getPosWeight()
+        pos_weight = train_loader.dataset.getPosWeight()
         pos_weight = torch.tensor(pos_weight).to(device)
         criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
         # criterion = torch.nn.BCEWithLogitsLoss()
 
     if args['dataset'] == 'iemocap' or 'mosei':
-        trainer = IemocapTrainer(args, model, criterion, optimizer, scheduler, device, dataloaders)
+        trainer = IemocapTrainer(args, model, criterion, optimizer, scheduler, device, {
+            'train': train_loader,
+            'valid': valid_loader,
+            'test': test_loader
+        })
 
     if args['test']:
         trainer.test()
