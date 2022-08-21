@@ -1,5 +1,5 @@
 import torch
-from torch import nn
+from torch import nn, Tensor
 import sys
 import torch.optim as optim
 import numpy as np
@@ -16,6 +16,41 @@ from utils.eval_metrics import *
 from utils.tools import *
 from model import MMIM
 import pickle
+import datetime
+import wandb
+
+def intensityLoss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean(torch.abs(target*torch.abs(target) - input))
+
+def squareLoss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean(torch.abs(input*torch.abs(input) - target*torch.abs(target)))
+
+def sqrtSquareLoss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean(torch.sqrt(torch.abs(input*torch.abs(input) - target*torch.abs(target))))
+
+
+def absSquareLoss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean(torch.abs(input**2 - target**2))
+
+def absAbsLoss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean(torch.abs(torch.abs(input) - torch.abs(target)))
+
+def l2Loss(input: Tensor, target: Tensor) -> Tensor:
+    return torch.mean((input - target)**2)
+
+def extremeLoss(input: Tensor, target: Tensor) -> Tensor:
+    loss = []
+    for idx, target_instance in enumerate(target):
+        if target_instance == 0:
+            loss.append(torch.abs(input[idx]))
+        elif target_instance > 0:
+            loss.append(torch.abs(3. - input[idx]))
+        else:
+            loss.append(torch.abs(-3. - input[idx]))
+    return torch.mean(torch.cat(loss))
+    # return torch.mean(3. - torch.abs(input))
+    # return torch.mean(3.-torch.abs(input))
+
 
 class Solver(object):
     def __init__(self, hyp_params, train_loader, dev_loader, test_loader, is_train=True, model=None, pretrained_emb=None):
@@ -49,7 +84,12 @@ class Solver(object):
             self.criterion = criterion = nn.CrossEntropyLoss(reduction="mean")
         else: # mosi and mosei are regression datasets
             self.criterion = criterion = nn.L1Loss(reduction="mean")
-        
+            # self.criterion = lambda i,t: nn.L1Loss(reduction="mean")(i,t) + intensityLoss(i,t)
+            # self.criterion =lambda i,t: (3 / 5) * nn.L1Loss(reduction="mean")(i,t) + (2 / 5) * absIntensityLoss(i,t)
+            # self.criterion = intensityLoss
+            # self.criterion = extremeLoss
+
+
         # optimizer
         self.optimizer={}
 
@@ -156,7 +196,7 @@ class Solver(object):
                 else:
                     mem = {'tv': None, 'ta': None, 'va': None}
 
-                lld, nce, preds, pn_dic, H = model(text, visual, audio, vlens, alens, 
+                lld, nce, preds, pn_dic, H, _ = model(text, visual, audio, vlens, alens, 
                                                 bert_sent, bert_sent_type, bert_sent_mask, y, mem)
 
                 if stage == 1:
@@ -251,7 +291,7 @@ class Solver(object):
                     batch_size = lengths.size(0) # bert_sent in size (bs, seq_len, emb_size)
 
                     # we don't need lld and bound anymore
-                    _, _, preds, _, _ = model(text, vision, audio, vlens, alens, bert_sent, bert_sent_type, bert_sent_mask)
+                    _, _, preds, _, _, _ = model(text, vision, audio, vlens, alens, bert_sent, bert_sent_type, bert_sent_mask)
 
                     if self.hp.dataset in ['mosi', 'mosei', 'mosei_senti'] and test:
                         criterion = nn.L1Loss()
@@ -271,6 +311,7 @@ class Solver(object):
         best_valid = 1e8
         best_mae = 1e8
         patience = self.hp.patience
+        total_start = time.time()
 
         for epoch in range(1, self.hp.num_epochs+1):
             start = time.time()
@@ -296,7 +337,11 @@ class Solver(object):
             print('Epoch {:2d} | Time {:5.4f} sec | Valid Loss {:5.4f} | Test Loss {:5.4f}'.format(epoch, duration, val_loss, test_loss))
             print("-"*50)
             
+            eval_mosi(results, truths, True)
+
             if val_loss < best_valid:
+                save_model(model, self.hp.dataset)
+
                 # update best validation
                 patience = self.hp.patience
                 best_valid = val_loss
@@ -307,21 +352,41 @@ class Solver(object):
                     best_epoch = epoch
                     best_mae = test_loss
                     if self.hp.dataset in ["mosei_senti", "mosei"]:
-                        eval_mosei_senti(results, truths, True)
+                        eval_values = eval_mosei_senti(results, truths, True)
 
                     elif self.hp.dataset == 'mosi':
-                        eval_mosi(results, truths, True)
+                        # eval_mosi(results, truths, True)
+                        eval_values = eval_mosei_senti(results, truths, True)
                     elif self.hp.dataset == 'iemocap':
                         eval_iemocap(results, truths)
                     
                     best_results = results
                     best_truths = truths
                     print(f"Saved model at pre_trained_models/MM.pt!")
-                    save_model(self.hp, model)
+                    save_model(model, self.hp.dataset)
             else:
                 patience -= 1
                 if patience == 0:
                     break
+            
+            wandb.log(
+                (
+                    {
+                        "train_loss": train_loss,
+                        "valid_loss": val_loss,
+                        "test_mae": eval_values['mae'],
+                        "test_mae_extreme": eval_values['mae_intensity'],
+                        "test_corr": eval_values['corr'],
+                        "test_f_score": eval_values['f1'],
+                        "test_acc2": eval_values['acc2'],
+                        "test_acc2_non0": eval_values['acc2_non0'],
+                        "test_acc5": eval_values['acc5'],
+                        "test_acc7":eval_values['acc7'],
+                        "best_valid_loss": best_valid,
+                        "best_test_loss": best_mae
+                    }
+                )
+            )
 
         print(f'Best epoch: {best_epoch}')
         if self.hp.dataset in ["mosei_senti", "mosei"]:
@@ -329,8 +394,11 @@ class Solver(object):
         elif self.hp.dataset == 'mosi':
             self.best_dict = eval_mosi(best_results, best_truths, True)
         elif self.hp.dataset == 'iemocap':
-            eval_iemocap(results, truths)       
+            eval_iemocap(results, truths)
+
+        total_end = time.time()
+        total_duration = total_end - total_start
+        print(f"Total training time: {total_duration}s, {datetime.timedelta(seconds=total_duration)}") 
         sys.stdout.flush()
 
-        save_model(self.hp, model)
         return model

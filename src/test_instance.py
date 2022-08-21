@@ -149,9 +149,14 @@ class TestMOSI(object):
             # 'audio_7': audio_7
             }
         
+        
+        path = os.getcwd() + '/src/dist/' + self.hp.model_name + '_' + self.hp.dataset + '.pkl'
+        to_pickle(test_dict, path)
+
         ## Make results directory on yourself
         path = os.getcwd() + '/results/' + self.hp.model_name + '_' + self.hp.dataset + '.pkl'
         to_pickle(test_dict, path)
 
         ## Save hidden spaces
         save_hidden(self.H, self.model_name, self.hp.dataset)
+

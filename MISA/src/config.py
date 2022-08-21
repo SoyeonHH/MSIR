@@ -9,25 +9,46 @@ from torch import optim
 import torch.nn as nn
 
 # path to a pretrained word embedding file
-# word_emb_path = '/mnt/soyeon/workspace/glove.840B.300d.txt'
-word_emb_path = '/home/ubuntu/soyeon/glove.840B.300d.txt'
+word_emb_path = '/home/iknow/workspace/multimodal/glove.840B.300d.txt'
 assert(word_emb_path is not None)
 
 
-# username = Path.home().name
-# project_dir = Path(__file__).resolve().parent.parent
-# sdk_dir = project_dir.joinpath('CMU-MultimodalSDK')
-# data_dir = project_dir.joinpath('datasets')
-
-sdk_dir = Path('/home/ubuntu/soyeon/CMU-MultimodalSDK')
-data_dir = Path('/home/ubuntu/soyeon/MSIR/datasets')
-data_dict = {'mosi': data_dir.joinpath('MOSI'), 'mosei': data_dir.joinpath(
-    'MOSEI'), 'ur_funny': data_dir.joinpath('UR_FUNNY')}
+sdk_dir = Path('/home/iknow/workspace/multimodal/CMU-MultimodalSDK')
+data_dir = Path('/home/iknow/workspace/multimodal')
+data_dict = {'mosi': data_dir.joinpath('MOSI'), 'mosei': data_dir.joinpath('MOSEI')}
 optimizer_dict = {'RMSprop': optim.RMSprop, 'Adam': optim.Adam}
 activation_dict = {'elu': nn.ELU, "hardshrink": nn.Hardshrink, "hardtanh": nn.Hardtanh,
                    "leakyrelu": nn.LeakyReLU, "prelu": nn.PReLU, "relu": nn.ReLU, "rrelu": nn.RReLU,
                    "tanh": nn.Tanh}
 
+output_dim_dict = {
+    'mosi': 1,
+    'mosei_senti': 1,
+}
+
+criterion_dict = {
+    'mosi': 'L1Loss',
+    'iemocap': 'CrossEntropyLoss',
+    'ur_funny': 'CrossEntropyLoss'
+}
+
+mosi_hp = {
+    'activate': 'relu',
+    'batch_size': 64,
+    'alpha': 1.0,
+    'beta': 0.3,
+    'gamma': 1.0,
+    'dropout': 0.5
+}
+
+mosei_hp = {
+    'activate': 'leakyrelu',
+    'batch_size': 16,
+    'alpha': 0.7,
+    'beta': 0.3,
+    'gamma': 0.7,
+    'dropout': 0.1
+}
 
 def str2bool(v):
     """string to boolean"""
@@ -84,19 +105,25 @@ def get_config(parse=True, **optional_kwargs):
     parser.add_argument('--use_bert', type=str2bool, default=True)
     parser.add_argument('--use_cmd_sim', type=str2bool, default=True)
 
+    # Data
+    parser.add_argument('--data', type=str, default='mosi')
+
+    _args = parser.parse_args()
+    dataset_default_hp = mosi_hp if _args.data.strip() == 'mosi' else mosei_hp
+
     # Train
     time_now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
     parser.add_argument('--name', type=str, default=f"{time_now}")
     parser.add_argument('--num_classes', type=int, default=0)
-    parser.add_argument('--batch_size', type=int, default=128)
+    parser.add_argument('--batch_size', type=int, default=dataset_default_hp['batch_size'])
     parser.add_argument('--eval_batch_size', type=int, default=10)
-    parser.add_argument('--n_epoch', type=int, default=500)
+    parser.add_argument('--n_epoch', type=int, default=5)
     parser.add_argument('--patience', type=int, default=6)
 
-    parser.add_argument('--diff_weight', type=float, default=0.3)
-    parser.add_argument('--sim_weight', type=float, default=1.0)
+    parser.add_argument('--diff_weight', type=float, default=dataset_default_hp['beta'])
+    parser.add_argument('--sim_weight', type=float, default=dataset_default_hp['alpha'])
     parser.add_argument('--sp_weight', type=float, default=0.0)
-    parser.add_argument('--recon_weight', type=float, default=1.0)
+    parser.add_argument('--recon_weight', type=float, default=dataset_default_hp['gamma'])
 
     parser.add_argument('--learning_rate', type=float, default=1e-4)
     parser.add_argument('--optimizer', type=str, default='Adam')
@@ -105,17 +132,14 @@ def get_config(parse=True, **optional_kwargs):
     parser.add_argument('--rnncell', type=str, default='lstm')
     parser.add_argument('--embedding_size', type=int, default=300)
     parser.add_argument('--hidden_size', type=int, default=128)
-    parser.add_argument('--dropout', type=float, default=0.5)
+    parser.add_argument('--dropout', type=float, default=dataset_default_hp['dropout'])
     parser.add_argument('--reverse_grad_weight', type=float, default=1.0)
     # Selectin activation from 'elu', "hardshrink", "hardtanh", "leakyrelu", "prelu", "relu", "rrelu", "tanh"
-    parser.add_argument('--activation', type=str, default='relu')
+    parser.add_argument('--activation', type=str, default=dataset_default_hp['activate'])
 
     # Model
     parser.add_argument('--model', type=str,
                         default='MISA', help='one of {MISA, }')
-
-    # Data
-    parser.add_argument('--data', type=str, default='mosi')
 
     # Parse arguments
     if parse:

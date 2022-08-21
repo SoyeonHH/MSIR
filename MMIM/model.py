@@ -4,6 +4,7 @@ import torch.nn.functional as F
 
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence, pad_packed_sequence
 from modules.encoders import LanguageEmbeddingLayer, CPC, MMILB, RNNEncoder, SubNet
+from torch.nn.parameter import Parameter
 
 from transformers import BertModel, BertConfig
 
@@ -89,6 +90,11 @@ class MMIM(nn.Module):
             n_class = hp.n_class,
             dropout = hp.dropout_prj
         )
+
+        # in TFN we are doing a regression with constrained output range: (-3, 3), hence we'll apply sigmoid to output
+        # shrink it to (0, 1), and scale\shift it back to range (-3, 3)
+        self.output_range = Parameter(torch.FloatTensor([6]), requires_grad=False)
+        self.output_shift = Parameter(torch.FloatTensor([-3]), requires_grad=False)
             
     def forward(self, sentences, visual, acoustic, v_len, a_len, bert_sent, bert_sent_type, bert_sent_mask, y=None, mem=None):
         """
@@ -116,6 +122,8 @@ class MMIM(nn.Module):
 
         # Linear proj and pred
         fusion, preds = self.fusion_prj(torch.cat([text, acoustic, visual], dim=1))
+        preds = F.sigmoid(preds)
+        preds = preds * self.output_range + self.output_shift
 
         nce_t = self.cpc_zt(text, fusion)
         nce_v = self.cpc_zv(visual, fusion)
@@ -127,4 +135,4 @@ class MMIM(nn.Module):
         lld = lld_tv + lld_ta + (lld_va if self.add_va else 0.0)
         H = H_tv + H_ta + (H_va if self.add_va else 0.0)
 
-        return lld, nce, preds, pn_dic, H
+        return lld, nce, preds, pn_dic, H, fusion

@@ -1,5 +1,4 @@
 import os
-from pyexpat import model
 import sys
 import math
 from math import isnan
@@ -22,6 +21,11 @@ from torch.nn import functional as F
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 import config
+from utils.tools import *
+from utils.eval_metrics import *
+import time
+import datetime
+import wandb
 
 torch.manual_seed(123)
 torch.cuda.manual_seed_all(123)
@@ -42,8 +46,13 @@ class Solver(object):
         self.test_data_loader = test_data_loader
         self.is_train = is_train
         self.model = model
+        
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        else:
+            self.device = torch.device("cpu")
     
-    @time_desc_decorator('Build Graph')
+    # @time_desc_decorator('Build Graph')
     def build(self, cuda=True):
 
         if self.model is None:
@@ -72,18 +81,16 @@ class Solver(object):
                 self.model.embed.weight.data = self.train_config.pretrained_emb
             self.model.embed.requires_grad = False
         
-        if torch.cuda.is_available() and cuda:
-            self.model.cuda()
+        # if torch.cuda.is_available() and cuda:
+        self.model.to(self.device)
 
         if self.is_train:
             self.optimizer = self.train_config.optimizer(
                 filter(lambda p: p.requires_grad, self.model.parameters()),
                 lr=self.train_config.learning_rate)
-        
-        return self.model
 
 
-    @time_desc_decorator('Training Start!')
+    # @time_desc_decorator('Training Start!')
     def train(self):
         curr_patience = patience = self.train_config.patience
         num_trials = 1
@@ -102,10 +109,12 @@ class Solver(object):
         self.loss_cmd = CMD()
         
         best_valid_loss = float('inf')
+        best_train_loss = float('inf')
         lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(self.optimizer, gamma=0.5)
         
         train_losses = []
         valid_losses = []
+        # total_start = time.time()
         for e in range(self.train_config.n_epoch):
             self.model.train()
 
@@ -113,9 +122,9 @@ class Solver(object):
             train_loss_recon = []
             train_loss_sp = []
             train_loss = []
-            for batch in self.train_data_loader:
+            for idx, batch in enumerate(tqdm(self.train_data_loader)):
                 self.model.zero_grad()
-                t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask = batch
+                t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
                 # batch_size = t.size(0)
                 t = to_gpu(t)
@@ -129,6 +138,7 @@ class Solver(object):
                 bert_sent_mask = to_gpu(bert_sent_mask)
 
                 y_tilde = self.model(t, v, a, l, bert_sent, bert_sent_type, bert_sent_mask)
+                y_tilde = y_tilde.squeeze()
                 
                 if self.train_config.data == "ur_funny":
                     y = y.squeeze()
@@ -164,16 +174,23 @@ class Solver(object):
             train_losses.append(train_loss)
             print(f"Training loss: {round(np.mean(train_loss), 4)}")
 
-            valid_loss, valid_acc = self.eval(mode="dev")
+            valid_loss, valid_acc, preds, truths = self.eval(mode="dev")
             
             print(f"Current patience: {curr_patience}, current trial: {num_trials}.")
             if valid_loss <= best_valid_loss:
                 best_valid_loss = valid_loss
+                best_results = preds
+                best_truths = truths
+                best_epoch = e
                 print("Found new best model on dev set!")
                 if not os.path.exists('checkpoints'): os.makedirs('checkpoints')
                 torch.save(self.model.state_dict(), f'checkpoints/model_{self.train_config.name}.std')
                 torch.save(self.optimizer.state_dict(), f'checkpoints/optim_{self.train_config.name}.std')
                 curr_patience = patience
+                # 임의로 모델 경로 지정 및 저장
+                save_model(self.model, self.train_config.data)
+                # Print best model results
+                eval_values = eval_mosei_senti(best_results, best_truths, True)
             else:
                 curr_patience -= 1
                 if curr_patience <= -1:
@@ -185,12 +202,34 @@ class Solver(object):
                     lr_scheduler.step()
                     print(f"Current learning rate: {self.optimizer.state_dict()['param_groups'][0]['lr']}")
             
+            wandb.log(
+                (
+                    {
+                        "train_loss": train_loss,
+                        "valid_loss": valid_loss,
+                        "test_mae": eval_values['mae'],
+                        "test_mae_extreme": eval_values['mae_intensity'],
+                        "test_corr": eval_values['corr'],
+                        "test_f_score": eval_values['f1'],
+                        "test_acc2": eval_values['acc2'],
+                        "test_acc2_non0": eval_values['acc2_non0'],
+                        "test_acc5": eval_values['acc5'],
+                        "test_acc7":eval_values['acc7'],
+                        "best_valid_loss": best_valid_loss,
+                    }
+                )
+            )
+            
             # if num_trials <= 0:
             #     print("Running out of patience, early stopping.")
             #     break
 
-        self.eval(mode="test", to_print=True)
-
+        train_loss, acc, test_preds, test_truths = self.eval(mode="test", to_print=True)
+        print(f'Best epoch: {best_epoch}')
+        eval_values_best = eval_mosei_senti(best_results, best_truths, True)
+        # total_end = time.time()
+        # total_duration = total_end - total_start
+        # print(f"Total training time: {total_duration}s, {datetime.timedelta(seconds=total_duration)}")
 
 
     
@@ -215,7 +254,7 @@ class Solver(object):
 
             for batch in dataloader:
                 self.model.zero_grad()
-                t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask = batch
+                t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
                 t = to_gpu(t)
                 v = to_gpu(v)
@@ -228,7 +267,8 @@ class Solver(object):
                 bert_sent_mask = to_gpu(bert_sent_mask)
 
                 y_tilde = self.model(t, v, a, l, bert_sent, bert_sent_type, bert_sent_mask)
-
+                y_tilde = y_tilde.squeeze()
+                
                 if self.train_config.data == "ur_funny":
                     y = y.squeeze()
                 
@@ -245,7 +285,7 @@ class Solver(object):
 
         accuracy = self.calc_metrics(y_true, y_pred, mode, to_print)
 
-        return eval_loss, accuracy
+        return eval_loss, accuracy, y_pred, y_true
 
     def multiclass_acc(self, preds, truths):
         """
