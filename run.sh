@@ -1,4 +1,5 @@
 ## Experiments (model_name: TFN, Glove, Facet, COVAREP)
+
 # python src/main.py --dataset mosi --model_name COVAREP --learning_rate 0.0005 --num_epochs 50
 
 ## TFN
