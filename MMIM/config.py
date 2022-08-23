@@ -136,6 +136,9 @@ def get_args():
                         help='when to stop training if best never change')
     parser.add_argument('--update_batch', type=int, default=1,
                         help='update batch interval')
+    
+    # Cuda
+    parser.add_argument('--device', type=str, default='cuda:0')
 
     # Logistics
     parser.add_argument('--log_interval', type=int, default=100,
@@ -202,3 +205,6 @@ def get_config(dataset='mosi', mode='train', batch_size=32):
     config.batch_size = batch_size
 
     return config
+
+args = get_args()
+DEVICE = args.device

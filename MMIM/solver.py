@@ -74,7 +74,7 @@ class Solver(object):
             self.model = model = MMIM(hp)
         
         if torch.cuda.is_available():
-            self.device = torch.device("cuda")
+            self.device = torch.device(hp.device)
             model = model.to(self.device)
         else:
             self.device = torch.device("cpu")
@@ -88,7 +88,6 @@ class Solver(object):
             # self.criterion =lambda i,t: (3 / 5) * nn.L1Loss(reduction="mean")(i,t) + (2 / 5) * absIntensityLoss(i,t)
             # self.criterion = intensityLoss
             # self.criterion = extremeLoss
-
 
         # optimizer
         self.optimizer={}
@@ -176,8 +175,7 @@ class Solver(object):
                         break
                 model.zero_grad()
 
-                # with torch.cuda.device(0):
-                device = torch.device('cuda')
+                device = torch.device(self.hp.device)
                 text, visual, audio, y, l, bert_sent, bert_sent_type, bert_sent_mask = \
                 text.to(device), visual.to(device), audio.to(device), y.to(device), l.to(device), bert_sent.to(device), \
                 bert_sent_type.to(device), bert_sent_mask.to(device)
@@ -278,7 +276,7 @@ class Solver(object):
                     text, vision, vlens, audio, alens, y, lengths, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
                     # with torch.cuda.device(0):
-                    device = torch.device('cuda')
+                    device = torch.device(self.hp.device)
                     text, audio, vision, y = text.to(device), audio.to(device), vision.to(device), y.to(device)
                     lengths = lengths.to(device)
                     bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
