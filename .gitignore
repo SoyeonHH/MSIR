@@ -10,3 +10,4 @@ checkpoints
 wandb
 *.so
 *.o
+build
