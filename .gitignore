@@ -8,4 +8,6 @@ checkpoints
 *.txt
 .vscode
 wandb
-
+*.so
+*.o
+build

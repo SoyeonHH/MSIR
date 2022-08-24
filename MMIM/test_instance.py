@@ -26,6 +26,7 @@ from torch.nn import functional as F
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, TensorDataset
 
+torch.cuda.set_device(DEVICE)
 torch.manual_seed(123)
 torch.cuda.manual_seed_all(123)
 
@@ -96,7 +97,7 @@ class TestMOSI(object):
                 labels.extend(y)
                 
                 # Predictions
-                device = torch.device('cuda')
+                device = torch.device(self.hp.device)
                 text, audio, visual, y = text.to(device), audio.to(device), visual.to(device), y.to(device)
                 lengths = lengths.to(device)
                 bert_sent, bert_sent_type, bert_sent_mask = bert_sent.to(device), bert_sent_type.to(device), bert_sent_mask.to(device)
@@ -120,8 +121,8 @@ class TestMOSI(object):
             }
         
 
-        path = os.getcwd() + f'/MMIM/dist/MMIM_{self.hp.dataset}{"_" if self.hp.name else ""}{self.hp.name}.pkl'
-        to_pickle(test_dict, path)
+        # path = os.getcwd() + f'/MMIM/dist/MMIM_{self.hp.dataset}{"_" if self.hp.name else ""}{self.hp.name}.pkl'
+        # to_pickle(test_dict, path)
 
         path = os.getcwd() + f'/results/MMIM_{self.hp.dataset}{"_" if self.hp.name else ""}{self.hp.name}.pkl'
         to_pickle(test_dict, path)
