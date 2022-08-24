@@ -41,6 +41,10 @@ def l2Loss(input: Tensor, target: Tensor) -> Tensor:
 def extremeLoss(input: Tensor, target: Tensor) -> Tensor:
     return torch.mean(3.-torch.abs(input))
 
+def extendRangeLoss(a:float=1):
+    def f(input: Tensor, target: Tensor) -> Tensor:
+        return torch.mean(torch.abs(a * input - target))
+    return f
 
 class Solver(object):
     def __init__(self, hyp_params, train_loader, dev_loader, test_loader, is_train=True, model=None, pretrained_emb=None):
@@ -77,7 +81,7 @@ class Solver(object):
             # self.criterion = intensityLoss
             # self.criterion = lambda i,t:  intensityLoss(i,t)+nn.L1Loss(reduction="mean")(i,t)
             # self.criterion = lambda i,t:  nn.L1Loss(reduction="mean")(i,t)/2 + absAbsLoss(i,t)/2
-            # self.criterion = extremeLoss
+            # self.criterion = extendRangeLoss(2.5/3)
         
 
         # optimizer
@@ -329,16 +333,23 @@ class Solver(object):
             
             eval_mosi(results, truths, True)
 
+            # if epoch == 19:
+            #     print(f"Saved model at pre_trained_models/MM.pt!")
+            #     save_model(model, self.hp.dataset)
+
+
             if val_loss < best_valid:
                 save_model(model, self.hp.dataset)
 
-                # update best validation
-                patience = self.hp.patience
-                best_valid = val_loss
                 # for ur_funny we don't care about
                 if self.hp.dataset == "ur_funny":
                     eval_humor(results, truths, True)
                 elif test_loss < best_mae:
+                    # update best validation
+                    patience = self.hp.patience
+                    best_valid = val_loss
+
+                    # update best test
                     best_epoch = epoch
                     best_mae = test_loss
                     if self.hp.dataset in ["mosei_senti", "mosei"]:
