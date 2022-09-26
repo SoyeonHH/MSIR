@@ -25,8 +25,8 @@ word2id = defaultdict(lambda: len(word2id))
 UNK = word2id['<unk>']
 PAD = word2id['<pad>']
 
-word_emb_path = '/home/iknow/workspace/multimodal/glove.840B.300d.txt'
-sdk_dir = Path('/home/iknow/workspace/multimodal/CMU-MultimodalSDK')
+word_emb_path = '/data1/multimodal/glove.840B.300d.txt'
+sdk_dir = Path('/data1/multimodal/CMU-MultimodalSDK')
 
 # turn off the word2id - define a named function here to allow for pickling
 def return_unk():
