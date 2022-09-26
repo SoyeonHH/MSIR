@@ -8,6 +8,7 @@ from tqdm import tqdm_notebook
 from collections import defaultdict
 from mmsdk import mmdatasdk as md
 from subprocess import check_call, CalledProcessError
+from pathlib import Path
 
 import torch
 import torch.nn as nn
@@ -24,8 +25,8 @@ word2id = defaultdict(lambda: len(word2id))
 UNK = word2id['<unk>']
 PAD = word2id['<pad>']
 
-# word_emb_path = '/mnt/soyeon/workspace/glove.840B.300d.txt'
-# sdk_dir = Path('/mnt/soyeon/workspace/multimodal/CMU-MultimodalSDK')
+word_emb_path = '/data1/multimodal/glove.840B.300d.txt'
+sdk_dir = Path('/data1/multimodal/CMU-MultimodalSDK')
 
 # turn off the word2id - define a named function here to allow for pickling
 def return_unk():
@@ -67,9 +68,9 @@ class MOSI:
 
         # If cached data if already exists
         try:
-            self.train = load_pickle(DATA_PATH + '/train.pkl')
-            self.dev = load_pickle(DATA_PATH + '/dev.pkl')
-            self.test = load_pickle(DATA_PATH + '/test.pkl')
+            self.train = load_pickle(DATA_PATH + '/train_noalign.pkl')
+            self.dev = load_pickle(DATA_PATH + '/dev_noalign.pkl')
+            self.test = load_pickle(DATA_PATH + '/test_noalign.pkl')
             self.pretrained_emb, self.word2id = torch.load(CACHE_PATH)
 
         except:
@@ -217,9 +218,9 @@ class MOSI:
             torch.save((pretrained_emb, word2id), CACHE_PATH)
 
             # Save pickles
-            to_pickle(train, DATA_PATH + '/train.pkl')
-            to_pickle(dev, DATA_PATH + '/dev.pkl')
-            to_pickle(test, DATA_PATH + '/test.pkl')
+            to_pickle(train, DATA_PATH + '/train_noalign.pkl')
+            to_pickle(dev, DATA_PATH + '/dev_noalign.pkl')
+            to_pickle(test, DATA_PATH + '/test_noalign.pkl')
 
     def get_data(self, mode):
         if mode == "train":
