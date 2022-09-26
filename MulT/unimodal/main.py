@@ -2,7 +2,7 @@ import torch
 import argparse
 from src.utils import *
 from torch.utils.data import DataLoader
-from src import train_unimodal
+from unimodal import train_unimodal
 import wandb
 
 
