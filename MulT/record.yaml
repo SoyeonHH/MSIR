@@ -1,59 +1,51 @@
 MulT_unaligned_mosi:
   model: MulT
+  modality: T+A+V
   aligned: False
   dataset: mosi
   mode: default
-  MAE:  0.9657705
-  Correlation Coefficient:  0.6636994070256488
-  mult_acc_7:  0.3760932944606414
-  mult_acc_5:  0.42419825072886297
-  F1 score:  0.8019275222786552
-  Accuracy:  0.801829268292683
+  MAE:  1.0156542
+  Correlation Coefficient:  0.6109859279635568
+  mult_acc_7:  0.358600583090379
+  mult_acc_5:  0.40816326530612246
+  F1 score:  0.7750800961239886
+  Accuracy:  0.7759146341463414
 
-MulT_aligned_mosi:
-  model: MulT
-  aligned: True
+Unimodal_text_mosi:
+  model: Naive Transformer
+  modality: text
+  aligned: False
   dataset: mosi
   mode: default
-  MAE:  0.9610811
-  Correlation Coefficient:  0.6700705100042449
-  mult_acc_7:  0.35276967930029157
-  mult_acc_5:  0.41690962099125367
-  F1 score:  0.7884916700813192
-  Accuracy:  0.7896341463414634
+  MAE:  0.95142794
+  Correlation Coefficient:  0.6494429685842987
+  mult_acc_7:  0.34402332361516036
+  mult_acc_5:  0.39212827988338195
+  F1 score:  0.7883011297645444
+  Accuracy:  0.7865853658536586
 
-MulT_unaligned_mosi_setting:
-  model: MulT
+Unimodal_text_mosi:
+  model: Naive Transformer
+  modality: visual
   aligned: False
   dataset: mosi
-  mode: paper_setting
-  MAE:  1.0539596
-  Correlation Coefficient:  0.6360208709208455
-  mult_acc_7:  0.3032069970845481
-  mult_acc_5:  0.3629737609329446
-  F1 score:  0.7791641545628939
-  Accuracy:  0.7804878048780488
+  mode: default
+  MAE:  1.4437226
+  Correlation Coefficient:  0.13551410184714432
+  mult_acc_7:  0.16763848396501457
+  mult_acc_5:  0.16763848396501457
+  F1 score:  0.5194648730893212
+  Accuracy:  0.5045731707317073
 
-MulT_aligned_mosi_setting:
-  model: MulT
-  algined: True
-  dataset: mosi
-  mode: paper_setting
-  MAE:  1.0003889
-  Correlation Coefficient:  0.6381476910236938
-  mult_acc_7:  0.35131195335276966
-  mult_acc_5:  0.40524781341107874
-  F1 score:  0.7876891784317892
-  Accuracy:  0.788109756097561
-
-MulT_unaligned_mosei:
-  model: MulT
+Unimodal_text_mosi:
+  model: Naive Transformer
+  modality: audio
   aligned: False
-  dataset: mosei
-  mode: paper_setting
-  MAE:  0.6268011
-  Correlation Coefficient:  0.6737924385262565
-  mult_acc_7:  0.48529727409315304
-  mult_acc_5:  0.506117192530586
-  F1 score:  0.8087659553205028
-  Accuracy:  0.7996697853604843
+  dataset: mosi
+  mode: default
+  MAE:  1.5123277
+  Correlation Coefficient:  0.07873641402625056
+  mult_acc_7:  0.17346938775510204
+  mult_acc_5:  0.17346938775510204
+  F1 score:  0.5776878080650294
+  Accuracy:  0.4344512195121951

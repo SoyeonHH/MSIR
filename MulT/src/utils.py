@@ -27,14 +27,14 @@ def save_load_name(args, name=''):
 
 def save_model(args, model, name=''):
     name = save_load_name(args, name)
-    torch.save(model, f'/data1/multimodal/MulT/pre_trained_models/{name}.pt')
+    torch.save(model, f'/data1/multimodal/pre_trained_models/{name}.pt')
     # torch.save(model, f'/home/iknow/workspace/multimodal/pre_trained_models/{name}.pt')
-    torch.save(model.state_dict(), f'/data1/multimodal/MulT/pre_trained_models/{name}_dict.pt')
+    torch.save(model.state_dict(), f'/data1/multimodal/pre_trained_models/{name}_dict.pt')
     # torch.save(model.state_dict(), f'/home/iknow/workspace/multimodal/pre_trained_models/{name}_dict.pt')
 
 
 def load_model(args, name=''):
     name = save_load_name(args, name)
-    model = torch.load(f'/data1/multimodal/MulT/pre_trained_models/{name}.pt')
+    model = torch.load(f'/data1/multimodal/pre_trained_models/{name}.pt')
     # model = torch.load(f'/home/iknow/workspace/multimodal/pre_trained_models/{name}.pt')
     return model
