@@ -1,0 +1,59 @@
+MulT_unaligned_mosi:
+  model: MulT
+  aligned: False
+  dataset: mosi
+  mode: default
+  MAE:  0.9657705
+  Correlation Coefficient:  0.6636994070256488
+  mult_acc_7:  0.3760932944606414
+  mult_acc_5:  0.42419825072886297
+  F1 score:  0.8019275222786552
+  Accuracy:  0.801829268292683
+
+MulT_aligned_mosi:
+  model: MulT
+  aligned: True
+  dataset: mosi
+  mode: default
+  MAE:  0.9610811
+  Correlation Coefficient:  0.6700705100042449
+  mult_acc_7:  0.35276967930029157
+  mult_acc_5:  0.41690962099125367
+  F1 score:  0.7884916700813192
+  Accuracy:  0.7896341463414634
+
+MulT_unaligned_mosi_setting:
+  model: MulT
+  aligned: False
+  dataset: mosi
+  mode: paper_setting
+  MAE:  1.0539596
+  Correlation Coefficient:  0.6360208709208455
+  mult_acc_7:  0.3032069970845481
+  mult_acc_5:  0.3629737609329446
+  F1 score:  0.7791641545628939
+  Accuracy:  0.7804878048780488
+
+MulT_aligned_mosi_setting:
+  model: MulT
+  algined: True
+  dataset: mosi
+  mode: paper_setting
+  MAE:  1.0003889
+  Correlation Coefficient:  0.6381476910236938
+  mult_acc_7:  0.35131195335276966
+  mult_acc_5:  0.40524781341107874
+  F1 score:  0.7876891784317892
+  Accuracy:  0.788109756097561
+
+MulT_unaligned_mosei:
+  model: MulT
+  aligned: False
+  dataset: mosei
+  mode: paper_setting
+  MAE:  0.6268011
+  Correlation Coefficient:  0.6737924385262565
+  mult_acc_7:  0.48529727409315304
+  mult_acc_5:  0.506117192530586
+  F1 score:  0.8087659553205028
+  Accuracy:  0.7996697853604843
