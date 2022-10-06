@@ -11,6 +11,19 @@ MulT_unaligned_mosi:
   F1 score:  0.7750800961239886
   Accuracy:  0.7759146341463414
 
+MulT_unaligned_mosei:
+  model: MulT
+  modality: T+A+V
+  aligned: False
+  dataset: mosei
+  mode: default
+  MAE:  0.6253033
+  Correlation Coefficient:  0.6754698198514607
+  mult_acc_7:  0.48787293410603133
+  mult_acc_5:  0.5052586391929599
+  F1 score:  0.804484808854719
+  Accuracy:  0.8048981838194826
+
 Unimodal_text_mosi:
   model: Naive Transformer
   modality: text
@@ -24,6 +37,8 @@ Unimodal_text_mosi:
   F1 score:  0.7883011297645444
   Accuracy:  0.7865853658536586
 
+# visual, audio 둘 다 padding으로 인한 sparsity 때문에 성능이 유난히 안 좋게 나오는 것 같음.
+# TODO: Unimodal 실험에서는 Conv1d 모듈을 제거하자.
 Unimodal_text_mosi:
   model: Naive Transformer
   modality: visual
@@ -49,3 +64,16 @@ Unimodal_text_mosi:
   mult_acc_5:  0.17346938775510204
   F1 score:  0.5776878080650294
   Accuracy:  0.4344512195121951
+
+Unimodal_text_mosi:
+  model: Naive Transformer
+  modality: text
+  aligned: False
+  dataset: mosei
+  mode: default
+  MAE:  0.6206237
+  Correlation Coefficient:  0.6547399292812622
+  mult_acc_7:  0.49152178579094224
+  mult_acc_5:  0.5056879158617729
+  F1 score:  0.8016537629758993
+  Accuracy:  0.7974683544303798
