@@ -120,13 +120,14 @@ def get_config(parse=True, **optional_kwargs):
     parser.add_argument('--num_classes', type=int, default=0)
     parser.add_argument('--batch_size', type=int, default=dataset_default_hp['batch_size'])
     parser.add_argument('--eval_batch_size', type=int, default=10)
-    parser.add_argument('--n_epoch', type=int, default=5)
+    parser.add_argument('--n_epoch', type=int, default=40)
     parser.add_argument('--patience', type=int, default=6)
 
     parser.add_argument('--diff_weight', type=float, default=dataset_default_hp['beta'])
     parser.add_argument('--sim_weight', type=float, default=dataset_default_hp['alpha'])
     parser.add_argument('--sp_weight', type=float, default=0.0)
     parser.add_argument('--recon_weight', type=float, default=dataset_default_hp['gamma'])
+    parser.add_argument('--conf_weight', type=float, default=0.5)
 
     parser.add_argument('--learning_rate', type=float, default=1e-4)
     parser.add_argument('--optimizer', type=str, default='Adam')
@@ -143,6 +144,7 @@ def get_config(parse=True, **optional_kwargs):
     # Model
     parser.add_argument('--model', type=str,
                         default='MISA', help='one of {MISA, }')
+    parser.add_argument('--use_confidNet', type=str2bool, default=True)
 
     # Parse arguments
     if parse:
@@ -163,6 +165,10 @@ def get_config(parse=True, **optional_kwargs):
     else:
         print("No dataset mentioned")
         exit()
+    
+    # if kwargs.use_confidNet:
+    #     kwargs.num_classes = 2
+    #     print("Try to predict binary (pos/neg) class")
 
     # Namespace => Dictionary
     kwargs = vars(kwargs)

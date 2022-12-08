@@ -57,7 +57,7 @@ if __name__ == '__main__':
     solver.train()
 
     # Make test result file by instance
-    tester = TestMOSI(solver, test_config, test_data_loader)
-    tester.start()
+    # tester = TestMOSI(solver, test_config, test_data_loader)
+    # tester.start()
 
-    sys.stdout.close()
+    # sys.stdout.close()

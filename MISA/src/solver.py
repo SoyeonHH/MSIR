@@ -31,7 +31,7 @@ torch.manual_seed(123)
 torch.cuda.manual_seed_all(123)
 
 from utils import to_gpu, to_cpu, time_desc_decorator, DiffLoss, MSE, SIMSE, CMD
-import models
+import models, new_models
 
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
@@ -56,7 +56,10 @@ class Solver(object):
     def build(self, cuda=True):
 
         if self.model is None:
-            self.model = getattr(models, self.train_config.model)(self.train_config)
+            if self.train_config.use_confidNet:
+                self.model = getattr(new_models, self.train_config.model)(self.train_config)
+            else:
+                self.model = getattr(models, self.train_config.model)(self.train_config)
         
         # Final list
         for name, param in self.model.named_parameters():
@@ -96,7 +99,7 @@ class Solver(object):
         num_trials = 1
 
         # self.criterion = criterion = nn.L1Loss(reduction="mean")
-        if self.train_config.data == "ur_funny":
+        if self.train_config.data == "ur_funny" or self.train_config.use_confidNet:
             self.criterion = criterion = nn.CrossEntropyLoss(reduction="mean")
         else: # mosi and mosei are regression datasets
             self.criterion = criterion = nn.MSELoss(reduction="mean")
@@ -107,6 +110,10 @@ class Solver(object):
         self.loss_diff = DiffLoss()
         self.loss_recon = MSE()
         self.loss_cmd = CMD()
+
+        # Confidence regression loss
+        self.loss_mcp = nn.CrossEntropyLoss(reduction="mean")
+        self.loss_conf = nn.MSELoss(reduction="mean")
         
         best_valid_loss = float('inf')
         best_train_loss = float('inf')
@@ -121,10 +128,15 @@ class Solver(object):
             train_loss_cls, train_loss_sim, train_loss_diff = [], [], []
             train_loss_recon = []
             train_loss_sp = []
+            train_loss_conf = []
             train_loss = []
             for idx, batch in enumerate(tqdm(self.train_data_loader)):
                 self.model.zero_grad()
                 t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
+
+                if self.train_config.use_confidNet: # Switch label into class (non-neg: 1, neg: 0)
+                    y = (y >= 0)
+                    y = y.type(torch.float)
 
                 # batch_size = t.size(0)
                 t = to_gpu(t)
@@ -143,11 +155,15 @@ class Solver(object):
                 if self.train_config.data == "ur_funny":
                     y = y.squeeze()
 
+                print("y:", y)
+                print("y_tilde:", y_tilde)
+
                 cls_loss = criterion(y_tilde, y)
                 diff_loss = self.get_diff_loss()
                 domain_loss = self.get_domain_loss()
                 recon_loss = self.get_recon_loss()
                 cmd_loss = self.get_cmd_loss()
+                conf_loss = self.get_conf_loss(y_tilde, y)
                 
                 if self.train_config.use_cmd_sim:
                     similarity_loss = cmd_loss
@@ -157,7 +173,8 @@ class Solver(object):
                 loss = cls_loss + \
                     self.train_config.diff_weight * diff_loss + \
                     self.train_config.sim_weight * similarity_loss + \
-                    self.train_config.recon_weight * recon_loss
+                    self.train_config.recon_weight * recon_loss + \
+                    self.train_config.conf_weight * conf_loss
 
                 loss.backward()
                 
@@ -169,6 +186,7 @@ class Solver(object):
                 train_loss_recon.append(recon_loss.item())
                 train_loss.append(loss.item())
                 train_loss_sim.append(similarity_loss.item())
+                train_loss_conf.append(conf_loss.item())
                 
 
             train_losses.append(train_loss)
@@ -190,7 +208,10 @@ class Solver(object):
                 # 임의로 모델 경로 지정 및 저장
                 save_model(self.model, self.train_config.data)
                 # Print best model results
-                eval_values = eval_mosei_senti(best_results, best_truths, True)
+                if self.train_config.use_confidNet:
+                    eval_values = eval_binary(best_results, best_truths)
+                else:
+                    eval_values = eval_mosei_senti(best_results, best_truths, True)
             else:
                 curr_patience -= 1
                 if curr_patience <= -1:
@@ -202,23 +223,35 @@ class Solver(object):
                     lr_scheduler.step()
                     print(f"Current learning rate: {self.optimizer.state_dict()['param_groups'][0]['lr']}")
             
-            wandb.log(
-                (
-                    {
-                        "train_loss": train_loss,
-                        "valid_loss": valid_loss,
-                        "test_mae": eval_values['mae'],
-                        "test_mae_extreme": eval_values['mae_intensity'],
-                        "test_corr": eval_values['corr'],
-                        "test_f_score": eval_values['f1'],
-                        "test_acc2": eval_values['acc2'],
-                        "test_acc2_non0": eval_values['acc2_non0'],
-                        "test_acc5": eval_values['acc5'],
-                        "test_acc7":eval_values['acc7'],
-                        "best_valid_loss": best_valid_loss,
-                    }
+            if self.train_config.use_confidNet:
+                wandb.log(
+                    (
+                        {
+                            "train_loss": train_loss,
+                            "valid_loss": valid_loss,
+                            "test_f_score": eval_values['f_score'],
+                            "test_acc2": eval_values['acc2']
+                        }
+                    )
                 )
-            )
+            else:
+                wandb.log(
+                    (
+                        {
+                            "train_loss": train_loss,
+                            "valid_loss": valid_loss,
+                            "test_mae": eval_values['mae'],
+                            "test_mae_extreme": eval_values['mae_intensity'],
+                            "test_corr": eval_values['corr'],
+                            "test_f_score": eval_values['f1'],
+                            "test_acc2": eval_values['acc2'],
+                            "test_acc2_non0": eval_values['acc2_non0'],
+                            "test_acc5": eval_values['acc5'],
+                            "test_acc7":eval_values['acc7'],
+                            "best_valid_loss": best_valid_loss,
+                        }
+                    )
+                )
             
             # if num_trials <= 0:
             #     print("Running out of patience, early stopping.")
@@ -255,6 +288,10 @@ class Solver(object):
             for batch in dataloader:
                 self.model.zero_grad()
                 t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
+
+                if self.train_config.use_confidNet:
+                    y = (y >= 0)
+                    y = y.type(torch.float)
 
                 t = to_gpu(t)
                 v = to_gpu(v)
@@ -303,7 +340,7 @@ class Solver(object):
         """
 
 
-        if self.train_config.data == "ur_funny":
+        if self.train_config.data == "ur_funny" or self.train_config.use_confidNet:
             test_preds = np.argmax(y_pred, 1)
             test_truth = y_true
 
@@ -420,3 +457,7 @@ class Solver(object):
         loss += self.loss_recon(self.model.utt_a_recon, self.model.utt_a_orig)
         loss = loss/3.0
         return loss
+
+    def get_conf_loss(self, pred, truth):
+
+        return self.loss_conf(self.model.pred_tcp, self.model.true_tcp[truth]) + self.loss_mcp(pred, truth)
