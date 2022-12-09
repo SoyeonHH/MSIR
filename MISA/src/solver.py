@@ -113,7 +113,7 @@ class Solver(object):
 
         # Confidence regression loss
         self.loss_mcp = nn.CrossEntropyLoss(reduction="mean")
-        self.loss_conf = nn.MSELoss(reduction="mean")
+        self.loss_tcp = nn.MSELoss(reduction="mean")
         
         best_valid_loss = float('inf')
         best_train_loss = float('inf')
@@ -135,8 +135,10 @@ class Solver(object):
                 t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
                 if self.train_config.use_confidNet: # Switch label into class (non-neg: 1, neg: 0)
-                    y = (y >= 0)
-                    y = y.type(torch.float)
+                    y = 1 * (y >= 0)
+                    y = y.type(torch.long)
+                    y = torch.nn.functional.one_hot(y, num_classes=self.train_config.num_classes)
+                    # y = y.type(torch.float)
 
                 # batch_size = t.size(0)
                 t = to_gpu(t)
@@ -150,20 +152,20 @@ class Solver(object):
                 bert_sent_mask = to_gpu(bert_sent_mask)
 
                 y_tilde = self.model(t, v, a, l, bert_sent, bert_sent_type, bert_sent_mask)
-                y_tilde = y_tilde.squeeze()
+                # y_tilde = y_tilde.squeeze()
                 
                 if self.train_config.data == "ur_funny":
                     y = y.squeeze()
 
-                print("y:", y)
-                print("y_tilde:", y_tilde)
+                if self.train_config.use_confidNet:
+                    y = y.type(torch.float)
+                    conf_loss = self.get_conf_loss(y_tilde, y)
 
                 cls_loss = criterion(y_tilde, y)
                 diff_loss = self.get_diff_loss()
                 domain_loss = self.get_domain_loss()
                 recon_loss = self.get_recon_loss()
                 cmd_loss = self.get_cmd_loss()
-                conf_loss = self.get_conf_loss(y_tilde, y)
                 
                 if self.train_config.use_cmd_sim:
                     similarity_loss = cmd_loss
@@ -173,8 +175,10 @@ class Solver(object):
                 loss = cls_loss + \
                     self.train_config.diff_weight * diff_loss + \
                     self.train_config.sim_weight * similarity_loss + \
-                    self.train_config.recon_weight * recon_loss + \
-                    self.train_config.conf_weight * conf_loss
+                    self.train_config.recon_weight * recon_loss
+
+                if self.train_config.use_confidNet:
+                    loss += self.train_config.conf_weight * conf_loss
 
                 loss.backward()
                 
@@ -229,7 +233,7 @@ class Solver(object):
                         {
                             "train_loss": train_loss,
                             "valid_loss": valid_loss,
-                            "test_f_score": eval_values['f_score'],
+                            "test_f_score": eval_values['f1'],
                             "test_acc2": eval_values['acc2']
                         }
                     )
@@ -258,8 +262,10 @@ class Solver(object):
             #     break
 
         train_loss, acc, test_preds, test_truths = self.eval(mode="test", to_print=True)
+        print('='*50)
         print(f'Best epoch: {best_epoch}')
-        eval_values_best = eval_mosei_senti(best_results, best_truths, True)
+        eval_values_best = eval_binary(best_results, best_truths) if self.train_config.use_confidNet \
+            else eval_mosei_senti(best_results, best_truths, True)
         # total_end = time.time()
         # total_duration = total_end - total_start
         # print(f"Total training time: {total_duration}s, {datetime.timedelta(seconds=total_duration)}")
@@ -290,8 +296,10 @@ class Solver(object):
                 t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
                 if self.train_config.use_confidNet:
-                    y = (y >= 0)
-                    y = y.type(torch.float)
+                    y = 1 * (y >= 0)
+                    y = y.type(torch.long)
+                    y = torch.nn.functional.one_hot(y, num_classes=self.train_config.num_classes)
+                    # y = y.type(torch.float)
 
                 t = to_gpu(t)
                 v = to_gpu(v)
@@ -304,17 +312,25 @@ class Solver(object):
                 bert_sent_mask = to_gpu(bert_sent_mask)
 
                 y_tilde = self.model(t, v, a, l, bert_sent, bert_sent_type, bert_sent_mask)
-                y_tilde = y_tilde.squeeze()
+                # y_tilde = y_tilde.squeeze()
                 
                 if self.train_config.data == "ur_funny":
                     y = y.squeeze()
+
+                if self.train_config.use_confidNet:
+                    y = y.type(torch.float)
                 
                 cls_loss = self.criterion(y_tilde, y)
                 loss = cls_loss
 
+                if self.train_config.use_confidNet:
+                    y = torch.argmax(y, dim=1)
+                    y_tilde = torch.argmax(y_tilde, dim=1)
+
                 eval_loss.append(loss.item())
                 y_pred.append(y_tilde.detach().cpu().numpy())
                 y_true.append(y.detach().cpu().numpy())
+
 
         eval_loss = np.mean(eval_loss)
         y_true = np.concatenate(y_true, axis=0).squeeze()
@@ -341,7 +357,7 @@ class Solver(object):
 
 
         if self.train_config.data == "ur_funny" or self.train_config.use_confidNet:
-            test_preds = np.argmax(y_pred, 1)
+            test_preds = y_pred
             test_truth = y_true
 
             if to_print:
@@ -459,5 +475,5 @@ class Solver(object):
         return loss
 
     def get_conf_loss(self, pred, truth):
-
-        return self.loss_conf(self.model.pred_tcp, self.model.true_tcp[truth]) + self.loss_mcp(pred, truth)
+        true_index = torch.argmax(truth, dim=1)
+        return self.loss_tcp(self.model.pred_tcp, pred[true_index]) + self.loss_mcp(pred, truth)

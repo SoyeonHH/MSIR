@@ -166,9 +166,9 @@ def get_config(parse=True, **optional_kwargs):
         print("No dataset mentioned")
         exit()
     
-    # if kwargs.use_confidNet:
-    #     kwargs.num_classes = 2
-    #     print("Try to predict binary (pos/neg) class")
+    if kwargs.use_confidNet:
+        kwargs.num_classes = 2
+        print("Try to predict binary (pos/neg) class")
 
     # Namespace => Dictionary
     kwargs = vars(kwargs)

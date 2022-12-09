@@ -256,9 +256,8 @@ class MISA(nn.Module):
 
         # For confidence network
         if self.config.use_confidNet:
-            o = torch.sigmoid(self.fusion(h))
-            self.pred_tcp = self.confidence(h)
-            self.true_tcp = o
+            o = torch.sigmoid(self.fusion(h))   # num_classes = 2
+            self.pred_tcp = self.confidence(h)  # dim = 1
             return o
         else:
             return self.fusion(h)
