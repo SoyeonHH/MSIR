@@ -43,6 +43,8 @@ def sent2class(test_preds_sent):
 
     for pred in test_preds_sent:
         # preds_2 appending
+        # print(pred)
+        pred = pred.any()
         if pred > 0:
             preds_2.append('pos')
         else:
@@ -74,6 +76,7 @@ class TestMOSI(object):
         self.config = test_config
         self.test_loader = test_data_loader
         self.H = []
+        self.config.use_confidNet = False
 
     def start(self):
         segment_list, labels, labels_2, labels_7, preds, preds_2, preds_7 = \
@@ -87,11 +90,11 @@ class TestMOSI(object):
             for i, batch in enumerate(tqdm(self.test_loader)):
 
                 t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
-                
-                segment_list.extend(ids)
-                
+
                 # Gold-truth
                 labels.extend(y)
+                
+                segment_list.extend(ids)
                 
                 t = to_gpu(t)
                 v = to_gpu(v)
@@ -123,6 +126,6 @@ class TestMOSI(object):
             'preds_7': preds_7,
             }
         
-        path = os.getcwd() + '/results/' + 'MISA_' + self.config.data + '.pkl'
+        path = os.getcwd() + '/results/' + 'MISA_' + self.config.data + '_confidNet.pkl'
         to_pickle(test_dict, path)
-        save_hidden(self.H, self.config.data)
+        # save_hidden(self.H, self.config.data)

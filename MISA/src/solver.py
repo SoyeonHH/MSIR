@@ -299,7 +299,6 @@ class Solver(object):
                     y = 1 * (y >= 0)
                     y = y.type(torch.long)
                     y = torch.nn.functional.one_hot(y, num_classes=self.train_config.num_classes)
-                    # y = y.type(torch.float)
 
                 t = to_gpu(t)
                 v = to_gpu(v)

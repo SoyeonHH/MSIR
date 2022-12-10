@@ -127,7 +127,7 @@ def get_config(parse=True, **optional_kwargs):
     parser.add_argument('--sim_weight', type=float, default=dataset_default_hp['alpha'])
     parser.add_argument('--sp_weight', type=float, default=0.0)
     parser.add_argument('--recon_weight', type=float, default=dataset_default_hp['gamma'])
-    parser.add_argument('--conf_weight', type=float, default=0.5)
+    parser.add_argument('--conf_weight', type=float, default=0.1)
 
     parser.add_argument('--learning_rate', type=float, default=1e-4)
     parser.add_argument('--optimizer', type=str, default='Adam')
