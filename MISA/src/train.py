@@ -54,10 +54,9 @@ if __name__ == '__main__':
     solver.build()
 
     # Train the model (test scores will be returned based on dev performance)
-    # solver.train()
+    solver.train()
 
     # Make test result file by instance
-    tester = TestMOSI(solver, test_config, test_data_loader)
-    tester.start()
-
-    sys.stdout.close()
+    # tester = TestMOSI(solver, test_config, test_data_loader)
+    # tester.start()
+    

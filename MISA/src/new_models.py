@@ -147,9 +147,30 @@ class MISA(nn.Module):
         ##########################################
 
         if self.config.use_confidNet:
-            self.confidence = nn.Sequential()
-            self.confidence.add_module('confidence_layer_1', nn.Linear(in_features=config.hidden_size*6, out_features=1))
-            self.softmax = nn.Softmax(dim=1)
+            # self.confidence = nn.Sequential()
+            # self.confidence.add_module('confidence_layer_1', nn.Linear(in_features=config.hidden_size*6, out_features=1))
+
+            self.classifier = nn.Sequential()
+            self.classifier.add_module('classifier_layer', nn.Linear(in_features=config.hidden_size, out_features=output_size))
+            self.classifier.add_module('classifier_layer_activation', nn.Softmax(dim=1))
+            
+            self.confid_shared_t = nn.Sequential()
+            self.confid_shared_t.add_module('confid_shared_t_layer', nn.Linear(in_features=config.hidden_size, out_features=1))
+
+            self.confid_shared_v = nn.Sequential()
+            self.confid_shared_v.add_module('confid_shared_v_layer', nn.Linear(in_features=config.hidden_size, out_features=1))
+
+            self.confid_shared_a = nn.Sequential()
+            self.confid_shared_a.add_module('confid_shared_a_layer', nn.Linear(in_features=config.hidden_size, out_features=1))
+
+            self.confid_private_t = nn.Sequential()
+            self.confid_private_t.add_module('confid_private_t_layer', nn.Linear(in_features=config.hidden_size, out_features=1))
+
+            self.confid_private_v = nn.Sequential()
+            self.confid_private_v.add_module('confid_private_v_layer', nn.Linear(in_features=config.hidden_size, out_features=1))
+
+            self.confid_private_a = nn.Sequential()
+            self.confid_private_a.add_module('confid_private_a_layer', nn.Linear(in_features=config.hidden_size, out_features=1))
 
         self.fusion = nn.Sequential()
         self.fusion.add_module('fusion_layer_1', nn.Linear(in_features=self.config.hidden_size*6, out_features=self.config.hidden_size*3))
@@ -249,18 +270,34 @@ class MISA(nn.Module):
         # 1-LAYER TRANSFORMER FUSION
         h = torch.stack((self.utt_private_t, self.utt_private_v, self.utt_private_a, self.utt_shared_t, self.utt_shared_v,  self.utt_shared_a), dim=0)
         h = self.transformer_encoder(h)
-        h = torch.cat((h[0], h[1], h[2], h[3], h[4], h[5]), dim=1)
 
         # o = self.fusion(h)
         # return o
 
         # For confidence network
         if self.config.use_confidNet:
-            o = torch.sigmoid(self.fusion(h))   # num_classes = 2
-            self.pred_tcp = self.confidence(h)  # dim = 1
-            return o
+            self.pred_tcp_shared_t = self.confid_shared_t(self.utt_shared_t)
+            self.pred_tcp_shared_v = self.confid_shared_v(self.utt_shared_v)
+            self.pred_tcp_shared_a = self.confid_shared_a(self.utt_shared_a)
+            self.pred_tcp_private_t = self.confid_private_t(self.utt_private_t)
+            self.pred_tcp_private_v = self.confid_private_v(self.utt_private_v)
+            self.pred_tcp_private_a = self.confid_private_a(self.utt_private_a)
+            self.pred_tcp = tcp = torch.stack((self.pred_tcp_private_t, self.pred_tcp_private_v, \
+                self.pred_tcp_private_a, self.pred_tcp_shared_t, self.pred_tcp_shared_v, self.pred_tcp_shared_a), dim=0)
+            
+            self.o_shared_t = self.classifier(self.utt_shared_t)
+            self.o_shared_v = self.classifier(self.utt_shared_v)
+            self.o_shared_a = self.classifier(self.utt_shared_a)
+            self.o_private_t = self.classifier(self.utt_private_t)
+            self.o_private_v = self.classifier(self.utt_private_v)
+            self.o_private_a = self.classifier(self.utt_private_a)
+
+            h = torch.cat((tcp[0]*h[0], tcp[1]*h[1], tcp[2]*h[2], tcp[3]*h[3], tcp[4]*h[4], tcp[5]*h[5]), dim=1)
         else:
-            return self.fusion(h)
+            h = torch.cat((h[0], h[1], h[2], h[3], h[4], h[5]), dim=1)
+        
+        return self.fusion(h)
+
     
     def reconstruct(self,):
 
