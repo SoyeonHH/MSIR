@@ -79,3 +79,14 @@ def eval_mosei_senti(results, truths, exclude_zero=False):
 
 def eval_mosi(results, truths, exclude_zero=False):
     return eval_mosei_senti(results, truths, exclude_zero)
+
+def eval_binary(results, truths):
+    acc_2 = accuracy_score(truths, results)
+    f_score = f1_score(truths, results, average='weighted')
+
+    print("--------------------------------------------------")
+    print("F1 score: {} over {}".format(np.round(f_score,4), truths.shape[0]))
+    print("Accuracy: {}".format(np.round(acc_2,4)))
+
+    print("-" * 50)
+    return {'acc2': acc_2, 'f1': f_score}

@@ -5,10 +5,11 @@
 # python TFN/main.py --dataset mosi --model_name TFN
 
 ## MMIM
-python MMIM/main.py --dataset mosei --device cuda:1
+# python MMIM/main.py --dataset mosei --device cuda:1
 
 ## MISA
-# python MISA/src/train.py --data mosi
+python MISA/src/train.py --data mosi
+# python MISA/src/train.py --data mosi --use_confidNet True --conf_weight 0.5
 
 ## MAG
 # python MAG/multimodal_driver.py --dataset mosei

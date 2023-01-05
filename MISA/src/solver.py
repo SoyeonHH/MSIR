@@ -31,7 +31,7 @@ torch.manual_seed(123)
 torch.cuda.manual_seed_all(123)
 
 from utils import to_gpu, to_cpu, time_desc_decorator, DiffLoss, MSE, SIMSE, CMD
-import models
+import models, new_models
 
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
@@ -56,7 +56,10 @@ class Solver(object):
     def build(self, cuda=True):
 
         if self.model is None:
-            self.model = getattr(models, self.train_config.model)(self.train_config)
+            # if self.train_config.use_confidNet:
+            self.model = getattr(new_models, self.train_config.model)(self.train_config)
+            # else:
+            #     self.model = getattr(models, self.train_config.model)(self.train_config)
         
         # Final list
         for name, param in self.model.named_parameters():
@@ -96,10 +99,10 @@ class Solver(object):
         num_trials = 1
 
         # self.criterion = criterion = nn.L1Loss(reduction="mean")
-        if self.train_config.data == "ur_funny":
-            self.criterion = criterion = nn.CrossEntropyLoss(reduction="mean")
-        else: # mosi and mosei are regression datasets
-            self.criterion = criterion = nn.MSELoss(reduction="mean")
+        # if self.train_config.data == "ur_funny" or self.train_config.use_confidNet:
+        self.criterion = criterion = nn.CrossEntropyLoss(reduction="mean")
+        # else: # mosi and mosei are regression datasets
+        #     self.criterion = criterion = nn.MSELoss(reduction="mean")
 
 
         self.domain_loss_criterion = nn.CrossEntropyLoss(reduction="mean")
@@ -107,6 +110,10 @@ class Solver(object):
         self.loss_diff = DiffLoss()
         self.loss_recon = MSE()
         self.loss_cmd = CMD()
+
+        # Confidence regression loss
+        self.loss_mcp = nn.CrossEntropyLoss(reduction="mean")
+        self.loss_tcp = nn.MSELoss(reduction="mean")
         
         best_valid_loss = float('inf')
         best_train_loss = float('inf')
@@ -121,10 +128,16 @@ class Solver(object):
             train_loss_cls, train_loss_sim, train_loss_diff = [], [], []
             train_loss_recon = []
             train_loss_sp = []
+            train_loss_conf = []
             train_loss = []
             for idx, batch in enumerate(tqdm(self.train_data_loader)):
                 self.model.zero_grad()
                 t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
+
+                # if self.train_config.use_confidNet: # Switch label into class (non-neg: 1, neg: 0)
+                y = 1 * (y >= 0)
+                y = y.type(torch.long)
+                y = torch.nn.functional.one_hot(y, num_classes=self.train_config.num_classes)
 
                 # batch_size = t.size(0)
                 t = to_gpu(t)
@@ -138,10 +151,14 @@ class Solver(object):
                 bert_sent_mask = to_gpu(bert_sent_mask)
 
                 y_tilde = self.model(t, v, a, l, bert_sent, bert_sent_type, bert_sent_mask)
-                y_tilde = y_tilde.squeeze()
+                # y_tilde = y_tilde.squeeze()
+                y = y.type(torch.float)
                 
                 if self.train_config.data == "ur_funny":
                     y = y.squeeze()
+
+                if self.train_config.use_confidNet:
+                    conf_loss = self.get_conf_loss(y_tilde, y)
 
                 cls_loss = criterion(y_tilde, y)
                 diff_loss = self.get_diff_loss()
@@ -159,6 +176,9 @@ class Solver(object):
                     self.train_config.sim_weight * similarity_loss + \
                     self.train_config.recon_weight * recon_loss
 
+                if self.train_config.use_confidNet:
+                    loss += self.train_config.conf_weight * conf_loss
+
                 loss.backward()
                 
                 torch.nn.utils.clip_grad_value_([param for param in self.model.parameters() if param.requires_grad], self.train_config.clip)
@@ -169,6 +189,9 @@ class Solver(object):
                 train_loss_recon.append(recon_loss.item())
                 train_loss.append(loss.item())
                 train_loss_sim.append(similarity_loss.item())
+
+                if self.train_config.use_confidNet:
+                    train_loss_conf.append(conf_loss.item())
                 
 
             train_losses.append(train_loss)
@@ -190,7 +213,10 @@ class Solver(object):
                 # 임의로 모델 경로 지정 및 저장
                 save_model(self.model, self.train_config.data)
                 # Print best model results
-                eval_values = eval_mosei_senti(best_results, best_truths, True)
+                # if self.train_config.use_confidNet:
+                eval_values = eval_binary(best_results, best_truths)
+                # else:
+                #     eval_values = eval_mosei_senti(best_results, best_truths, True)
             else:
                 curr_patience -= 1
                 if curr_patience <= -1:
@@ -207,26 +233,39 @@ class Solver(object):
                     {
                         "train_loss": train_loss,
                         "valid_loss": valid_loss,
-                        "test_mae": eval_values['mae'],
-                        "test_mae_extreme": eval_values['mae_intensity'],
-                        "test_corr": eval_values['corr'],
                         "test_f_score": eval_values['f1'],
-                        "test_acc2": eval_values['acc2'],
-                        "test_acc2_non0": eval_values['acc2_non0'],
-                        "test_acc5": eval_values['acc5'],
-                        "test_acc7":eval_values['acc7'],
-                        "best_valid_loss": best_valid_loss,
+                        "test_acc2": eval_values['acc2']
                     }
                 )
             )
+            #     wandb.log(
+            #         (
+            #             {
+            #                 "train_loss": train_loss,
+            #                 "valid_loss": valid_loss,
+            #                 "test_mae": eval_values['mae'],
+            #                 "test_mae_extreme": eval_values['mae_intensity'],
+            #                 "test_corr": eval_values['corr'],
+            #                 "test_f_score": eval_values['f1'],
+            #                 "test_acc2": eval_values['acc2'],
+            #                 "test_acc2_non0": eval_values['acc2_non0'],
+            #                 "test_acc5": eval_values['acc5'],
+            #                 "test_acc7":eval_values['acc7'],
+            #                 "best_valid_loss": best_valid_loss,
+            #             }
+            #         )
+            #     )
             
             # if num_trials <= 0:
             #     print("Running out of patience, early stopping.")
             #     break
 
         train_loss, acc, test_preds, test_truths = self.eval(mode="test", to_print=True)
+        print('='*50)
         print(f'Best epoch: {best_epoch}')
-        eval_values_best = eval_mosei_senti(best_results, best_truths, True)
+        # eval_values_best = eval_binary(best_results, best_truths) if self.train_config.use_confidNet \
+        #     else eval_mosei_senti(best_results, best_truths, True)
+        eval_values_best = eval_binary(best_results, best_truths)
         # total_end = time.time()
         # total_duration = total_end - total_start
         # print(f"Total training time: {total_duration}s, {datetime.timedelta(seconds=total_duration)}")
@@ -256,6 +295,11 @@ class Solver(object):
                 self.model.zero_grad()
                 t, v, a, y, l, bert_sent, bert_sent_type, bert_sent_mask, ids = batch
 
+                # if self.train_config.use_confidNet:
+                y = 1 * (y >= 0)
+                y = y.type(torch.long)
+                y = torch.nn.functional.one_hot(y, num_classes=self.train_config.num_classes)
+
                 t = to_gpu(t)
                 v = to_gpu(v)
                 a = to_gpu(a)
@@ -267,17 +311,25 @@ class Solver(object):
                 bert_sent_mask = to_gpu(bert_sent_mask)
 
                 y_tilde = self.model(t, v, a, l, bert_sent, bert_sent_type, bert_sent_mask)
-                y_tilde = y_tilde.squeeze()
+                # y_tilde = y_tilde.squeeze()
                 
                 if self.train_config.data == "ur_funny":
                     y = y.squeeze()
+
+                # if self.train_config.use_confidNet:
+                y = y.type(torch.float)
                 
                 cls_loss = self.criterion(y_tilde, y)
                 loss = cls_loss
 
+                # if self.train_config.use_confidNet:
+                y = torch.argmax(y, dim=1)
+                y_tilde = torch.argmax(y_tilde, dim=1)
+
                 eval_loss.append(loss.item())
                 y_pred.append(y_tilde.detach().cpu().numpy())
                 y_true.append(y.detach().cpu().numpy())
+
 
         eval_loss = np.mean(eval_loss)
         y_true = np.concatenate(y_true, axis=0).squeeze()
@@ -303,59 +355,59 @@ class Solver(object):
         """
 
 
-        if self.train_config.data == "ur_funny":
-            test_preds = np.argmax(y_pred, 1)
-            test_truth = y_true
+        # if self.train_config.data == "ur_funny" or self.train_config.use_confidNet:
+        test_preds = y_pred
+        test_truth = y_true
 
-            if to_print:
-                print("Confusion Matrix (pos/neg) :")
-                print(confusion_matrix(test_truth, test_preds))
-                print("Classification Report (pos/neg) :")
-                print(classification_report(test_truth, test_preds, digits=5))
-                print("Accuracy (pos/neg) ", accuracy_score(test_truth, test_preds))
+        if to_print:
+            print("Confusion Matrix (pos/neg) :")
+            print(confusion_matrix(test_truth, test_preds))
+            print("Classification Report (pos/neg) :")
+            print(classification_report(test_truth, test_preds, digits=5))
+            print("Accuracy (pos/neg) ", accuracy_score(test_truth, test_preds))
+        
+        return accuracy_score(test_truth, test_preds)
+
+        # else:
+        #     test_preds = y_pred
+        #     test_truth = y_true
+
+        #     non_zeros = np.array([i for i, e in enumerate(test_truth) if e.any() != 0])
+
+        #     test_preds_a7 = np.clip(test_preds, a_min=-3., a_max=3.)
+        #     test_truth_a7 = np.clip(test_truth, a_min=-3., a_max=3.)
+        #     test_preds_a5 = np.clip(test_preds, a_min=-2., a_max=2.)
+        #     test_truth_a5 = np.clip(test_truth, a_min=-2., a_max=2.)
+
+        #     mae = np.mean(np.absolute(test_preds - test_truth))   # Average L1 distance between preds and truths
+        #     corr = np.corrcoef(test_preds, test_truth)[0][1]
+        #     mult_a7 = self.multiclass_acc(test_preds_a7, test_truth_a7)
+        #     mult_a5 = self.multiclass_acc(test_preds_a5, test_truth_a5)
             
-            return accuracy_score(test_truth, test_preds)
-
-        else:
-            test_preds = y_pred
-            test_truth = y_true
-
-            non_zeros = np.array([i for i, e in enumerate(test_truth) if e.any() != 0])
-
-            test_preds_a7 = np.clip(test_preds, a_min=-3., a_max=3.)
-            test_truth_a7 = np.clip(test_truth, a_min=-3., a_max=3.)
-            test_preds_a5 = np.clip(test_preds, a_min=-2., a_max=2.)
-            test_truth_a5 = np.clip(test_truth, a_min=-2., a_max=2.)
-
-            mae = np.mean(np.absolute(test_preds - test_truth))   # Average L1 distance between preds and truths
-            corr = np.corrcoef(test_preds, test_truth)[0][1]
-            mult_a7 = self.multiclass_acc(test_preds_a7, test_truth_a7)
-            mult_a5 = self.multiclass_acc(test_preds_a5, test_truth_a5)
+        #     f_score = f1_score((test_preds[non_zeros] > 0), (test_truth[non_zeros] > 0), average='weighted')
             
-            f_score = f1_score((test_preds[non_zeros] > 0), (test_truth[non_zeros] > 0), average='weighted')
-            
-            # pos - neg
-            binary_truth = (test_truth[non_zeros] > 0)
-            binary_preds = (test_preds[non_zeros] > 0)
+        #     # pos - neg
+        #     binary_truth = (test_truth[non_zeros] > 0)
+        #     binary_preds = (test_preds[non_zeros] > 0)
 
-            if to_print:
-                print("mae: ", mae)
-                print("corr: ", corr)
-                print("mult_acc: ", mult_a7)
-                print("Classification Report (pos/neg) :")
-                print(classification_report(binary_truth, binary_preds, digits=5))
-                print("Accuracy (pos/neg) ", accuracy_score(binary_truth, binary_preds))
+        #     if to_print:
+        #         print("mae: ", mae)
+        #         print("corr: ", corr)
+        #         print("mult_acc: ", mult_a7)
+        #         print("Classification Report (pos/neg) :")
+        #         print(classification_report(binary_truth, binary_preds, digits=5))
+        #         print("Accuracy (pos/neg) ", accuracy_score(binary_truth, binary_preds))
             
-            # non-neg - neg
-            binary_truth = (test_truth >= 0)
-            binary_preds = (test_preds >= 0)
+        #     # non-neg - neg
+        #     binary_truth = (test_truth >= 0)
+        #     binary_preds = (test_preds >= 0)
 
-            if to_print:
-                print("Classification Report (non-neg/neg) :")
-                print(classification_report(binary_truth, binary_preds, digits=5))
-                print("Accuracy (non-neg/neg) ", accuracy_score(binary_truth, binary_preds))
+        #     if to_print:
+        #         print("Classification Report (non-neg/neg) :")
+        #         print(classification_report(binary_truth, binary_preds, digits=5))
+        #         print("Accuracy (non-neg/neg) ", accuracy_score(binary_truth, binary_preds))
             
-            return accuracy_score(binary_truth, binary_preds)
+        #     return accuracy_score(binary_truth, binary_preds)
 
 
     def get_domain_loss(self,):
@@ -420,3 +472,10 @@ class Solver(object):
         loss += self.loss_recon(self.model.utt_a_recon, self.model.utt_a_orig)
         loss = loss/3.0
         return loss
+
+    def get_conf_loss(self, pred, truth):
+        true_index = torch.argmax(truth, dim=1)
+        conf_loss = []
+        for i in range(self.model.pred_tcp.size(0)):
+            conf_loss.append(self.loss_tcp(self.model.pred_tcp[i], pred[:][true_index]) + self.loss_mcp(pred, truth))
+        return torch.stack(conf_loss).mean()

@@ -17,7 +17,7 @@ assert(word_emb_path is not None)
 # sdk_dir = Path('/home/iknow/workspace/multimodal/CMU-MultimodalSDK')
 # data_dir = Path('/home/iknow/workspace/multimodal')
 sdk_dir = Path('/data1/multimodal/CMU-MultimodalSDK')
-data_dir = Path('/data1/multimodal')
+data_dir = Path('/data1/multimodal/MMIM')
 data_dict = {'mosi': data_dir.joinpath('MOSI'), 'mosei': data_dir.joinpath('MOSEI')}
 
 optimizer_dict = {'RMSprop': optim.RMSprop, 'Adam': optim.Adam}
@@ -40,7 +40,7 @@ criterion_dict = {
 mosi_hp = {
     'batch_size':32,
     'lr_mmilb':5e-3,
-    'lr_main':1e-3,
+    'lr_main':1e-4,
     'alpha': 0.3,
     'beta': 0.1,
     'd_vh': 32,
